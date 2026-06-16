@@ -1,0 +1,29 @@
+{
+  "name": "prompter",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run verify && vite build",
+    "preview": "vite preview",
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/marked": "^5.0.2",
+    "eslint": "^10.5.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.61.1",
+    "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "marked": "^18.0.5"
+  }
+}
