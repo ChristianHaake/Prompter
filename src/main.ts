@@ -21,6 +21,7 @@ const contentMap: Record<string, string> = {
 const appDiv = document.querySelector<HTMLDivElement>('#app')!;
 const shellHeader = document.querySelector<HTMLElement>('.app-header');
 const shellFooter = document.querySelector<HTMLElement>('.app-footer');
+const educationNotice = document.querySelector<HTMLElement>('#education-notice');
 
 let currentViewInstance: EditorView | PresentationView | null = null;
 let currentViewMode = store.getState().viewMode;
@@ -39,6 +40,7 @@ function renderApp() {
       // Hide shell header/footer during presentation
       if (shellHeader) shellHeader.style.display = 'none';
       if (shellFooter) shellFooter.style.display = 'none';
+      if (educationNotice) educationNotice.style.display = 'none';
       appDiv.style.padding = '0'; // Remove workspace padding
       
       currentViewInstance = new PresentationView(appDiv);
@@ -47,6 +49,7 @@ function renderApp() {
       // Show shell header/footer
       if (shellHeader) shellHeader.style.display = 'flex';
       if (shellFooter) shellFooter.style.display = 'flex';
+      if (educationNotice) educationNotice.style.display = 'flex';
       appDiv.style.padding = '2rem';
       
       currentViewInstance = new EditorView(appDiv);
@@ -66,6 +69,7 @@ function renderContentPage(page: string) {
   // Show shell header/footer
   if (shellHeader) shellHeader.style.display = 'flex';
   if (shellFooter) shellFooter.style.display = 'flex';
+  if (educationNotice) educationNotice.style.display = 'flex';
   appDiv.style.padding = '2rem';
 
   const mdContent = contentMap[page];

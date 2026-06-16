@@ -105,6 +105,77 @@ main {
   padding: 0 clamp(16px, 4vw, 64px) 56px;
 }
 
+.language-switch {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--border-soft);
+  border-radius: 9px;
+  background: #f8fafc;
+}
+
+.language-switch button {
+  min-width: 34px;
+  padding: 5px 7px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.language-switch button[aria-pressed="true"] {
+  color: white;
+  background: var(--accent);
+}
+
+.text-button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  padding: 54px 0 34px;
+}
+
+.intro > div {
+  max-width: 680px;
+}
+
+.eyebrow,
+.panel-kicker {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  max-width: 650px;
+  margin: 10px 0 12px;
+  font-size: clamp(2.2rem, 5vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.intro p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: clamp(1rem, 1.6vw, 1.1rem);
+  line-height: 1.65;
+}
+
 /* --- Workspace & Panels --- */
 .workspace {
   display: grid;

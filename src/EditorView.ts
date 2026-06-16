@@ -40,31 +40,15 @@ export class EditorView {
 
   private render() {
     this.container.innerHTML = `
-      <div class="app">
-        <header class="app-header">
-          <div class="brand">
-             <div class="brand__mark">P</div>
-             <span>
-               <strong>Prompter</strong>
-               <small>haak3</small>
-             </span>
-          </div>
-          <div class="header-meta">
-             <span class="privacy-badge">Lokal & Sicher</span>
-          </div>
-        </header>
-
-        <div class="education-notice">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-          <p>Teleprompter-App ohne Login und ohne Tracking. Alle Daten bleiben in diesem Browser.</p>
+      <section class="intro">
+        <div>
+          <span class="eyebrow">LOKAL. EXPORTIERBAR. BROWSERBASIERT.</span>
+          <h1>Perfektioniere deine Pitches.</h1>
+          <p>Gestalte deine Skripte und nutze den integrierten Teleprompter, um deine Präsentationen fehlerfrei zu halten. Ohne Anmeldung und ohne Upload.</p>
         </div>
+      </section>
 
-        <main>
-          <div class="workspace">
+      <div class="workspace">
             <!-- Sidebar / Settings -->
             <div class="editor-panel">
               <div class="panel-heading">
@@ -159,8 +143,6 @@ export class EditorView {
               </div>
             </div>
           </div>
-        </main>
-      </div>
     `;
 
     this.presentBtn = this.container.querySelector('#btn-present') as HTMLButtonElement;

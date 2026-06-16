@@ -8,9 +8,9 @@ export default defineConfig({
       injectRegister: 'script-defer',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Prompter',
-        short_name: 'Prompter',
-        description: 'Teleprompter-App ohne Login und ohne Tracking.',
+        name: 'PitchTimer',
+        short_name: 'PitchTimer',
+        description: 'Browserbasierter Teleprompter für deine Pitches.',
         lang: 'de',
         start_url: '/',
         scope: '/',

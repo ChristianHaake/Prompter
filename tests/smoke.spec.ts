@@ -4,7 +4,7 @@ test('has title and brand mark', async ({ page }) => {
   await page.goto('/');
 
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Prompter/);
+  await expect(page).toHaveTitle(/PitchTimer/);
 
   // Expect the brand mark "P" to be visible
   const brandMark = page.locator('.brand__mark');
