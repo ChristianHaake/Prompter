@@ -7,10 +7,12 @@ export class EditorView {
   private currentProject: PrompterProject;
 
   // DOM Elements
-  private textarea!: HTMLTextAreaElement;
-  private wordCountSpan!: HTMLSpanElement;
-  private readTimeSpan!: HTMLSpanElement;
-  private titleInput!: HTMLInputElement;
+  private presentBtn!: HTMLButtonElement;
+  private wordCountEl!: HTMLSpanElement;
+  private readTimeEl!: HTMLSpanElement;
+  private exportBtn!: HTMLButtonElement;
+  private importBtn!: HTMLButtonElement;
+  private fileInput!: HTMLInputElement;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -19,161 +21,247 @@ export class EditorView {
 
   public mount() {
     this.render();
-    this.unsubscribe = store.subscribe((state) => {
-      // Very basic diffing to avoid losing cursor focus in textarea
-      if (this.currentProject.text !== state.project.text) {
-         if (this.textarea && this.textarea.value !== state.project.text) {
-            this.textarea.value = state.project.text;
-         }
-      }
-      if (this.currentProject.title !== state.project.title) {
-        if (this.titleInput && this.titleInput.value !== state.project.title) {
-          this.titleInput.value = state.project.title;
-        }
-      }
-      this.currentProject = state.project;
+    this.attachEventListeners();
+    this.unsubscribe = store.subscribe(() => {
+      this.currentProject = store.getState().project;
       this.updateStats();
     });
+    this.updateStats();
   }
 
   public unmount() {
-    if (this.unsubscribe) this.unsubscribe();
+    if (this.unsubscribe) {
+      this.unsubscribe();
+      this.unsubscribe = null;
+    }
+    this.removeEventListeners();
     this.container.innerHTML = '';
   }
 
-  private calculateWordCount(text: string): number {
-    return text.trim().split(/\s+/).filter(w => w.length > 0).length;
-  }
-
-  private calculateEstimatedTime(words: number): number {
-    const WPM = 130; // average spoken words per minute
-    return Math.ceil((words / WPM) * 60);
-  }
-
-  private updateStats() {
-    if (!this.wordCountSpan || !this.readTimeSpan) return;
-    const words = this.calculateWordCount(this.currentProject.text);
-    const estimatedSeconds = this.calculateEstimatedTime(words);
-    
-    this.wordCountSpan.textContent = `${words} Wörter`;
-    
-    const minutes = Math.floor(estimatedSeconds / 60);
-    const seconds = estimatedSeconds % 60;
-    this.readTimeSpan.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} Min. (geschätzt)`;
-  }
-
-  private handleFileImport = (e: Event) => {
-    const input = e.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          store.importProject(event.target.result as string);
-        }
-      };
-      reader.readAsText(input.files[0]);
-    }
-  };
-
-  private handleExport = () => {
-    const json = JSON.stringify(store.getState().project, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${this.currentProject.title || 'prompter'}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   private render() {
     this.container.innerHTML = `
-      <div class="editor-layout">
-        <div class="editor-main surface">
-          <input type="text" id="project-title" class="title-input" value="${this.currentProject.title}" placeholder="Projekttitel" />
-          <textarea id="editor-textarea" class="text-input" placeholder="Gib hier deinen Sprechtext ein...">${this.currentProject.text}</textarea>
-          <div class="stats-bar">
-            <span id="word-count">0 Wörter</span>
-            <span id="read-time">0:00 Min.</span>
+      <div class="app">
+        <header class="app-header">
+          <div class="brand">
+             <div class="brand__mark">P</div>
+             <span>
+               <strong>Prompter</strong>
+               <small>haak3</small>
+             </span>
           </div>
+          <div class="header-meta">
+             <span class="privacy-badge">Lokal & Sicher</span>
+          </div>
+        </header>
+
+        <div class="education-notice">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <p>Teleprompter-App ohne Login und ohne Tracking. Alle Daten bleiben in diesem Browser.</p>
         </div>
-        
-        <div class="editor-sidebar surface">
-          <h3>Zielzeit</h3>
-          <div class="time-buttons">
-            ${[30, 60, 90, 120, 180].map(t => `<button class="time-btn ${this.currentProject.targetDurationSeconds === t ? 'active' : ''}" data-time="${t}">${t}s</button>`).join('')}
-          </div>
-          <div style="margin-top: 1rem;">
-             <label>Manuell (Sekunden):</label>
-             <input type="number" id="manual-time" value="${this.currentProject.targetDurationSeconds}" min="1" class="number-input" />
-          </div>
 
-          <hr class="sidebar-divider" />
+        <main>
+          <div class="workspace">
+            <!-- Sidebar / Settings -->
+            <div class="editor-panel">
+              <div class="panel-heading">
+                <h2>Einstellungen</h2>
+              </div>
+              <div class="editor-form">
+                <div class="field">
+                  <label class="field-label">Titel</label>
+                  <input type="text" id="project-title" value="${this.currentProject.title}" placeholder="Neues Projekt" />
+                </div>
 
-          <h3>Projekt-Aktionen</h3>
-          <div class="action-buttons">
-            <button id="btn-export" class="secondary-btn">Export (JSON)</button>
-            <label class="secondary-btn file-upload">
-              Import (JSON)
-              <input type="file" id="btn-import" accept=".json" style="display:none;" />
-            </label>
-            <button id="btn-reset" class="danger-btn">Zurücksetzen</button>
-          </div>
+                <div class="field">
+                  <label class="field-label">Zieldauer (Minuten)</label>
+                  <input type="number" id="project-duration" value="${this.currentProject.targetDurationSeconds / 60}" min="0.5" step="0.5" />
+                </div>
 
-          <div class="present-container">
-             <button id="btn-present" class="primary-btn huge">Präsentieren</button>
+                <div class="field">
+                  <label class="field-label">Schriftgröße</label>
+                  <input type="number" id="project-fontsize" value="${this.currentProject.fontSize}" min="16" max="200" step="4" />
+                </div>
+
+                <div class="field">
+                  <label class="field-label">Spiegelmodus (für Teleprompter-Glas)</label>
+                  <div class="segmented-control">
+                    <label>
+                      <input type="radio" name="mirror" value="false" ${!this.currentProject.mirrorMode ? 'checked' : ''} />
+                      <span>Normal</span>
+                    </label>
+                    <label>
+                      <input type="radio" name="mirror" value="true" ${this.currentProject.mirrorMode ? 'checked' : ''} />
+                      <span>Gespiegelt</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="field-label">Fokus-Linie</label>
+                  <div class="segmented-control">
+                    <label>
+                      <input type="radio" name="focusLine" value="true" ${this.currentProject.focusLine ? 'checked' : ''} />
+                      <span>An</span>
+                    </label>
+                    <label>
+                      <input type="radio" name="focusLine" value="false" ${!this.currentProject.focusLine ? 'checked' : ''} />
+                      <span>Aus</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="field-label">3-Sekunden Countdown</label>
+                  <div class="segmented-control">
+                    <label>
+                      <input type="radio" name="countdown" value="true" ${this.currentProject.countdownEnabled ? 'checked' : ''} />
+                      <span>An</span>
+                    </label>
+                    <label>
+                      <input type="radio" name="countdown" value="false" ${!this.currentProject.countdownEnabled ? 'checked' : ''} />
+                      <span>Aus</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                  <button id="btn-present" class="button button--primary" style="width: 100%;">
+                    Präsentieren
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Text Editor -->
+            <div class="preview-panel">
+              <div class="preview-panel__header">
+                <h2>Text</h2>
+                <div class="panel-actions">
+                  <button id="btn-import" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">Öffnen</button>
+                  <button id="btn-export" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">Speichern</button>
+                  <input type="file" id="file-import" accept=".prompter" style="display: none;" />
+                </div>
+              </div>
+              <div class="preview-panel__content">
+                <textarea id="project-text" class="text-input" placeholder="Füge hier deinen Text ein...">${this.currentProject.text}</textarea>
+                <div class="action-bar">
+                  <div class="stats">
+                    <span id="word-count">0</span> Wörter
+                  </div>
+                  <div class="stats">
+                    Lesezeit ca. <span id="read-time">0:00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     `;
 
-    // Bind elements
-    this.textarea = this.container.querySelector('#editor-textarea') as HTMLTextAreaElement;
-    this.titleInput = this.container.querySelector('#project-title') as HTMLInputElement;
-    this.wordCountSpan = this.container.querySelector('#word-count') as HTMLSpanElement;
-    this.readTimeSpan = this.container.querySelector('#read-time') as HTMLSpanElement;
+    this.presentBtn = this.container.querySelector('#btn-present') as HTMLButtonElement;
+    this.wordCountEl = this.container.querySelector('#word-count') as HTMLSpanElement;
+    this.readTimeEl = this.container.querySelector('#read-time') as HTMLSpanElement;
+    
+    this.exportBtn = this.container.querySelector('#btn-export') as HTMLButtonElement;
+    this.importBtn = this.container.querySelector('#btn-import') as HTMLButtonElement;
+    this.fileInput = this.container.querySelector('#file-import') as HTMLInputElement;
+  }
 
-    this.updateStats();
+  private updateStats() {
+    const text = this.currentProject.text.trim();
+    const words = text ? text.split(/\\s+/).length : 0;
+    this.wordCountEl.textContent = words.toString();
 
-    // Event Listeners
-    this.textarea.addEventListener('input', (e) => {
-      store.updateProject({ text: (e.target as HTMLTextAreaElement).value });
-    });
+    // Average reading speed: 130 words per minute
+    const readTimeMinutes = words / 130;
+    const minutes = Math.floor(readTimeMinutes);
+    const seconds = Math.floor((readTimeMinutes - minutes) * 60);
+    this.readTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
 
-    this.titleInput.addEventListener('input', (e) => {
-      store.updateProject({ title: (e.target as HTMLInputElement).value });
-    });
+  private handleInput = (e: Event) => {
+    const target = e.target as HTMLElement;
+    
+    if (target.id === 'project-title') {
+      store.updateProject({ title: (target as HTMLInputElement).value });
+    } else if (target.id === 'project-text') {
+      store.updateProject({ text: (target as HTMLTextAreaElement).value });
+    } else if (target.id === 'project-duration') {
+      const mins = parseFloat((target as HTMLInputElement).value) || 1;
+      store.updateProject({ targetDurationSeconds: mins * 60 });
+    } else if (target.id === 'project-fontsize') {
+      const size = parseInt((target as HTMLInputElement).value, 10) || 48;
+      store.updateProject({ fontSize: size });
+    } else if ((target as HTMLInputElement).name === 'mirror') {
+      store.updateProject({ mirrorMode: (target as HTMLInputElement).value === 'true' });
+    } else if ((target as HTMLInputElement).name === 'focusLine') {
+      store.updateProject({ focusLine: (target as HTMLInputElement).value === 'true' });
+    } else if ((target as HTMLInputElement).name === 'countdown') {
+      store.updateProject({ countdownEnabled: (target as HTMLInputElement).value === 'true' });
+    }
+  };
 
-    this.container.querySelectorAll('.time-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const time = parseInt((e.target as HTMLButtonElement).dataset.time!);
-        store.updateProject({ targetDurationSeconds: time });
-        // Re-render sidebar active state
-        this.render(); 
-      });
-    });
+  private handlePresent = () => {
+    store.setViewMode('presentation');
+  };
 
-    const manualTimeInput = this.container.querySelector('#manual-time') as HTMLInputElement;
-    manualTimeInput.addEventListener('change', (e) => {
-      const val = parseInt((e.target as HTMLInputElement).value);
-      if (!isNaN(val) && val > 0) {
-        store.updateProject({ targetDurationSeconds: val });
-        this.render();
+  private handleExport = () => {
+    const project = store.getState().project;
+    const jsonStr = JSON.stringify(project, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${project.title || 'Projekt'}.prompter`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  private triggerImport = () => {
+    this.fileInput.click();
+  };
+
+  private handleImport = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+    
+    const file = target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (store.importProject(content)) {
+        // Re-render implicitly handled by store subscription in main.ts, but let's clear the input
+        this.fileInput.value = '';
+      } else {
+        alert("Fehler beim Importieren der Datei. Ist es eine gültige .prompter Datei?");
       }
-    });
+    };
+    reader.readAsText(file);
+  };
 
-    this.container.querySelector('#btn-present')?.addEventListener('click', () => {
-      store.setViewMode('presentation');
-    });
+  private attachEventListeners() {
+    this.container.addEventListener('input', this.handleInput);
+    this.presentBtn.addEventListener('click', this.handlePresent);
+    this.exportBtn.addEventListener('click', this.handleExport);
+    this.importBtn.addEventListener('click', this.triggerImport);
+    this.fileInput.addEventListener('change', this.handleImport);
+  }
 
-    this.container.querySelector('#btn-reset')?.addEventListener('click', () => {
-      if (confirm('Wirklich alles zurücksetzen?')) {
-        store.resetProject();
-        this.render(); // force full re-render
-      }
-    });
-
-    this.container.querySelector('#btn-export')?.addEventListener('click', this.handleExport);
-    this.container.querySelector('#btn-import')?.addEventListener('change', this.handleFileImport);
+  private removeEventListeners() {
+    this.container.removeEventListener('input', this.handleInput);
+    if (this.presentBtn) {
+      this.presentBtn.removeEventListener('click', this.handlePresent);
+      this.exportBtn.removeEventListener('click', this.handleExport);
+      this.importBtn.removeEventListener('click', this.triggerImport);
+      this.fileInput.removeEventListener('change', this.handleImport);
+    }
   }
 }

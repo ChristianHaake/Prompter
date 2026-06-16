@@ -1,5 +1,7 @@
 import { store } from './store';
 import type { PrompterProject } from './types';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 export class PresentationView {
   private container: HTMLElement;
@@ -34,6 +36,13 @@ export class PresentationView {
     this.attachEventListeners();
     this.calculateScrollDistance();
     
+    // Focus play button for accessibility
+    setTimeout(() => {
+      if (this.playPauseBtn) {
+        this.playPauseBtn.focus();
+      }
+    }, 50);
+    
     if (this.project.countdownEnabled) {
       this.startCountdown();
     } else {
@@ -52,36 +61,40 @@ export class PresentationView {
     const fontSize = this.project.fontSize || 48;
     const lineHeight = this.project.lineHeight || 1.5;
     
+    const rawHtml = marked.parse(this.project.text, { breaks: true, async: false }) as string;
+    const cleanHtml = DOMPurify.sanitize(rawHtml);
+    
     this.container.innerHTML = `
       <div class="presentation-layout">
         <div class="presentation-header">
-           <button id="btn-exit" class="secondary-btn">← Zurück</button>
-           <div class="presentation-stats">
-              <span id="time-elapsed">0:00</span>
-              <div class="progress-track">
-                <div id="progress-bar" class="progress-fill"></div>
-              </div>
-              <span id="time-remaining">${this.formatTime(this.project.targetDurationSeconds)}</span>
-           </div>
-           <div class="presentation-controls">
-              <button id="btn-slower" class="icon-btn">-</button>
-              <span class="speed-indicator">${this.project.manualSpeed.toFixed(1)}x</span>
-              <button id="btn-faster" class="icon-btn">+</button>
-           </div>
+           <button id="btn-exit" class="button button--secondary">← Zurück</button>
         </div>
         
         <div id="prompter-viewport" class="prompter-viewport">
-          <div id="prompter-text" class="prompter-text" style="font-size: ${fontSize}px; line-height: ${lineHeight}; ${this.project.mirrorMode ? 'transform: scaleX(-1);' : ''}">
-            ${this.project.text.replace(/\n/g, '<br>')}
+          <div id="prompter-text" class="prompter-text" style="font-size: ${fontSize}px; line-height: ${lineHeight}; transform: translateY(0px) ${this.project.mirrorMode ? 'scaleX(-1)' : ''}">
+            ${cleanHtml}
           </div>
+          ${this.project.focusLine ? '<div class="focus-line"></div>' : ''}
           <div id="countdown-overlay" class="countdown-overlay hidden">
             <span id="countdown-number">3</span>
           </div>
         </div>
 
         <div class="presentation-footer">
-          <button id="btn-reset" class="secondary-btn">Reset (R)</button>
-          <button id="btn-playpause" class="primary-btn">Start (Leertaste)</button>
+           <span id="time-elapsed" class="presentation-stats">0:00</span>
+           <div class="progress-track">
+             <div id="progress-bar" class="progress-fill"></div>
+           </div>
+           <span id="time-remaining" class="presentation-stats">${this.formatTime(this.project.targetDurationSeconds)}</span>
+           
+           <div class="presentation-controls" style="margin: 0 1rem;">
+              <button id="btn-slower" class="icon-button" aria-label="Geschwindigkeit verringern">-</button>
+              <span class="speed-indicator">${this.project.manualSpeed.toFixed(1)}x</span>
+              <button id="btn-faster" class="icon-button" aria-label="Geschwindigkeit erhöhen">+</button>
+           </div>
+           
+           <button id="btn-reset" class="icon-button" aria-label="Reset">↺</button>
+           <button id="btn-playpause" class="button button--primary">Start (Leertaste)</button>
         </div>
       </div>
     `;
@@ -132,10 +145,10 @@ export class PresentationView {
     if (!this.hasStarted) return;
     if (this.isPlaying) {
       this.stopScrolling();
-      this.playPauseBtn.textContent = 'Fortsetzen (Leertaste)';
+      this.playPauseBtn.textContent = 'Fortsetzen';
     } else {
       this.startScrolling();
-      this.playPauseBtn.textContent = 'Pause (Leertaste)';
+      this.playPauseBtn.textContent = 'Pause';
     }
   };
 
@@ -143,7 +156,7 @@ export class PresentationView {
     this.isPlaying = true;
     this.lastFrameTime = performance.now();
     this.animationFrameId = requestAnimationFrame(this.scrollLoop);
-    this.playPauseBtn.textContent = 'Pause (Leertaste)';
+    this.playPauseBtn.textContent = 'Pause';
   }
 
   private stopScrolling() {
@@ -158,9 +171,9 @@ export class PresentationView {
     this.hasStarted = false;
     this.scrollPosition = 0;
     this.elapsedSeconds = 0;
-    this.textContainer.style.transform = `translateY(0px)`;
+    this.textContainer.style.transform = `translateY(0px) ${this.project.mirrorMode ? 'scaleX(-1)' : ''}`;
     this.updateProgressUI();
-    this.playPauseBtn.textContent = 'Start (Leertaste)';
+    this.playPauseBtn.textContent = 'Start';
     if (this.project.countdownEnabled) {
       this.startCountdown();
     } else {
@@ -191,7 +204,7 @@ export class PresentationView {
       this.animationFrameId = requestAnimationFrame(this.scrollLoop);
     }
 
-    this.textContainer.style.transform = `translateY(-${this.scrollPosition}px)`;
+    this.textContainer.style.transform = `translateY(-${this.scrollPosition}px) ${this.project.mirrorMode ? 'scaleX(-1)' : ''}`;
     this.updateProgressUI();
   };
 
@@ -218,7 +231,7 @@ export class PresentationView {
         break;
       case 'Escape':
         e.preventDefault();
-        store.setViewMode('editor');
+        this.handleExit();
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -235,12 +248,21 @@ export class PresentationView {
     }
   };
 
+  private handleExit = () => {
+    store.setViewMode('editor');
+    // Set focus back to 'Präsentieren' button when Editor mounts
+    setTimeout(() => {
+      const presentBtn = document.getElementById('btn-present');
+      if (presentBtn) {
+        presentBtn.focus();
+      }
+    }, 50);
+  };
+
   private attachEventListeners() {
     window.addEventListener('keydown', this.handleKeyDown);
     
-    this.container.querySelector('#btn-exit')?.addEventListener('click', () => {
-      store.setViewMode('editor');
-    });
+    this.container.querySelector('#btn-exit')?.addEventListener('click', this.handleExit);
     
     this.container.querySelector('#btn-playpause')?.addEventListener('click', this.togglePlayPause);
     this.container.querySelector('#btn-reset')?.addEventListener('click', this.reset);

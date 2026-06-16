@@ -1,6 +1,7 @@
 import './style.css';
 import './app.css';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { store } from './store';
 import { EditorView } from './EditorView';
 import { PresentationView } from './PresentationView';
@@ -69,20 +70,21 @@ function renderContentPage(page: string) {
 
   const mdContent = contentMap[page];
   if (mdContent) {
-    const htmlContent = marked.parse(mdContent);
+    const rawHtml = marked.parse(mdContent) as string;
+    const htmlContent = DOMPurify.sanitize(rawHtml);
     appDiv.innerHTML = `
-      <div class="surface" style="max-width: 800px; margin: 0 auto; width: 100%;">
-        <a href="#" style="display: inline-block; margin-bottom: 1rem; color: var(--color-primary); text-decoration: none;">&larr; Zurück zur App</a>
-        <div class="content-body">
+      <div class="legal-page">
+        <a href="#" class="back-link">&larr; Zurück zur App</a>
+        <div class="markdown-body">
           ${htmlContent}
         </div>
       </div>
     `;
   } else {
     appDiv.innerHTML = `
-      <div class="surface">
+      <div class="legal-page">
         <h2>Seite nicht gefunden</h2>
-        <a href="#">&larr; Zurück zur App</a>
+        <a href="#" class="back-link">&larr; Zurück zur App</a>
       </div>
     `;
   }

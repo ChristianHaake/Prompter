@@ -78,16 +78,26 @@ class Store {
   public importProject(jsonString: string): boolean {
     try {
       const parsed = JSON.parse(jsonString);
-      if (parsed.version && parsed.text !== undefined) {
-        this.state.project = { ...DEFAULT_PROJECT, ...parsed };
+      if (typeof parsed === 'object' && parsed !== null) {
+        this.state.project = {
+          ...DEFAULT_PROJECT,
+          ...parsed,
+          manualSpeed: Number(parsed.manualSpeed) || DEFAULT_PROJECT.manualSpeed,
+          fontSize: Number(parsed.fontSize) || DEFAULT_PROJECT.fontSize,
+          lineHeight: Number(parsed.lineHeight) || DEFAULT_PROJECT.lineHeight,
+          mirrorMode: Boolean(parsed.mirrorMode),
+          focusLine: Boolean(parsed.focusLine),
+          countdownEnabled: Boolean(parsed.countdownEnabled),
+          text: String(parsed.text || '')
+        };
         this.saveToStorage();
         this.notify();
         return true;
       }
-    } catch (e) {
-      console.error("Import failed", e);
+      return false;
+    } catch {
+      return false;
     }
-    return false;
   }
 
   public subscribe(callback: Subscriber): () => void {
