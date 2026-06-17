@@ -18,9 +18,12 @@ export type PrompterProject = {
 // Application View State
 export type ViewMode = 'editor' | 'presentation';
 
+export type Language = 'de' | 'en';
+
 export type AppState = {
   project: PrompterProject;
   viewMode: ViewMode;
+  language: Language;
 };
 
 export type ProjectImportResult =

@@ -2,6 +2,7 @@ import { store } from './store';
 import type { PrompterProject } from './types';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { t } from './i18n';
 
 export class PresentationView {
   private container: HTMLElement;
@@ -73,8 +74,8 @@ export class PresentationView {
     this.container.innerHTML = `
       <div class="presentation-layout">
         <div class="presentation-header">
-           <button id="btn-exit" class="button button--secondary">← Zurück</button>
-           <button id="btn-fullscreen" class="button button--secondary">Vollbild</button>
+           <button id="btn-exit" class="button button--secondary">← ${t('presentation.back')}</button>
+           <button id="btn-fullscreen" class="button button--secondary">${t('presentation.fullscreen')}</button>
         </div>
         
         <div id="prompter-viewport" class="prompter-viewport">
@@ -95,13 +96,13 @@ export class PresentationView {
            <span id="time-remaining" class="presentation-stats">${this.formatTime(this.project.targetDurationSeconds)}</span>
            
            <div class="presentation-controls" style="margin: 0 1rem;">
-              <button id="btn-slower" class="icon-button" aria-label="Geschwindigkeit verringern">-</button>
+              <button id="btn-slower" class="icon-button" aria-label="${t('presentation.speedDecrease')}">-</button>
               <span class="speed-indicator">${this.project.manualSpeed.toFixed(1)}x</span>
-              <button id="btn-faster" class="icon-button" aria-label="Geschwindigkeit erhöhen">+</button>
+              <button id="btn-faster" class="icon-button" aria-label="${t('presentation.speedIncrease')}">+</button>
            </div>
            
            <button id="btn-reset" class="icon-button" aria-label="Reset">↺</button>
-           <button id="btn-playpause" class="button button--primary">Start (Leertaste)</button>
+           <button id="btn-playpause" class="button button--primary">${t('presentation.start')} (Leertaste)</button>
         </div>
       </div>
     `;
@@ -167,10 +168,10 @@ export class PresentationView {
     }
     if (this.isPlaying) {
       this.stopScrolling();
-      this.playPauseBtn.textContent = 'Fortsetzen';
+      this.playPauseBtn.textContent = t('presentation.resume');
     } else {
       this.startScrolling();
-      this.playPauseBtn.textContent = 'Pause';
+      this.playPauseBtn.textContent = t('presentation.pause');
     }
   };
 
@@ -193,7 +194,7 @@ export class PresentationView {
     this.isPlaying = true;
     this.lastFrameTime = performance.now();
     this.animationFrameId = requestAnimationFrame(this.scrollLoop);
-    this.playPauseBtn.textContent = 'Pause';
+    this.playPauseBtn.textContent = t('presentation.pause');
   }
 
   private stopScrolling() {
@@ -212,7 +213,7 @@ export class PresentationView {
     this.elapsedSeconds = 0;
     this.textContainer.style.transform = `translateY(0px) ${this.project.mirrorMode ? 'scaleX(-1)' : ''}`;
     this.updateProgressUI();
-    this.playPauseBtn.textContent = 'Start';
+    this.playPauseBtn.textContent = t('presentation.start');
     if (this.project.countdownEnabled) {
       this.startCountdown();
     } else {
@@ -237,7 +238,7 @@ export class PresentationView {
     if (this.scrollPosition >= this.totalScrollDistance) {
       this.scrollPosition = this.totalScrollDistance;
       this.stopScrolling();
-      this.playPauseBtn.textContent = 'Beendet';
+      this.playPauseBtn.textContent = t('presentation.end');
     } else {
       this.animationFrameId = requestAnimationFrame(this.scrollLoop);
     }

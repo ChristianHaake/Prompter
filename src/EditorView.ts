@@ -1,5 +1,6 @@
 import { DEFAULT_PROJECT, MAX_PROJECT_FILE_BYTES, store } from './store';
 import type { PrompterProject } from './types';
+import { t } from './i18n';
 
 function escapeHtml(value: string): string {
   return value
@@ -71,9 +72,9 @@ export class EditorView {
     this.container.innerHTML = `
       <section class="intro">
         <div>
-          <span class="eyebrow">LOKAL. EXPORTIERBAR. BROWSERBASIERT.</span>
-          <h1>Perfektioniere deine Pitches.</h1>
-          <p>Gestalte deine Skripte und nutze den integrierten Teleprompter, um deine Präsentationen fehlerfrei zu halten. Ohne Anmeldung und ohne Upload.</p>
+          <span class="eyebrow">${t('editor.intro.eyebrow')}</span>
+          <h1>${t('editor.intro.title')}</h1>
+          <p>${t('editor.intro.text')}</p>
         </div>
       </section>
 
@@ -81,26 +82,26 @@ export class EditorView {
             <!-- Sidebar / Settings -->
             <div class="editor-panel">
               <div class="panel-heading">
-                <h2>Einstellungen</h2>
+                <h2>${t('editor.settings.title')}</h2>
               </div>
               <div class="editor-form">
                 <div class="field">
-                  <label class="field-label" for="project-title">Titel</label>
-                  <input type="text" id="project-title" value="${escapeHtml(this.currentProject.title)}" placeholder="Neues Projekt" />
+                  <label class="field-label" for="project-title">${t('editor.settings.projectTitle')}</label>
+                  <input type="text" id="project-title" value="${escapeHtml(this.currentProject.title)}" placeholder="${t('editor.placeholder.title')}" />
                 </div>
 
                 <div class="field">
-                  <label class="field-label" for="project-duration">Zieldauer (Minuten)</label>
+                  <label class="field-label" for="project-duration">${t('editor.settings.duration')}</label>
                   <input type="number" id="project-duration" value="${this.currentProject.targetDurationSeconds / 60}" min="0.5" step="0.5" />
                 </div>
 
                 <div class="field">
-                  <label class="field-label" for="project-fontsize">Schriftgröße</label>
+                  <label class="field-label" for="project-fontsize">${t('editor.settings.fontSize')}</label>
                   <input type="number" id="project-fontsize" value="${this.currentProject.fontSize}" min="16" max="200" step="4" />
                 </div>
 
                 <div class="field">
-                  <label class="field-label">Spiegelmodus (für Teleprompter-Glas)</label>
+                  <label class="field-label">${t('editor.settings.mirrorMode')}</label>
                   <div class="segmented-control">
                     <label>
                       <input type="radio" name="mirror" value="false" ${!this.currentProject.mirrorMode ? 'checked' : ''} />
@@ -108,13 +109,13 @@ export class EditorView {
                     </label>
                     <label>
                       <input type="radio" name="mirror" value="true" ${this.currentProject.mirrorMode ? 'checked' : ''} />
-                      <span>Gespiegelt</span>
+                      <span>Mirror</span>
                     </label>
                   </div>
                 </div>
 
                 <div class="field">
-                  <label class="field-label">Fokus-Linie</label>
+                  <label class="field-label">${t('editor.settings.focusLine')}</label>
                   <div class="segmented-control">
                     <label>
                       <input type="radio" name="focusLine" value="true" ${this.currentProject.focusLine ? 'checked' : ''} />
@@ -128,7 +129,7 @@ export class EditorView {
                 </div>
 
                 <div class="field">
-                  <label class="field-label">3-Sekunden Countdown</label>
+                  <label class="field-label">${t('editor.settings.countdown')}</label>
                   <div class="segmented-control">
                     <label>
                       <input type="radio" name="countdown" value="true" ${this.currentProject.countdownEnabled ? 'checked' : ''} />
@@ -143,11 +144,11 @@ export class EditorView {
 
                 <div style="margin-top: 1rem;">
                   <button id="btn-present" class="button button--primary" style="width: 100%;">
-                    Präsentieren
+                    ${t('editor.actions.present')}
                   </button>
                 </div>
                 <button id="btn-reset-project" class="button button--secondary" type="button">
-                  Lokale Daten zurücksetzen
+                  ${t('editor.actions.reset')}
                 </button>
               </div>
             </div>
@@ -157,20 +158,20 @@ export class EditorView {
               <div class="preview-panel__header">
                 <h2>Text</h2>
                 <div class="panel-actions">
-                  <button id="btn-import" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">Projekt öffnen</button>
-                  <button id="btn-export" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">Projekt exportieren</button>
+                  <button id="btn-import" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">${t('editor.actions.import')}</button>
+                  <button id="btn-export" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">${t('editor.actions.export')}</button>
                   <input type="file" id="file-import" accept=".prompter" style="display: none;" />
                 </div>
               </div>
               <div class="preview-panel__content">
                 <label class="visually-hidden" for="project-text">Präsentationstext</label>
-                <textarea id="project-text" class="text-input" placeholder="Füge hier deinen Text ein...">${escapeHtml(this.currentProject.text)}</textarea>
+                <textarea id="project-text" class="text-input" placeholder="${t('editor.placeholder.text')}">${escapeHtml(this.currentProject.text)}</textarea>
                 <div class="action-bar">
                   <div class="stats">
-                    <span id="word-count">0</span> Wörter
+                    <span id="word-count">0</span> ${t('editor.stats.words')}
                   </div>
                   <div class="stats">
-                    Lesezeit ca. <span id="read-time">0:00</span>
+                    ${t('editor.stats.readTime')} <span id="read-time">0:00</span>
                   </div>
                 </div>
               </div>

@@ -160,7 +160,8 @@ export class Store {
     this.storage = storage;
     this.state = {
       project: this.loadFromStorage(),
-      viewMode: 'editor'
+      viewMode: 'editor',
+      language: this.loadLanguageFromStorage()
     };
   }
 
@@ -201,6 +202,27 @@ export class Store {
 
   public setViewMode(mode: AppState['viewMode']) {
     this.state.viewMode = mode;
+    this.notify();
+  }
+
+  private loadLanguageFromStorage(): 'de' | 'en' {
+    try {
+      const stored = this.storage?.getItem('prompter_language');
+      if (stored === 'de' || stored === 'en') return stored;
+    } catch (e) {
+      // ignore
+    }
+    // Default based on browser language if needed, but for simplicity default to 'de'
+    return 'de';
+  }
+
+  public setLanguage(lang: 'de' | 'en') {
+    this.state.language = lang;
+    try {
+      this.storage?.setItem('prompter_language', lang);
+    } catch (e) {
+      // ignore
+    }
     this.notify();
   }
   

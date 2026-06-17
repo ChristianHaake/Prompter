@@ -63,6 +63,26 @@
   justify-content: flex-end;
 }
 
+.header-button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.header-button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
 .privacy-badge {
   display: inline-flex;
   gap: 7px;
