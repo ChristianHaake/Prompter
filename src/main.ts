@@ -18,7 +18,7 @@ import datenschutzEnMd from '../content/datenschutz_en.md?raw';
 import impressumEnMd from '../content/impressum_en.md?raw';
 import lehrkraefteEnMd from '../content/fuer-lehrkraefte_en.md?raw';
 
-import { t, TranslationKey } from './i18n';
+import { t, type TranslationKey } from './i18n';
 
 const contentMap: Record<string, Record<'de' | 'en', string>> = {
   'hilfe': { de: hilfeMd, en: hilfeEnMd },
