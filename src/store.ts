@@ -4,8 +4,8 @@ const STORAGE_KEY = 'prompter_project_v1';
 
 export const DEFAULT_PROJECT: PrompterProject = {
   version: "1.0",
-  title: "Neues Projekt",
-  text: "",
+  title: "Beispiel-Pitch",
+  text: "Hallo und herzlich willkommen!\n\nMit PitchTimer kannst du deine Präsentationen ganz einfach ablesen und perfektionieren.\n\nDer Text scrollt automatisch nach oben. Du kannst die Geschwindigkeit jederzeit anpassen, den Text für Teleprompter-Spiegel umdrehen oder eine Fokus-Linie einschalten, um den Überblick zu behalten.\n\nProbier es einfach aus, indem du auf »Präsentieren« klickst!",
   targetDurationSeconds: 60,
   manualSpeed: 1.0,
   fontSize: 48,
