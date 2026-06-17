@@ -1,8 +1,8 @@
 {
-  "name": "prompter",
+  "name": "pitchtimer",
   "private": true,
   "version": "1.0.0",
-  "description": "Local-first browser teleprompter for pitches and short presentations.",
+  "description": "Browserbasierter Teleprompter für deine Pitches.",
   "license": "GPL-3.0-only",
   "homepage": "https://prompter.haak3.de",
   "repository": {

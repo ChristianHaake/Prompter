@@ -1,6 +1,6 @@
-# Prompter
+# PitchTimer
 
-Prompter ist eine browserbasierte Teleprompter-App für Pitches, Unterricht,
+PitchTimer ist eine browserbasierte Teleprompter-App für Pitches, Unterricht,
 Workshops und kurze Präsentationen.
 
 Die Anwendung läuft lokal im Browser. Es gibt kein Backend, keine Anmeldung und
@@ -10,7 +10,7 @@ Live application: [https://prompter.haak3.de](https://prompter.haak3.de)
 
 ## Zweck
 
-Prompter hilft dabei, Skripte zu schreiben, als Teleprompter abzuspielen und als
+PitchTimer hilft dabei, Skripte zu schreiben, als Teleprompter abzuspielen und als
 editierbare Projektdatei zu sichern. Zielgruppe sind Lehrkräfte, Lernende,
 Workshop-Teams und alle, die kurze Präsentationen kontrolliert vortragen wollen.
 
