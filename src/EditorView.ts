@@ -1,5 +1,27 @@
-import { store } from './store';
+import { DEFAULT_PROJECT, MAX_PROJECT_FILE_BYTES, store } from './store';
 import type { PrompterProject } from './types';
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function sanitizeFilename(value: string): string {
+  const trimmed = value.trim() || 'Projekt';
+  return trimmed
+    .split('')
+    .map(char => {
+      const codePoint = char.codePointAt(0) ?? 0;
+      return codePoint < 32 || '<>:"/\\|?*'.includes(char) ? '-' : char;
+    })
+    .join('')
+    .replace(/\s+/g, ' ')
+    .slice(0, 80);
+}
 
 export class EditorView {
   private container: HTMLElement;
@@ -12,7 +34,12 @@ export class EditorView {
   private readTimeEl!: HTMLSpanElement;
   private exportBtn!: HTMLButtonElement;
   private importBtn!: HTMLButtonElement;
+  private resetBtn!: HTMLButtonElement;
   private fileInput!: HTMLInputElement;
+  private titleInput!: HTMLInputElement;
+  private durationInput!: HTMLInputElement;
+  private fontSizeInput!: HTMLInputElement;
+  private textInput!: HTMLTextAreaElement;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -24,8 +51,10 @@ export class EditorView {
     this.attachEventListeners();
     this.unsubscribe = store.subscribe(() => {
       this.currentProject = store.getState().project;
+      this.syncFormWithProject();
       this.updateStats();
     });
+    this.syncFormWithProject();
     this.updateStats();
   }
 
@@ -56,17 +85,17 @@ export class EditorView {
               </div>
               <div class="editor-form">
                 <div class="field">
-                  <label class="field-label">Titel</label>
-                  <input type="text" id="project-title" value="${this.currentProject.title}" placeholder="Neues Projekt" />
+                  <label class="field-label" for="project-title">Titel</label>
+                  <input type="text" id="project-title" value="${escapeHtml(this.currentProject.title)}" placeholder="Neues Projekt" />
                 </div>
 
                 <div class="field">
-                  <label class="field-label">Zieldauer (Minuten)</label>
+                  <label class="field-label" for="project-duration">Zieldauer (Minuten)</label>
                   <input type="number" id="project-duration" value="${this.currentProject.targetDurationSeconds / 60}" min="0.5" step="0.5" />
                 </div>
 
                 <div class="field">
-                  <label class="field-label">Schriftgröße</label>
+                  <label class="field-label" for="project-fontsize">Schriftgröße</label>
                   <input type="number" id="project-fontsize" value="${this.currentProject.fontSize}" min="16" max="200" step="4" />
                 </div>
 
@@ -117,6 +146,9 @@ export class EditorView {
                     Präsentieren
                   </button>
                 </div>
+                <button id="btn-reset-project" class="button button--secondary" type="button">
+                  Lokale Daten zurücksetzen
+                </button>
               </div>
             </div>
 
@@ -125,13 +157,14 @@ export class EditorView {
               <div class="preview-panel__header">
                 <h2>Text</h2>
                 <div class="panel-actions">
-                  <button id="btn-import" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">Öffnen</button>
-                  <button id="btn-export" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">Speichern</button>
+                  <button id="btn-import" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">Projekt öffnen</button>
+                  <button id="btn-export" class="button button--secondary" style="height: 36px; font-size: 0.85rem;">Projekt exportieren</button>
                   <input type="file" id="file-import" accept=".prompter" style="display: none;" />
                 </div>
               </div>
               <div class="preview-panel__content">
-                <textarea id="project-text" class="text-input" placeholder="Füge hier deinen Text ein...">${this.currentProject.text}</textarea>
+                <label class="visually-hidden" for="project-text">Präsentationstext</label>
+                <textarea id="project-text" class="text-input" placeholder="Füge hier deinen Text ein...">${escapeHtml(this.currentProject.text)}</textarea>
                 <div class="action-bar">
                   <div class="stats">
                     <span id="word-count">0</span> Wörter
@@ -151,7 +184,46 @@ export class EditorView {
     
     this.exportBtn = this.container.querySelector('#btn-export') as HTMLButtonElement;
     this.importBtn = this.container.querySelector('#btn-import') as HTMLButtonElement;
+    this.resetBtn = this.container.querySelector('#btn-reset-project') as HTMLButtonElement;
     this.fileInput = this.container.querySelector('#file-import') as HTMLInputElement;
+    this.titleInput = this.container.querySelector('#project-title') as HTMLInputElement;
+    this.durationInput = this.container.querySelector('#project-duration') as HTMLInputElement;
+    this.fontSizeInput = this.container.querySelector('#project-fontsize') as HTMLInputElement;
+    this.textInput = this.container.querySelector('#project-text') as HTMLTextAreaElement;
+  }
+
+  private syncFormWithProject() {
+    if (!this.titleInput) return;
+
+    const activeElement = document.activeElement;
+    if (activeElement !== this.titleInput || this.titleInput.value !== this.currentProject.title) {
+      this.titleInput.value = this.currentProject.title;
+    }
+    if (activeElement !== this.durationInput || this.durationInput.value !== String(this.currentProject.targetDurationSeconds / 60)) {
+      this.durationInput.value = String(this.currentProject.targetDurationSeconds / 60);
+    }
+    if (activeElement !== this.fontSizeInput || this.fontSizeInput.value !== String(this.currentProject.fontSize)) {
+      this.fontSizeInput.value = String(this.currentProject.fontSize);
+    }
+    if (activeElement !== this.textInput || this.textInput.value !== this.currentProject.text) {
+      this.textInput.value = this.currentProject.text;
+    }
+
+    this.container
+      .querySelectorAll<HTMLInputElement>('input[name="mirror"]')
+      .forEach(input => {
+        input.checked = String(this.currentProject.mirrorMode) === input.value;
+      });
+    this.container
+      .querySelectorAll<HTMLInputElement>('input[name="focusLine"]')
+      .forEach(input => {
+        input.checked = String(this.currentProject.focusLine) === input.value;
+      });
+    this.container
+      .querySelectorAll<HTMLInputElement>('input[name="countdown"]')
+      .forEach(input => {
+        input.checked = String(this.currentProject.countdownEnabled) === input.value;
+      });
   }
 
   private updateStats() {
@@ -200,7 +272,7 @@ export class EditorView {
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${project.title || 'Projekt'}.prompter`;
+    a.download = `${sanitizeFilename(project.title)}.prompter`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -208,6 +280,17 @@ export class EditorView {
   };
 
   private triggerImport = () => {
+    const project = store.getState().project;
+    const hasUserWork =
+      project.text.trim() !== DEFAULT_PROJECT.text.trim() ||
+      project.title.trim() !== DEFAULT_PROJECT.title.trim();
+
+    if (hasUserWork) {
+      const shouldReplace = window.confirm(
+        'Das Öffnen einer Projektdatei ersetzt den aktuellen lokalen Entwurf. Trotzdem öffnen?',
+      );
+      if (!shouldReplace) return;
+    }
     this.fileInput.click();
   };
 
@@ -216,17 +299,31 @@ export class EditorView {
     if (!target.files || target.files.length === 0) return;
     
     const file = target.files[0];
+    if (file.size > MAX_PROJECT_FILE_BYTES) {
+      alert('Die Projektdatei ist zu groß. Bitte öffne eine .prompter-Datei unter 500 KB.');
+      this.fileInput.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
-      if (store.importProject(content)) {
-        // Re-render implicitly handled by store subscription in main.ts, but let's clear the input
+      const result = store.importProject(content);
+      if (result.ok) {
         this.fileInput.value = '';
       } else {
-        alert("Fehler beim Importieren der Datei. Ist es eine gültige .prompter Datei?");
+        alert(`Fehler beim Öffnen der Datei. ${result.reason}`);
       }
     };
     reader.readAsText(file);
+  };
+
+  private handleResetProject = () => {
+    const shouldReset = window.confirm(
+      'Lokale Daten zurücksetzen? Der aktuelle Entwurf wird aus diesem Browser entfernt.',
+    );
+    if (!shouldReset) return;
+    store.resetProject();
   };
 
   private attachEventListeners() {
@@ -234,6 +331,7 @@ export class EditorView {
     this.presentBtn.addEventListener('click', this.handlePresent);
     this.exportBtn.addEventListener('click', this.handleExport);
     this.importBtn.addEventListener('click', this.triggerImport);
+    this.resetBtn.addEventListener('click', this.handleResetProject);
     this.fileInput.addEventListener('change', this.handleImport);
   }
 
@@ -243,6 +341,7 @@ export class EditorView {
       this.presentBtn.removeEventListener('click', this.handlePresent);
       this.exportBtn.removeEventListener('click', this.handleExport);
       this.importBtn.removeEventListener('click', this.triggerImport);
+      this.resetBtn.removeEventListener('click', this.handleResetProject);
       this.fileInput.removeEventListener('change', this.handleImport);
     }
   }

@@ -1,48 +1,128 @@
-# Datenschutz
+# Datenschutzerklärung
 
-Stand: {{YYYY-MM-DD}}
+## 1. Verantwortlicher
 
-> Vorlage: Dieser Text muss an die tatsächliche Anwendung und das konkrete
-> Hosting angepasst und vor Veröffentlichung durch den Betreiber geprüft
-> werden.
+Verantwortlich für die Datenverarbeitung auf dieser Website:
 
-## Verantwortlicher
+Christian Haake  
+Alte Ziegelei 7  
+26197 Großenkneten  
+Deutschland
 
-{{OPERATOR_NAME}}
+E-Mail: {mein Vorname}{mein Nachname}@gmail.com
 
-{{OPERATOR_ADDRESS}}
+## 2. Bereitstellung der Website
 
-E-Mail: {{OPERATOR_EMAIL}}
+Diese Website wird über Cloudflare Pages bereitgestellt.
 
-## Hosting
+Beim Aufruf der Website werden technisch notwendige Verbindungsdaten verarbeitet.
+Hierzu können insbesondere die IP-Adresse, Browserinformationen, Betriebssystem,
+Datum und Uhrzeit des Zugriffs sowie angeforderte Inhalte gehören.
 
-Die Anwendung wird über {{HOSTING_PROVIDER}} bereitgestellt. Beim Aufruf
-verarbeitet der Hosting-Anbieter technisch erforderliche Verbindungsdaten,
-beispielsweise IP-Adresse, Zeitpunkt, angeforderte Datei und Browserangaben.
+Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Das
+berechtigte Interesse liegt in der sicheren, stabilen und effizienten
+Bereitstellung des Webangebots.
 
-Ergänze Rechtsgrundlage, Speicherdauer, Auftragsverarbeitung und einen Link zur
-Datenschutzerklärung des Hosting-Anbieters.
+Anbieter des Hostings:
 
-## Verarbeitung von Inhalten
+Cloudflare Inc.  
+101 Townsend St.  
+San Francisco, CA 94107  
+USA
 
-Beschreibe exakt, ob eingegebene Texte und hochgeladene Dateien ausschließlich
-im Browser verarbeitet werden oder das Gerät verlassen.
+Weitere Informationen:  
+https://www.cloudflare.com/privacypolicy/
 
-## Lokale Speicherung
+## 3. Einsatz von Cloudflare-Diensten
 
-Liste alle verwendeten `localStorage`- und IndexedDB-Einträge mit Zweck und
-Löschmöglichkeit auf.
+Zur Bereitstellung der Domain, DNS-Dienste, Netzwerksicherheit sowie
+Performanceoptimierung wird Cloudflare eingesetzt.
 
-## Cookies und Analyse
+Dabei können technische Verbindungsdaten über die Infrastruktur von Cloudflare
+verarbeitet werden.
 
-Dokumentiere Cookies, Hosting-Analyse und weitere Dienste. Falls keine
-eingesetzt werden, sage dies nur, wenn es durch die Produktion geprüft wurde.
+Anbieter:
 
-## Löschung
+Cloudflare Inc.  
+101 Townsend St.  
+San Francisco, CA 94107  
+USA
 
-Erkläre, wie Nutzer lokal gespeicherte Daten löschen können.
+Weitere Informationen:  
+https://www.cloudflare.com/privacypolicy/
 
-## Rechte betroffener Personen
+## 4. Cloudflare Web Analytics
 
-Ergänze die erforderlichen Informationen zu Auskunft, Berichtigung, Löschung,
-Einschränkung, Widerspruch und Beschwerderecht.
+Diese Website verwendet Cloudflare Web Analytics zur statistischen Analyse der
+Nutzung der Website.
+
+Cloudflare Web Analytics verwendet nach Angaben des Anbieters keine Cookies,
+kein Local Storage und keine geräteübergreifenden Nutzerprofile. Ebenso erfolgt
+nach Angaben von Cloudflare kein Fingerprinting einzelner Nutzer zu
+Analysezwecken.
+
+Erfasst werden ausschließlich technisch notwendige und statistische Informationen
+über die Nutzung der Website, beispielsweise Seitenaufrufe, Referrer, verwendete
+Gerätetypen, Browserinformationen sowie Zeitpunkte von Zugriffen.
+
+Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Das
+berechtigte Interesse liegt in der Analyse und Optimierung des Webangebots.
+
+Weitere Informationen:  
+https://www.cloudflare.com/web-analytics/
+
+## 5. Lokale Verarbeitung von Eingaben
+
+Prompter verarbeitet die vom Nutzer eingegebenen Inhalte grundsätzlich lokal im
+Browser.
+
+Die eingegebenen Daten werden nicht an den Betreiber übermittelt und nicht
+dauerhaft gespeichert, soweit dies nicht ausdrücklich anders angegeben wird.
+
+Der aktuelle Entwurf wird im Browser unter dem `localStorage`-Schlüssel
+`prompter_project_v1` gespeichert. Diese Speicherung dient der lokalen
+Wiederherstellung des Entwurfs im selben Browser. Nutzer können diese Daten über
+"Lokale Daten zurücksetzen" in der App oder über die Website-Daten des Browsers
+löschen.
+
+Exportierte `.prompter`-Dateien werden lokal durch den Browser erzeugt und liegen
+anschließend außerhalb der App im Dateisystem der Nutzer.
+
+## 6. Cookies
+
+Diese Website verwendet keine Cookies zu Werbe-, Marketing- oder Trackingzwecken.
+
+Soweit durch technische Infrastrukturkomponenten technisch notwendige Cookies
+gesetzt werden, erfolgt dies auf Grundlage des berechtigten Interesses gemäß
+Art. 6 Abs. 1 lit. f DSGVO.
+
+## 7. Datenübermittlung in Drittländer
+
+Bei der Nutzung von Cloudflare kann eine Verarbeitung personenbezogener Daten in
+den USA nicht ausgeschlossen werden.
+
+Der Anbieter verwendet nach eigenen Angaben geeignete Garantien für
+internationale Datenübermittlungen, insbesondere Standardvertragsklauseln der
+Europäischen Kommission, soweit dies erforderlich ist.
+
+## 8. Rechte der betroffenen Personen
+
+Sie haben im Rahmen der gesetzlichen Bestimmungen insbesondere folgende Rechte:
+
+- Recht auf Auskunft gemäß Art. 15 DSGVO
+- Recht auf Berichtigung gemäß Art. 16 DSGVO
+- Recht auf Löschung gemäß Art. 17 DSGVO
+- Recht auf Einschränkung der Verarbeitung gemäß Art. 18 DSGVO
+- Recht auf Datenübertragbarkeit gemäß Art. 20 DSGVO
+- Recht auf Widerspruch gemäß Art. 21 DSGVO
+
+Außerdem haben Sie das Recht, Beschwerde bei einer Datenschutzaufsichtsbehörde
+einzulegen.
+
+## 9. Änderungen dieser Datenschutzerklärung
+
+Diese Datenschutzerklärung kann angepasst werden, wenn technische oder
+rechtliche Änderungen dies erforderlich machen. Es gilt jeweils die auf dieser
+Website veröffentlichte aktuelle Fassung.
+
+Stand: Juni 2026

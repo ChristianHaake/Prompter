@@ -22,3 +22,7 @@ export type AppState = {
   project: PrompterProject;
   viewMode: ViewMode;
 };
+
+export type ProjectImportResult =
+  | { ok: true; project: PrompterProject }
+  | { ok: false; reason: string };

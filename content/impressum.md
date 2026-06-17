@@ -1,24 +1,24 @@
 # Impressum
 
-> Vorlage: Vor Veröffentlichung mit den tatsächlichen Betreiberangaben
-> ausfüllen und rechtlich prüfen.
+Angaben gemäß § 5 DDG
 
-## Angaben gemäß § 5 DDG
+Christian Haake  
+Alte Ziegelei 7  
+26197 Großenkneten  
+Deutschland
 
-{{OPERATOR_NAME}}
+E-Mail: {mein Vorname}{mein Nachname}@gmail.com
 
-{{OPERATOR_ADDRESS}}
+## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
 
-## Kontakt
+Christian Haake  
+Alte Ziegelei 7  
+26197 Großenkneten  
+Deutschland
 
-E-Mail: {{OPERATOR_EMAIL}}
+## Quellcode
 
-## Verantwortlich für den Inhalt
+Repository:  
+https://github.com/ChristianHaake/Prompter
 
-{{CONTENT_RESPONSIBLE}}
-
-{{CONTENT_RESPONSIBLE_ADDRESS}}
-
-## Haftung und Urheberrecht
-
-Ergänze nur rechtlich geprüfte, für dieses Angebot zutreffende Angaben.
+Lizenz: GNU General Public License v3.0 only.

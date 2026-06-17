@@ -15,6 +15,7 @@ export class PresentationView {
   private scrollPosition = 0;
   private lastFrameTime = 0;
   private animationFrameId: number | null = null;
+  private countdownIntervalId: number | null = null;
   private totalScrollDistance = 0;
 
   // DOM Elements
@@ -25,6 +26,7 @@ export class PresentationView {
   private timeElapsedEl!: HTMLSpanElement;
   private timeRemainingEl!: HTMLSpanElement;
   private playPauseBtn!: HTMLButtonElement;
+  private fullscreenBtn!: HTMLButtonElement;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -34,7 +36,10 @@ export class PresentationView {
   public mount() {
     this.render();
     this.attachEventListeners();
-    this.calculateScrollDistance();
+    requestAnimationFrame(() => {
+      this.calculateScrollDistance();
+      this.updateProgressUI();
+    });
     
     // Focus play button for accessibility
     setTimeout(() => {
@@ -47,11 +52,12 @@ export class PresentationView {
       this.startCountdown();
     } else {
       this.hasStarted = true;
-      this.startScrolling();
+      this.playPauseBtn.textContent = 'Start';
     }
   }
 
   public unmount() {
+    this.clearCountdown();
     this.stopScrolling();
     this.removeEventListeners();
     this.container.innerHTML = '';
@@ -68,6 +74,7 @@ export class PresentationView {
       <div class="presentation-layout">
         <div class="presentation-header">
            <button id="btn-exit" class="button button--secondary">← Zurück</button>
+           <button id="btn-fullscreen" class="button button--secondary">Vollbild</button>
         </div>
         
         <div id="prompter-viewport" class="prompter-viewport">
@@ -106,14 +113,14 @@ export class PresentationView {
     this.timeElapsedEl = this.container.querySelector('#time-elapsed') as HTMLSpanElement;
     this.timeRemainingEl = this.container.querySelector('#time-remaining') as HTMLSpanElement;
     this.playPauseBtn = this.container.querySelector('#btn-playpause') as HTMLButtonElement;
+    this.fullscreenBtn = this.container.querySelector('#btn-fullscreen') as HTMLButtonElement;
   }
 
   private calculateScrollDistance() {
-    // Add padding so the text scrolls completely off screen
     const viewportHeight = this.viewport.clientHeight;
     this.textContainer.style.paddingTop = `${viewportHeight / 2}px`;
     this.textContainer.style.paddingBottom = `${viewportHeight / 2}px`;
-    this.totalScrollDistance = this.textContainer.scrollHeight - viewportHeight;
+    this.totalScrollDistance = Math.max(0, this.textContainer.scrollHeight - viewportHeight);
   }
 
   private formatTime(seconds: number): string {
@@ -124,16 +131,19 @@ export class PresentationView {
   }
 
   private startCountdown() {
+    this.clearCountdown();
+    this.stopScrolling();
     this.countdownValue = 3;
+    this.playPauseBtn.textContent = 'Countdown...';
     this.overlay.classList.remove('hidden');
     this.overlay.querySelector('#countdown-number')!.textContent = this.countdownValue.toString();
     
-    const interval = setInterval(() => {
+    this.countdownIntervalId = window.setInterval(() => {
       this.countdownValue--;
       if (this.countdownValue > 0) {
         this.overlay.querySelector('#countdown-number')!.textContent = this.countdownValue.toString();
       } else {
-        clearInterval(interval);
+        this.clearCountdown();
         this.overlay.classList.add('hidden');
         this.hasStarted = true;
         this.startScrolling();
@@ -141,8 +151,20 @@ export class PresentationView {
     }, 1000);
   }
 
+  private clearCountdown() {
+    if (this.countdownIntervalId !== null) {
+      window.clearInterval(this.countdownIntervalId);
+      this.countdownIntervalId = null;
+    }
+  }
+
   private togglePlayPause = () => {
     if (!this.hasStarted) return;
+    if (this.totalScrollDistance <= 0) {
+      this.updateProgressUI();
+      this.playPauseBtn.textContent = 'Kein Scroll nötig';
+      return;
+    }
     if (this.isPlaying) {
       this.stopScrolling();
       this.playPauseBtn.textContent = 'Fortsetzen';
@@ -153,6 +175,21 @@ export class PresentationView {
   };
 
   private startScrolling() {
+    this.clearCountdown();
+    if (this.totalScrollDistance <= 0) {
+      this.isPlaying = false;
+      this.playPauseBtn.textContent = 'Kein Scroll nötig';
+      this.updateProgressUI();
+      return;
+    }
+    if (this.scrollPosition >= this.totalScrollDistance) {
+      this.scrollPosition = 0;
+      this.elapsedSeconds = 0;
+    }
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
     this.isPlaying = true;
     this.lastFrameTime = performance.now();
     this.animationFrameId = requestAnimationFrame(this.scrollLoop);
@@ -163,10 +200,12 @@ export class PresentationView {
     this.isPlaying = false;
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
     }
   }
 
   private reset = () => {
+    this.clearCountdown();
     this.stopScrolling();
     this.hasStarted = false;
     this.scrollPosition = 0;
@@ -188,13 +227,12 @@ export class PresentationView {
     const deltaMs = time - this.lastFrameTime;
     this.lastFrameTime = time;
 
-    // Calculate pixels per second based on target duration and manual speed multiplier
-    const baseSpeed = this.totalScrollDistance / this.project.targetDurationSeconds;
+    const baseSpeed = this.getBaseSpeed();
     const currentSpeed = baseSpeed * this.project.manualSpeed;
 
     const deltaY = currentSpeed * (deltaMs / 1000);
     this.scrollPosition += deltaY;
-    this.elapsedSeconds += (deltaMs / 1000) * this.project.manualSpeed;
+    this.elapsedSeconds += deltaMs / 1000;
 
     if (this.scrollPosition >= this.totalScrollDistance) {
       this.scrollPosition = this.totalScrollDistance;
@@ -209,11 +247,27 @@ export class PresentationView {
   };
 
   private updateProgressUI() {
-    const progress = Math.min(100, (this.scrollPosition / this.totalScrollDistance) * 100);
+    const progress =
+      this.totalScrollDistance <= 0
+        ? 100
+        : Math.min(100, (this.scrollPosition / this.totalScrollDistance) * 100);
     this.progressBar.style.width = `${progress}%`;
     this.timeElapsedEl.textContent = this.formatTime(this.elapsedSeconds);
-    const remaining = this.project.targetDurationSeconds - this.elapsedSeconds;
+    const remaining = this.getRemainingSeconds();
     this.timeRemainingEl.textContent = this.formatTime(remaining);
+  }
+
+  private getBaseSpeed(): number {
+    if (this.totalScrollDistance <= 0) return 0;
+    return this.totalScrollDistance / Math.max(1, this.project.targetDurationSeconds);
+  }
+
+  private getRemainingSeconds(): number {
+    if (this.totalScrollDistance <= 0) return 0;
+    const currentSpeed = this.getBaseSpeed() * this.project.manualSpeed;
+    if (currentSpeed <= 0) return 0;
+    const remainingDistance = Math.max(0, this.totalScrollDistance - this.scrollPosition);
+    return remainingDistance / currentSpeed;
   }
 
   private adjustSpeed = (delta: number) => {
@@ -221,6 +275,26 @@ export class PresentationView {
     store.updateProject({ manualSpeed: newSpeed });
     this.project = store.getState().project;
     this.container.querySelector('.speed-indicator')!.textContent = `${this.project.manualSpeed.toFixed(1)}x`;
+    this.updateProgressUI();
+  };
+
+  private toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await this.container.querySelector('.presentation-layout')?.requestFullscreen();
+      }
+      this.updateFullscreenButton();
+    } catch {
+      this.fullscreenBtn.textContent = 'Vollbild nicht verfügbar';
+      window.setTimeout(() => this.updateFullscreenButton(), 1800);
+    }
+  };
+
+  private updateFullscreenButton = () => {
+    if (!this.fullscreenBtn) return;
+    this.fullscreenBtn.textContent = document.fullscreenElement ? 'Vollbild beenden' : 'Vollbild';
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
@@ -263,15 +337,18 @@ export class PresentationView {
     window.addEventListener('keydown', this.handleKeyDown);
     
     this.container.querySelector('#btn-exit')?.addEventListener('click', this.handleExit);
+    this.container.querySelector('#btn-fullscreen')?.addEventListener('click', this.toggleFullscreen);
     
     this.container.querySelector('#btn-playpause')?.addEventListener('click', this.togglePlayPause);
     this.container.querySelector('#btn-reset')?.addEventListener('click', this.reset);
     
     this.container.querySelector('#btn-faster')?.addEventListener('click', () => this.adjustSpeed(0.1));
     this.container.querySelector('#btn-slower')?.addEventListener('click', () => this.adjustSpeed(-0.1));
+    document.addEventListener('fullscreenchange', this.updateFullscreenButton);
   }
 
   private removeEventListeners() {
     window.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener('fullscreenchange', this.updateFullscreenButton);
   }
 }

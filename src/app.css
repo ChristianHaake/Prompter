@@ -11,6 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   min-height: 76px;
   padding: 12px clamp(20px, 4vw, 64px);
   border-bottom: 1px solid var(--border-soft);
@@ -58,6 +59,8 @@
   display: flex;
   gap: 18px;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .privacy-badge {
@@ -77,6 +80,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
   width: min(1312px, calc(100% - 32px));
   min-height: 48px;
   padding: 10px 14px;
@@ -103,41 +107,6 @@ main {
   width: min(1440px, 100%);
   margin: 0 auto;
   padding: 0 clamp(16px, 4vw, 64px) 56px;
-}
-
-.language-switch {
-  display: inline-flex;
-  padding: 3px;
-  border: 1px solid var(--border-soft);
-  border-radius: 9px;
-  background: #f8fafc;
-}
-
-.language-switch button {
-  min-width: 34px;
-  padding: 5px 7px;
-  border: 0;
-  border-radius: 6px;
-  color: var(--text-muted);
-  background: transparent;
-  font-size: 0.72rem;
-  font-weight: 800;
-}
-
-.language-switch button[aria-pressed="true"] {
-  color: white;
-  background: var(--accent);
-}
-
-.text-button {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 0;
-  border: 0;
-  background: transparent;
-  font-size: 0.88rem;
-  font-weight: 700;
 }
 
 .intro {
@@ -205,6 +174,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
   padding: 22px 24px;
   border-bottom: 1px solid var(--border-soft);
 }
@@ -218,6 +189,7 @@ main {
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .preview-panel__content {
@@ -358,7 +330,7 @@ main {
 
 .segmented-control {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
   padding: 4px;
   border: 1px solid #cfd5dd;
@@ -416,6 +388,8 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
   padding: 24px clamp(20px, 4vw, 64px);
   z-index: 10;
   opacity: 0;
@@ -452,7 +426,7 @@ main {
 .prompter-text {
   max-width: 1000px;
   width: 100%;
-  padding: 0 4rem;
+  padding: 0 clamp(18px, 6vw, 64px);
   box-sizing: border-box;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -497,6 +471,8 @@ main {
   right: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 24px;
   padding: 24px clamp(20px, 4vw, 64px);
   background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
@@ -508,14 +484,15 @@ main {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex: 1;
+  flex: 0 0 auto;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   font-size: 1rem;
 }
 
 .progress-track {
-  flex: 1;
+  flex: 1 1 180px;
+  min-width: 120px;
   height: 6px;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 9999px;
@@ -532,6 +509,7 @@ main {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 0 0 auto;
 }
 
 .presentation-controls .icon-button {
@@ -571,6 +549,8 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
   padding: 24px clamp(20px, 4vw, 64px);
   border-top: 1px solid var(--border-soft);
   color: var(--text-muted);
@@ -581,6 +561,7 @@ main {
 .footer-nav {
   display: flex;
   gap: 24px;
+  flex-wrap: wrap;
 }
 
 .footer-nav a {
@@ -598,7 +579,18 @@ main {
   align-items: center;
   gap: 8px;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 750;
+  padding: 9px 12px;
+  border: 1px solid #cfd5dd;
+  border-radius: 10px;
+  color: var(--text-main);
+  background: white;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+}
+
+.github-link:hover {
+  border-color: #9da7b5;
+  background: #f8fafc;
 }
 
 .legal-page {
@@ -643,4 +635,101 @@ main {
 .markdown-body a {
   color: var(--accent);
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    align-items: flex-start;
+    padding: 12px 16px;
+  }
+
+  .brand {
+    min-width: 0;
+  }
+
+  .brand__mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .privacy-badge {
+    padding: 7px 9px;
+    font-size: 0.76rem;
+  }
+
+  main {
+    padding: 0 12px 40px;
+  }
+
+  .intro {
+    padding: 34px 0 22px;
+  }
+
+  .intro h1 {
+    letter-spacing: -0.02em;
+  }
+
+  .preview-panel__content {
+    height: min(62dvh, 560px);
+  }
+
+  .presentation-header {
+    padding: 14px 12px;
+  }
+
+  .presentation-footer {
+    gap: 10px;
+    padding: 14px 12px;
+  }
+
+  .progress-track {
+    order: -1;
+    flex-basis: 100%;
+  }
+
+  .presentation-controls {
+    order: 2;
+  }
+
+  .presentation-footer > .icon-button,
+  .presentation-footer > .button {
+    order: 3;
+  }
+
+  .presentation-stats {
+    min-width: 52px;
+    justify-content: center;
+    font-size: 0.88rem;
+  }
+
+  .speed-indicator {
+    width: 44px;
+    font-size: 0.9rem;
+  }
+
+  .prompter-text {
+    font-weight: 600;
+  }
+
+  .app-footer {
+    align-items: flex-start;
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .button {
+    padding: 0 12px;
+    font-size: 0.88rem;
+  }
+
+  .icon-button {
+    width: 40px;
+    height: 40px;
+  }
 }

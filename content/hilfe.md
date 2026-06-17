@@ -2,23 +2,42 @@
 
 ## Was macht Prompter?
 
-Beschreibe den Zweck der Anwendung in wenigen Sätzen.
+Prompter ist ein lokaler Browser-Teleprompter. Du schreibst oder öffnest ein
+Skript, stellst Zieldauer und Lesbarkeit ein und startest den Präsentationsmodus.
 
 ## Schnellstart
 
-1. Beschreibe den ersten Schritt.
-2. Beschreibe die zentrale Bearbeitung.
-3. Beschreibe Speichern oder Exportieren.
+1. Text in das Textfeld einfügen.
+2. Zieldauer, Schriftgröße, Spiegelmodus, Fokus-Linie und Countdown einstellen.
+3. "Präsentieren" starten.
+4. Im Präsentationsmodus mit Leertaste pausieren oder fortsetzen.
+5. Mit Pfeil hoch und Pfeil runter die Geschwindigkeit ändern.
+6. Mit `R` zurücksetzen und mit Escape zum Editor zurückkehren.
 
 ## Projekte speichern und öffnen
 
-Erkläre Autospeicherung, Projektdateien, Import, Export und die Grenzen der
-Wiederherstellung.
+Der aktuelle Entwurf wird automatisch im Browser gespeichert. Diese Speicherung
+ist nur eine Wiederherstellungshilfe für denselben Browser.
+
+Für ein dauerhaftes Backup exportierst du eine `.prompter`-Datei über "Projekt
+exportieren". Eine solche Datei kannst du später mit "Projekt öffnen" wieder
+laden. Beim Öffnen wird der aktuelle Entwurf ersetzt; die App fragt vorher nach.
+
+Ungültige Dateien, zu große Dateien und nicht unterstützte Projektversionen
+werden abgelehnt. Der aktuelle Entwurf bleibt dann erhalten.
 
 ## Daten löschen
 
-Erkläre, wie lokal gespeicherte Daten vollständig gelöscht werden.
+"Lokale Daten zurücksetzen" entfernt den gespeicherten Entwurf aus diesem
+Browser und stellt das Beispielprojekt wieder her. Zusätzlich kannst du die
+Website-Daten in den Browser-Einstellungen löschen.
 
-## Unterstützte Geräte und Dateien
+## Unterstützte Geräte und Grenzen
 
-Dokumentiere Browser, Dateitypen, Größenlimits und bekannte Einschränkungen.
+Prompter ist für moderne Desktop- und Mobilbrowser gebaut. Die App nutzt
+`localStorage`, den Fullscreen-API des Browsers und einen Service Worker für PWA-
+Funktionalität.
+
+Projektdateien sind JSON-Dateien mit der Endung `.prompter`. Die aktuelle
+Importgrenze liegt bei 500 KB. Sehr lange Texte werden auf 100.000 Zeichen
+begrenzt.

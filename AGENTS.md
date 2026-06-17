@@ -28,8 +28,8 @@ https://github.com/ChristianHaake/haak3-webapp-standard
 ## App-specific rules
 
 - App name: `Prompter`
-- Live URL: `{{APP_URL}}`
-- Repository: `{{REPOSITORY_URL}}`
+- Live URL: `https://prompter.haak3.de`
+- Repository: `https://github.com/ChristianHaake/Prompter`
 - Add further project-specific instructions here.
 
 ## Verification
