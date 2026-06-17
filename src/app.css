@@ -28,11 +28,9 @@
 }
 
 .brand__logo {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  object-fit: cover;
-  box-shadow: 0 4px 12px rgb(36 93 204 / 15%);
+  height: 38px;
+  width: auto;
+  object-fit: contain;
 }
 
 .brand > span:last-child {
