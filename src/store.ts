@@ -209,7 +209,7 @@ export class Store {
     try {
       const stored = this.storage?.getItem('prompter_language');
       if (stored === 'de' || stored === 'en') return stored;
-    } catch (e) {
+    } catch {
       // ignore
     }
     // Default based on browser language if needed, but for simplicity default to 'de'
@@ -220,7 +220,7 @@ export class Store {
     this.state.language = lang;
     try {
       this.storage?.setItem('prompter_language', lang);
-    } catch (e) {
+    } catch {
       // ignore
     }
     this.notify();
