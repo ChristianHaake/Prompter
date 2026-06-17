@@ -27,17 +27,12 @@
   text-decoration: none;
 }
 
-.brand__mark {
-  display: grid;
+.brand__logo {
   width: 42px;
   height: 42px;
-  place-items: center;
   border-radius: 12px;
-  color: white;
-  background: var(--accent);
-  box-shadow: 0 8px 18px rgb(36 93 204 / 24%);
-  font-weight: 800;
-  font-size: 1.25rem;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgb(36 93 204 / 15%);
 }
 
 .brand > span:last-child {
