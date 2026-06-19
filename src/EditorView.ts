@@ -2,6 +2,8 @@ import { DEFAULT_PROJECT, MAX_PROJECT_FILE_BYTES, store } from './store';
 import type { PrompterProject } from './types';
 import { t } from './i18n';
 
+const READING_SPEED_WPM = 130;
+
 function escapeHtml(value: string): string {
   return value
     .replaceAll('&', '&amp;')
@@ -229,11 +231,10 @@ export class EditorView {
 
   private updateStats() {
     const text = this.currentProject.text.trim();
-    const words = text ? text.split(/\\s+/).length : 0;
+    const words = text ? text.split(/\s+/).length : 0;
     this.wordCountEl.textContent = words.toString();
 
-    // Average reading speed: 130 words per minute
-    const readTimeMinutes = words / 130;
+    const readTimeMinutes = words / READING_SPEED_WPM;
     const minutes = Math.floor(readTimeMinutes);
     const seconds = Math.floor((readTimeMinutes - minutes) * 60);
     this.readTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;

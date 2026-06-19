@@ -20,7 +20,8 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 - [x] Markdown content is sanitized before rendering.
 - [x] Build, lint, typecheck, unit tests, and Playwright smoke tests are wired
   through `npm run verify`.
-- [x] PWA manifest and local PNG icons are configured.
+- [x] PWA manifest and local PNG icons are configured with correct pixel sizes.
+- [x] Production precache avoids oversized public image assets.
 - [ ] Mobile and tablet workflow manually tested on target devices.
 - [ ] Manual screen-reader check completed.
 - [x] Legal and privacy content populated from the operator's existing
@@ -34,7 +35,10 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 
 This pass fixes the previously known prototype gaps: import/editor state drift,
 stubbed tests, mobile overflow in core controls, dead header controls, missing
-reset behavior, weak project validation, and placeholder product documentation.
+reset behavior, weak project validation, placeholder product documentation,
+wrong word-count parsing, stale E2E selectors, and oversized PWA image assets.
+
+Current production build precaches 16 entries at about 681 KB.
 
 The app still needs manual device, PWA install, offline, and screen-reader
 checks before a full release sign-off.

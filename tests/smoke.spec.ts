@@ -9,11 +9,12 @@ async function disableCountdown(page: Page) {
     .click();
 }
 
-test('has title, brand mark, and GitHub footer button', async ({ page }) => {
+test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   await page.goto('/');
 
   await expect(page).toHaveTitle(/Prompter/);
-  await expect(page.locator('.brand__mark')).toHaveText('P');
+  await expect(page.locator('.brand__logo')).toBeVisible();
+  await expect(page.locator('.brand__logo')).toHaveAttribute('alt', 'Prompter Logo');
 
   const githubLink = page.locator('.github-link');
   await expect(githubLink).toBeVisible();
@@ -27,6 +28,8 @@ test('can type text and use presentation controls', async ({ page }) => {
   await disableCountdown(page);
   await page.locator('#project-duration').fill('0.5');
   await page.locator('#project-text').fill('Willkommen zum Teleprompter Test!\n\n'.repeat(30));
+  await expect(page.locator('#word-count')).toHaveText('120');
+  await expect(page.locator('#read-time')).toHaveText('0:55');
   await page.locator('#btn-present').click();
 
   await expect(page.locator('#prompter-text')).toContainText('Willkommen zum Teleprompter Test!');
@@ -36,7 +39,7 @@ test('can type text and use presentation controls', async ({ page }) => {
   await expect(page.locator('#btn-playpause')).toHaveText('Pause');
 
   await page.keyboard.press('Space');
-  await expect(page.locator('#btn-playpause')).toHaveText('Fortsetzen');
+  await expect(page.locator('#btn-playpause')).toHaveText('Weiter');
 
   await page.keyboard.press('ArrowUp');
   await expect(page.locator('.speed-indicator')).toHaveText('1.1x');

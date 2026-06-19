@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Accessibility Enhancements**: Included explicit ARIA labels on speed controls and auto-focused presentation actions for screen readers.
 
 ### Changed
-- **Rebranding**: Formally renamed the app from `Prompter` to `PitchTimer`.
+- **Naming Consistency**: Standardized the visible product name as `Prompter`.
 - **CSS Improvements**: Optimized animations with `will-change: transform` and improved layout structure with modern `100dvh` units.
 - **Import Robustness**: Updated the project import logic in `store.ts` to strictly validate schema properties and properly coerce undefined inputs.
 - **App Shell Routing**: View state management now dynamically mounts and unmounts the global UI headers depending on the active presentation state.

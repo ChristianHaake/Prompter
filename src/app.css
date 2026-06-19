@@ -660,12 +660,6 @@ main {
     min-width: 0;
   }
 
-  .brand__mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-  }
-
   .brand small {
     display: none;
   }
