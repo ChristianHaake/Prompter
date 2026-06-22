@@ -1,5 +1,17 @@
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+function productionContentSecurityPolicy(): string {
+  const headersPath = resolve(dirname(fileURLToPath(import.meta.url)), 'public/_headers');
+  const match = readFileSync(headersPath, 'utf8').match(/^\s*Content-Security-Policy:\s*(.+)$/m);
+  if (!match) {
+    throw new Error(`Content-Security-Policy not found in ${headersPath}`);
+  }
+  return match[1].trim();
+}
 
 export default defineConfig({
   plugins: [
@@ -52,6 +64,12 @@ export default defineConfig({
   },
   preview: {
     port: 5180,
-    strictPort: true
+    strictPort: true,
+    headers: {
+      'Content-Security-Policy': productionContentSecurityPolicy().replace(
+        /;\s*upgrade-insecure-requests\s*/i,
+        '',
+      )
+    }
   }
 });

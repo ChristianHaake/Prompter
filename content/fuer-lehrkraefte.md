@@ -8,4 +8,4 @@ Diese App kann im Unterricht eingesetzt werden, um Präsentationen und freies Sp
 - Erstellung von Videoprojekten
 
 ## Datenschutz im Unterricht
-Die App verarbeitet alle Texte ausschließlich lokal im Browser des Nutzers. Es findet kein Upload auf Server statt, und es werden keine Benutzerkonten benötigt. Daher ist der Einsatz datenschutzrechtlich unbedenklich.
+Die App verarbeitet eingegebene Texte lokal im Browser des Nutzers. Es findet kein Upload der Skripte an den Betreiber statt, und es werden keine Benutzerkonten benötigt. Für den Unterricht sollten trotzdem keine sensiblen personenbezogenen Daten in Skripte eingetragen werden; technische Verbindungs- und Statistikdaten können durch Cloudflare verarbeitet werden.

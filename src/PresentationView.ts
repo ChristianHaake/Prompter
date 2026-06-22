@@ -4,6 +4,51 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { t } from './i18n';
 
+type WakeLockSentinelLike = {
+  release: () => Promise<void>;
+  addEventListener?: (type: 'release', listener: () => void) => void;
+  removeEventListener?: (type: 'release', listener: () => void) => void;
+};
+
+type WakeLockNavigator = Navigator & {
+  wakeLock?: {
+    request: (type: 'screen') => Promise<WakeLockSentinelLike>;
+  };
+};
+
+type WebKitAudioWindow = Window &
+  typeof globalThis & {
+    webkitAudioContext?: typeof AudioContext;
+  };
+
+async function playEndSignal() {
+  try {
+    const AudioContextClass = window.AudioContext || (window as WebKitAudioWindow).webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    const context = new AudioContextClass();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(880, context.currentTime);
+    gain.gain.setValueAtTime(0.0001, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.35);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.35);
+
+    oscillator.onended = () => {
+      void context.close();
+    };
+  } catch {
+    // End signal is non-critical and must never block the presentation.
+  }
+}
+
 export class PresentationView {
   private container: HTMLElement;
   private project: PrompterProject;
@@ -18,6 +63,11 @@ export class PresentationView {
   private animationFrameId: number | null = null;
   private countdownIntervalId: number | null = null;
   private totalScrollDistance = 0;
+  private hasRecordedRun = false;
+  private runCompleted = false;
+  private wakeLockSentinel: WakeLockSentinelLike | null = null;
+  private wakeLockRequestId = 0;
+  private isMounted = false;
 
   // DOM Elements
   private textContainer!: HTMLDivElement;
@@ -35,6 +85,7 @@ export class PresentationView {
   }
 
   public mount() {
+    this.isMounted = true;
     this.render();
     this.attachEventListeners();
     requestAnimationFrame(() => {
@@ -53,21 +104,21 @@ export class PresentationView {
       this.startCountdown();
     } else {
       this.hasStarted = true;
-      this.playPauseBtn.textContent = 'Start';
+      this.playPauseBtn.textContent = t('presentation.start');
     }
   }
 
   public unmount() {
+    this.isMounted = false;
+    this.recordCancelledRun();
     this.clearCountdown();
     this.stopScrolling();
+    void this.releaseWakeLock();
     this.removeEventListeners();
     this.container.innerHTML = '';
   }
 
   private render() {
-    const fontSize = this.project.fontSize || 48;
-    const lineHeight = this.project.lineHeight || 1.5;
-    
     const rawHtml = marked.parse(this.project.text, { breaks: true, async: false }) as string;
     const cleanHtml = DOMPurify.sanitize(rawHtml);
     
@@ -79,7 +130,7 @@ export class PresentationView {
         </div>
         
         <div id="prompter-viewport" class="prompter-viewport">
-          <div id="prompter-text" class="prompter-text" style="font-size: ${fontSize}px; line-height: ${lineHeight}; transform: translateY(0px) ${this.project.mirrorMode ? 'scaleX(-1)' : ''}">
+          <div id="prompter-text" class="prompter-text">
             ${cleanHtml}
           </div>
           ${this.project.focusLine ? '<div class="focus-line"></div>' : ''}
@@ -95,14 +146,14 @@ export class PresentationView {
            </div>
            <span id="time-remaining" class="presentation-stats">${this.formatTime(this.project.targetDurationSeconds)}</span>
            
-           <div class="presentation-controls" style="margin: 0 1rem;">
+           <div class="presentation-controls">
               <button id="btn-slower" class="icon-button" aria-label="${t('presentation.speedDecrease')}">-</button>
               <span class="speed-indicator">${this.project.manualSpeed.toFixed(1)}x</span>
               <button id="btn-faster" class="icon-button" aria-label="${t('presentation.speedIncrease')}">+</button>
            </div>
            
-           <button id="btn-reset" class="icon-button" aria-label="Reset">↺</button>
-           <button id="btn-playpause" class="button button--primary">${t('presentation.start')} (Leertaste)</button>
+           <button id="btn-reset" class="icon-button" aria-label="${t('presentation.reset')}">↺</button>
+           <button id="btn-playpause" class="button button--primary">${t('presentation.startHint')}</button>
         </div>
       </div>
     `;
@@ -115,6 +166,17 @@ export class PresentationView {
     this.timeRemainingEl = this.container.querySelector('#time-remaining') as HTMLSpanElement;
     this.playPauseBtn = this.container.querySelector('#btn-playpause') as HTMLButtonElement;
     this.fullscreenBtn = this.container.querySelector('#btn-fullscreen') as HTMLButtonElement;
+    this.applyTextStyle();
+  }
+
+  private applyTextStyle() {
+    this.textContainer.style.fontSize = `${this.project.fontSize || 48}px`;
+    this.textContainer.style.lineHeight = String(this.project.lineHeight || 1.5);
+    this.updateTextTransform();
+  }
+
+  private updateTextTransform() {
+    this.textContainer.style.transform = `translateY(-${this.scrollPosition}px) ${this.project.mirrorMode ? 'scaleX(-1)' : ''}`;
   }
 
   private calculateScrollDistance() {
@@ -123,6 +185,15 @@ export class PresentationView {
     this.textContainer.style.paddingBottom = `${viewportHeight / 2}px`;
     this.totalScrollDistance = Math.max(0, this.textContainer.scrollHeight - viewportHeight);
   }
+
+  private handleResize = () => {
+    const progress =
+      this.totalScrollDistance <= 0 ? 0 : this.scrollPosition / this.totalScrollDistance;
+    this.calculateScrollDistance();
+    this.scrollPosition = this.totalScrollDistance * progress;
+    this.updateTextTransform();
+    this.updateProgressUI();
+  };
 
   private formatTime(seconds: number): string {
     const s = Math.max(0, Math.floor(seconds));
@@ -135,7 +206,7 @@ export class PresentationView {
     this.clearCountdown();
     this.stopScrolling();
     this.countdownValue = 3;
-    this.playPauseBtn.textContent = 'Countdown...';
+    this.playPauseBtn.textContent = t('presentation.countdown');
     this.overlay.classList.remove('hidden');
     this.overlay.querySelector('#countdown-number')!.textContent = this.countdownValue.toString();
     
@@ -161,11 +232,6 @@ export class PresentationView {
 
   private togglePlayPause = () => {
     if (!this.hasStarted) return;
-    if (this.totalScrollDistance <= 0) {
-      this.updateProgressUI();
-      this.playPauseBtn.textContent = 'Kein Scroll nötig';
-      return;
-    }
     if (this.isPlaying) {
       this.stopScrolling();
       this.playPauseBtn.textContent = t('presentation.resume');
@@ -177,15 +243,15 @@ export class PresentationView {
 
   private startScrolling() {
     this.clearCountdown();
-    if (this.totalScrollDistance <= 0) {
-      this.isPlaying = false;
-      this.playPauseBtn.textContent = 'Kein Scroll nötig';
-      this.updateProgressUI();
-      return;
-    }
-    if (this.scrollPosition >= this.totalScrollDistance) {
+    const timerComplete =
+      this.totalScrollDistance <= 0 && this.elapsedSeconds >= this.project.targetDurationSeconds;
+    const scrollComplete =
+      this.totalScrollDistance > 0 && this.scrollPosition >= this.totalScrollDistance;
+    if (timerComplete || scrollComplete) {
       this.scrollPosition = 0;
       this.elapsedSeconds = 0;
+      this.hasRecordedRun = false;
+      this.runCompleted = false;
     }
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
@@ -195,6 +261,7 @@ export class PresentationView {
     this.lastFrameTime = performance.now();
     this.animationFrameId = requestAnimationFrame(this.scrollLoop);
     this.playPauseBtn.textContent = t('presentation.pause');
+    void this.requestWakeLock();
   }
 
   private stopScrolling() {
@@ -206,19 +273,23 @@ export class PresentationView {
   }
 
   private reset = () => {
+    this.recordCancelledRun();
     this.clearCountdown();
     this.stopScrolling();
+    void this.releaseWakeLock();
     this.hasStarted = false;
+    this.hasRecordedRun = false;
+    this.runCompleted = false;
     this.scrollPosition = 0;
     this.elapsedSeconds = 0;
-    this.textContainer.style.transform = `translateY(0px) ${this.project.mirrorMode ? 'scaleX(-1)' : ''}`;
+    this.updateTextTransform();
     this.updateProgressUI();
     this.playPauseBtn.textContent = t('presentation.start');
     if (this.project.countdownEnabled) {
       this.startCountdown();
     } else {
       this.hasStarted = true;
-      this.startScrolling();
+      this.playPauseBtn.textContent = t('presentation.start');
     }
   };
 
@@ -232,25 +303,43 @@ export class PresentationView {
     const currentSpeed = baseSpeed * this.project.manualSpeed;
 
     const deltaY = currentSpeed * (deltaMs / 1000);
-    this.scrollPosition += deltaY;
     this.elapsedSeconds += deltaMs / 1000;
+
+    if (this.totalScrollDistance <= 0) {
+      if (this.elapsedSeconds >= this.project.targetDurationSeconds) {
+        this.elapsedSeconds = this.project.targetDurationSeconds;
+        this.stopScrolling();
+        this.playPauseBtn.textContent = t('presentation.end');
+        this.recordCompletedRun();
+        void this.releaseWakeLock();
+      } else {
+        this.animationFrameId = requestAnimationFrame(this.scrollLoop);
+      }
+
+      this.updateProgressUI();
+      return;
+    }
+
+    this.scrollPosition += deltaY;
 
     if (this.scrollPosition >= this.totalScrollDistance) {
       this.scrollPosition = this.totalScrollDistance;
       this.stopScrolling();
       this.playPauseBtn.textContent = t('presentation.end');
+      this.recordCompletedRun();
+      void this.releaseWakeLock();
     } else {
       this.animationFrameId = requestAnimationFrame(this.scrollLoop);
     }
 
-    this.textContainer.style.transform = `translateY(-${this.scrollPosition}px) ${this.project.mirrorMode ? 'scaleX(-1)' : ''}`;
+    this.updateTextTransform();
     this.updateProgressUI();
   };
 
   private updateProgressUI() {
     const progress =
       this.totalScrollDistance <= 0
-        ? 100
+        ? Math.min(100, (this.elapsedSeconds / Math.max(1, this.project.targetDurationSeconds)) * 100)
         : Math.min(100, (this.scrollPosition / this.totalScrollDistance) * 100);
     this.progressBar.style.width = `${progress}%`;
     this.timeElapsedEl.textContent = this.formatTime(this.elapsedSeconds);
@@ -264,7 +353,9 @@ export class PresentationView {
   }
 
   private getRemainingSeconds(): number {
-    if (this.totalScrollDistance <= 0) return 0;
+    if (this.totalScrollDistance <= 0) {
+      return Math.max(0, this.project.targetDurationSeconds - this.elapsedSeconds);
+    }
     const currentSpeed = this.getBaseSpeed() * this.project.manualSpeed;
     if (currentSpeed <= 0) return 0;
     const remainingDistance = Math.max(0, this.totalScrollDistance - this.scrollPosition);
@@ -288,14 +379,16 @@ export class PresentationView {
       }
       this.updateFullscreenButton();
     } catch {
-      this.fullscreenBtn.textContent = 'Vollbild nicht verfügbar';
+      this.fullscreenBtn.textContent = t('presentation.fullscreenUnavailable');
       window.setTimeout(() => this.updateFullscreenButton(), 1800);
     }
   };
 
   private updateFullscreenButton = () => {
     if (!this.fullscreenBtn) return;
-    this.fullscreenBtn.textContent = document.fullscreenElement ? 'Vollbild beenden' : 'Vollbild';
+    this.fullscreenBtn.textContent = document.fullscreenElement
+      ? t('presentation.fullscreenExit')
+      : t('presentation.fullscreen');
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
@@ -324,6 +417,8 @@ export class PresentationView {
   };
 
   private handleExit = () => {
+    this.recordCancelledRun();
+    void this.releaseWakeLock();
     store.setViewMode('editor');
     // Set focus back to 'Präsentieren' button when Editor mounts
     setTimeout(() => {
@@ -334,8 +429,60 @@ export class PresentationView {
     }, 50);
   };
 
+  private recordCompletedRun() {
+    if (this.hasRecordedRun) return;
+    this.hasRecordedRun = true;
+    this.runCompleted = true;
+    store.addPitchRun('completed', this.elapsedSeconds);
+    void playEndSignal();
+  }
+
+  private recordCancelledRun() {
+    if (this.hasRecordedRun || this.runCompleted || this.elapsedSeconds <= 0) return;
+    this.hasRecordedRun = true;
+    store.addPitchRun('cancelled', this.elapsedSeconds);
+  }
+
+  private async requestWakeLock() {
+    if (this.wakeLockSentinel) return;
+    const requestId = ++this.wakeLockRequestId;
+    try {
+      const wakeLock = (navigator as WakeLockNavigator).wakeLock;
+      if (!wakeLock) return;
+      const sentinel = await wakeLock.request('screen');
+      if (!this.isMounted || requestId !== this.wakeLockRequestId || this.wakeLockSentinel) {
+        await sentinel.release().catch(() => undefined);
+        return;
+      }
+      this.wakeLockSentinel = sentinel;
+      sentinel.addEventListener?.('release', this.handleWakeLockRelease);
+    } catch {
+      if (requestId === this.wakeLockRequestId) {
+        this.wakeLockSentinel = null;
+      }
+    }
+  }
+
+  private async releaseWakeLock() {
+    this.wakeLockRequestId++;
+    const sentinel = this.wakeLockSentinel;
+    if (!sentinel) return;
+    this.wakeLockSentinel = null;
+    sentinel.removeEventListener?.('release', this.handleWakeLockRelease);
+    try {
+      await sentinel.release();
+    } catch {
+      // Browser already released the lock.
+    }
+  }
+
+  private handleWakeLockRelease = () => {
+    this.wakeLockSentinel = null;
+  };
+
   private attachEventListeners() {
     window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('resize', this.handleResize);
     
     this.container.querySelector('#btn-exit')?.addEventListener('click', this.handleExit);
     this.container.querySelector('#btn-fullscreen')?.addEventListener('click', this.toggleFullscreen);
@@ -350,6 +497,7 @@ export class PresentationView {
 
   private removeEventListeners() {
     window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('fullscreenchange', this.updateFullscreenButton);
   }
 }

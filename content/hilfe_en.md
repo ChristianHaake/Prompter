@@ -7,11 +7,11 @@ Prompter is a local browser teleprompter. You write or open a script, adjust the
 ## Quick Start
 
 1. Paste text into the text field.
-2. Set target duration, font size, mirror mode, focus line, and countdown.
+2. Set target duration directly or with a timer preset, font size, mirror mode, focus line, and countdown.
 3. Start "Present".
 4. In presentation mode, use the spacebar to pause or resume.
 5. Use the up and down arrow keys to change the speed.
-6. Use `R` to reset and Escape to return to the editor.
+6. Use `R` to reset and Escape to return to the editor. Completed and cancelled runs appear in the pitch history.
 
 ## Save and Open Projects
 
@@ -19,14 +19,16 @@ The current draft is automatically saved in the browser. This storage is only a 
 
 For a permanent backup, export a `.prompter` file via "Save Project". You can load such a file later with "Import". When opening, the current draft will be replaced; the app will ask for confirmation beforehand.
 
+You can also import `.txt` and `.md` files directly as script text. These files are not treated as complete projects.
+
 Invalid files, files that are too large, and unsupported project versions are rejected. The current draft is then retained.
 
 ## Delete Data
 
-"Reset" removes the saved draft from this browser and restores the example project. In addition, you can delete the website data in the browser settings.
+"Reset" removes the saved draft from this browser and restores the example project. The pitch history has its own clear button. In addition, you can delete the website data in the browser settings.
 
 ## Supported Devices and Limits
 
-Prompter is built for modern desktop and mobile browsers. The app uses `localStorage`, the browser's Fullscreen API, and a Service Worker for PWA functionality.
+Prompter is built for modern desktop and mobile browsers. The app uses `localStorage`, the browser's Fullscreen API, Web Audio for the end signal, optional Wake Lock during presentation, and a Service Worker for PWA functionality.
 
 Project files are JSON files with the `.prompter` extension. The current import limit is 500 KB. Very long texts are limited to 100,000 characters.

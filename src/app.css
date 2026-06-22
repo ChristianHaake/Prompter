@@ -147,7 +147,7 @@ main {
   margin: 10px 0 12px;
   font-size: clamp(2.2rem, 5vw, 4.4rem);
   line-height: 0.98;
-  letter-spacing: -0.055em;
+  letter-spacing: 0;
 }
 
 .intro p {
@@ -277,6 +277,15 @@ main {
   background: #f8fafc;
 }
 
+.button--full {
+  width: 100%;
+}
+
+.button--compact {
+  height: 36px;
+  font-size: 0.85rem;
+}
+
 .icon-button {
   display: inline-grid;
   flex: 0 0 auto;
@@ -298,6 +307,10 @@ main {
   display: grid;
   gap: 18px;
   padding: 20px 24px 26px;
+}
+
+.present-action {
+  margin-top: 1rem;
 }
 
 .field {
@@ -326,6 +339,89 @@ main {
 
 .field input:hover {
   border-color: #9da7b5;
+}
+
+.timer-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.timer-preset-button {
+  min-width: 0;
+  padding: 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-preset-button.is-active {
+  color: white;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.pitch-history {
+  display: grid;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.pitch-history__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pitch-history__list {
+  display: grid;
+  gap: 8px;
+}
+
+.pitch-history__empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.pitch-history__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.pitch-history__item strong,
+.pitch-history__item span,
+.pitch-history__time span,
+.pitch-history__time small {
+  display: block;
+}
+
+.pitch-history__item strong {
+  color: var(--text-main);
+  font-size: 0.86rem;
+}
+
+.pitch-history__item span,
+.pitch-history__time small {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+
+.pitch-history__time {
+  flex: 0 0 auto;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pitch-history__time span {
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 750;
 }
 
 .segmented-field {
@@ -442,7 +538,7 @@ main {
   padding: 0 clamp(18px, 6vw, 64px);
   box-sizing: border-box;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   will-change: transform;
   color: rgba(255, 255, 255, 0.9);
 }
@@ -523,6 +619,7 @@ main {
   align-items: center;
   gap: 8px;
   flex: 0 0 auto;
+  margin: 0 1rem;
 }
 
 .presentation-controls .icon-button {
@@ -678,11 +775,15 @@ main {
   }
 
   .intro h1 {
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   .preview-panel__content {
     height: min(62dvh, 560px);
+  }
+
+  .timer-preset-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .presentation-header {

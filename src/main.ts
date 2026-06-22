@@ -45,6 +45,11 @@ function updateShellTranslations() {
       el.textContent = t(key);
     }
   });
+  if (langSwitchBtn) {
+    const label = t('lang.switchLabel');
+    langSwitchBtn.setAttribute('title', label);
+    langSwitchBtn.setAttribute('aria-label', label);
+  }
   document.documentElement.lang = store.getState().language;
 }
 

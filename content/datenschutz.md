@@ -85,6 +85,11 @@ Wiederherstellung des Entwurfs im selben Browser. Nutzer können diese Daten üb
 "Lokale Daten zurücksetzen" in der App oder über die Website-Daten des Browsers
 löschen.
 
+Der Pitch-Verlauf wird getrennt unter dem `localStorage`-Schlüssel
+`prompter_pitch_history_v1` gespeichert. Er enthält Zeitpunkte, Zielzeiten,
+tatsächliche Laufzeiten sowie den Status "abgeschlossen" oder "abgebrochen".
+Diese Daten bleiben im Browser und können im Editor gelöscht werden.
+
 Exportierte `.prompter`-Dateien werden lokal durch den Browser erzeugt und liegen
 anschließend außerhalb der App im Dateisystem der Nutzer.
 

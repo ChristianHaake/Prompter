@@ -20,14 +20,16 @@
     "test": "vitest run tests/*.test.ts",
     "test:e2e": "playwright test",
     "lint": "eslint .",
+    "audit": "npm audit --omit=dev",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run build && npm run test:e2e"
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run audit && npm run build && npm run test:e2e"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.61.0",
     "@types/dompurify": "^3.0.5",
     "@types/marked": "^5.0.2",
+    "@types/node": "20.19.43",
     "eslint": "^10.5.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.61.1",
@@ -36,7 +38,7 @@
     "vitest": "^4.1.9"
   },
   "dependencies": {
-    "dompurify": "^3.4.10",
+    "dompurify": "3.4.11",
     "marked": "^18.0.5"
   }
 }

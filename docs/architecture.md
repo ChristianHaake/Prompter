@@ -31,10 +31,11 @@ one presentation view, and a small local store.
 
 - `src/main.ts`: shell routing, Markdown content pages, and view mounting.
 - `src/store.ts`: app state, localStorage persistence, project validation, import
-  and reset behavior.
-- `src/EditorView.ts`: editor UI, import/export/reset controls, project form.
+  and reset behavior, pitch run history.
+- `src/EditorView.ts`: editor UI, text/project import, export/reset controls,
+  project form, timer presets, pitch history.
 - `src/PresentationView.ts`: prompter playback, countdown, fullscreen, keyboard
-  controls, progress and timing.
+  controls, progress, timing, wake lock, end signal, run recording.
 - `content/`: bundled Markdown pages for help, about, privacy, and imprint.
 - `tests/`: Vitest unit tests and Playwright browser tests.
 
@@ -48,6 +49,16 @@ The active project is held in memory by the `Store` class and persisted to
 - Durable backup: user-exported `.prompter` JSON file
 - Reset behavior: "Lokale Daten zurücksetzen" removes the localStorage entry and
   restores the default project in memory.
+
+Presentation run history is held in the same store and persisted separately.
+
+- Storage key: `prompter_pitch_history_v1`
+- History schema version: `1`
+- Maximum records: 50
+- Recorded fields: timestamp, target duration, actual duration, completed or
+  cancelled status.
+- Clear behavior: the editor's pitch-history clear action removes only the
+  history entry, not the current project.
 
 Imported and restored projects are validated at runtime. Invalid files,
 unsupported versions, missing title/text fields, and malformed JSON are rejected
@@ -65,11 +76,27 @@ before state replacement.
 
 Failed imports preserve the current project.
 
+Plain `.txt` and `.md` files can be imported as script text. They are not project
+files and do not bypass the same text-length clamp used by manual editor input.
+
+## Presentation Runtime
+
+Presentation playback uses `requestAnimationFrame` and derives scroll speed from
+the configured target duration and current manual speed multiplier. Timer
+presets in the editor write the same `targetDurationSeconds` project field as
+manual duration input.
+
+When a presentation reaches the end, Prompter records a completed run and plays a
+short local Web Audio signal. Reset or exit after elapsed playback records a
+cancelled run. The screen Wake Lock API is requested while playback is active
+when the browser supports it; lack of support is ignored.
+
 ## Network and Privacy
 
-The app has no application backend and no runtime third-party assets. Production
-CSP uses `connect-src 'none'`, so user-created content is not sent to an app
-server by the application code.
+The app has no application backend and does not send user-created project
+content to an app server. Production CSP allows same-origin connections for
+Cloudflare Pages/Web Analytics behavior and is enforced in production-preview
+browser tests.
 
 The production site is served through Cloudflare Pages. Cloudflare receives
 technical request metadata, and Cloudflare Web Analytics is documented on the

@@ -1,12 +1,24 @@
 # Imprint
 
-Information according to § 5 TMG
+Information according to § 5 DDG
 
-Christian Haake
-[Address available upon request or insert here]
+Christian Haake  
+Alte Ziegelei 7  
+26197 Großenkneten  
+Germany
 
-## Contact
-Email: christian@haak3.de
+Email: {my first name}{my last name}@gmail.com
 
-## Disclaimer
-Despite careful content control, we assume no liability for the content of external links. The operators of the linked pages are solely responsible for their content.
+## Responsible for Content under § 18(2) MStV
+
+Christian Haake  
+Alte Ziegelei 7  
+26197 Großenkneten  
+Germany
+
+## Source Code
+
+Repository:  
+https://github.com/ChristianHaake/Prompter
+
+License: GNU General Public License v3.0 only.

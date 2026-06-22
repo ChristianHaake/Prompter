@@ -1,7 +1,18 @@
-import type { AppState, ProjectImportResult, PrompterProject } from './types';
+import type {
+  AppState,
+  PitchRunRecord,
+  PitchRunStatus,
+  ProjectImportErrorCode,
+  ProjectImportResult,
+  PrompterProject,
+} from './types';
 
 export const STORAGE_KEY = 'prompter_project_v1';
+export const PITCH_HISTORY_STORAGE_KEY = 'prompter_pitch_history_v1';
 export const PROJECT_SCHEMA_VERSION = '1.0';
+export const PITCH_HISTORY_SCHEMA_VERSION = 1;
+export const MAX_PITCH_HISTORY_RECORDS = 50;
+export const TIMER_PRESETS_SECONDS = [30, 60, 90, 120] as const;
 export const MAX_PROJECT_FILE_BYTES = 500_000;
 export const MAX_TITLE_LENGTH = 120;
 export const MAX_TEXT_LENGTH = 100_000;
@@ -67,28 +78,66 @@ function parseString(value: unknown, fallback: string, maxLength: number): strin
   return value.slice(0, maxLength);
 }
 
+function importError(errorCode: ProjectImportErrorCode, reason: string): ProjectImportResult {
+  return { ok: false, errorCode, reason };
+}
+
+function isFiniteNonNegativeNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0;
+}
+
+function isPitchRunRecord(value: unknown): value is PitchRunRecord {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === 'string' &&
+    typeof value.date === 'string' &&
+    !Number.isNaN(Date.parse(value.date)) &&
+    isFiniteNonNegativeNumber(value.targetDurationSeconds) &&
+    isFiniteNonNegativeNumber(value.actualDurationSeconds) &&
+    (value.status === 'completed' || value.status === 'cancelled')
+  );
+}
+
+function createRecordId(): string {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+export function decodePitchHistoryStorage(value: unknown): PitchRunRecord[] {
+  const records =
+    Array.isArray(value)
+      ? value
+      : isRecord(value) &&
+          value.version === PITCH_HISTORY_SCHEMA_VERSION &&
+          Array.isArray(value.records)
+        ? value.records
+        : null;
+
+  if (!records) return [];
+  return records.filter(isPitchRunRecord).slice(0, MAX_PITCH_HISTORY_RECORDS);
+}
+
 export function validateProjectImport(jsonString: string): ProjectImportResult {
   let parsed: unknown;
   try {
     parsed = JSON.parse(jsonString);
   } catch {
-    return { ok: false, reason: 'Die Datei enthält kein gültiges JSON.' };
+    return importError('invalidJson', 'Die Datei enthält kein gültiges JSON.');
   }
 
   if (!isRecord(parsed)) {
-    return { ok: false, reason: 'Die Projektdatei hat kein gültiges Objektformat.' };
+    return importError('invalidObject', 'Die Projektdatei hat kein gültiges Objektformat.');
   }
 
   if (parsed.version !== PROJECT_SCHEMA_VERSION) {
-    return { ok: false, reason: `Unterstützt wird nur Projektversion ${PROJECT_SCHEMA_VERSION}.` };
+    return importError('unsupportedVersion', `Unterstützt wird nur Projektversion ${PROJECT_SCHEMA_VERSION}.`);
   }
 
   if (typeof parsed.title !== 'string') {
-    return { ok: false, reason: 'Der Projekttitel fehlt oder ist ungültig.' };
+    return importError('missingTitle', 'Der Projekttitel fehlt oder ist ungültig.');
   }
 
   if (typeof parsed.text !== 'string') {
-    return { ok: false, reason: 'Der Projekttext fehlt oder ist ungültig.' };
+    return importError('missingText', 'Der Projekttext fehlt oder ist ungültig.');
   }
 
   const targetDurationSeconds = clamp(
@@ -160,6 +209,7 @@ export class Store {
     this.storage = storage;
     this.state = {
       project: this.loadFromStorage(),
+      pitchHistory: this.loadPitchHistoryFromStorage(),
       viewMode: 'editor',
       language: this.loadLanguageFromStorage()
     };
@@ -178,11 +228,36 @@ export class Store {
     return { ...DEFAULT_PROJECT };
   }
 
+  private loadPitchHistoryFromStorage(): PitchRunRecord[] {
+    try {
+      const stored = this.storage?.getItem(PITCH_HISTORY_STORAGE_KEY);
+      if (!stored) return [];
+      return decodePitchHistoryStorage(JSON.parse(stored));
+    } catch (e) {
+      console.error('Failed to load pitch history from local storage', e);
+      return [];
+    }
+  }
+
   private saveToStorage() {
     try {
       this.storage?.setItem(STORAGE_KEY, JSON.stringify(this.state.project));
     } catch (e) {
       console.error('Failed to save project to local storage', e);
+    }
+  }
+
+  private savePitchHistoryToStorage() {
+    try {
+      this.storage?.setItem(
+        PITCH_HISTORY_STORAGE_KEY,
+        JSON.stringify({
+          version: PITCH_HISTORY_SCHEMA_VERSION,
+          records: this.state.pitchHistory,
+        }),
+      );
+    } catch (e) {
+      console.error('Failed to save pitch history to local storage', e);
     }
   }
 
@@ -202,6 +277,30 @@ export class Store {
 
   public setViewMode(mode: AppState['viewMode']) {
     this.state.viewMode = mode;
+    this.notify();
+  }
+
+  public addPitchRun(status: PitchRunStatus, actualDurationSeconds: number) {
+    const project = this.state.project;
+    const record: PitchRunRecord = {
+      id: createRecordId(),
+      date: new Date().toISOString(),
+      targetDurationSeconds: project.targetDurationSeconds,
+      actualDurationSeconds: Math.max(0, Math.round(actualDurationSeconds)),
+      status,
+    };
+    this.state.pitchHistory = [record, ...this.state.pitchHistory].slice(0, MAX_PITCH_HISTORY_RECORDS);
+    this.savePitchHistoryToStorage();
+    this.notify();
+  }
+
+  public clearPitchHistory() {
+    this.state.pitchHistory = [];
+    try {
+      this.storage?.removeItem(PITCH_HISTORY_STORAGE_KEY);
+    } catch (e) {
+      console.error('Failed to clear pitch history from local storage', e);
+    }
     this.notify();
   }
 

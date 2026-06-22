@@ -17,10 +17,15 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'mobile-chromium',
+      use: { ...devices['Pixel 5'] },
+    },
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run build && npm run preview -- --host 127.0.0.1',
     url: 'http://localhost:5180',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
+    timeout: 120_000,
   },
 });

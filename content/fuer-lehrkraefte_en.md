@@ -8,4 +8,4 @@ This app can be used in the classroom to practice presentations and free speakin
 - Creation of video projects
 
 ## Privacy in the Classroom
-The app processes all texts exclusively locally in the user's browser. There is no upload to a server, and no user accounts are required. Therefore, its use is completely safe from a data protection perspective.
+The app processes entered texts locally in the user's browser. Scripts are not uploaded to the operator, and no user accounts are required. Students should still avoid entering sensitive personal data; technical connection and statistical data may be processed by Cloudflare.

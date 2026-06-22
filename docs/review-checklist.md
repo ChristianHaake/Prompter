@@ -20,6 +20,8 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 - [x] Markdown content is sanitized before rendering.
 - [x] Build, lint, typecheck, unit tests, and Playwright smoke tests are wired
   through `npm run verify`.
+- [x] Production dependency audit is wired through `npm run verify`.
+- [x] Playwright smoke tests run against production preview headers.
 - [x] PWA manifest and local PNG icons are configured with correct pixel sizes.
 - [x] Production precache avoids oversized public image assets.
 - [ ] Mobile and tablet workflow manually tested on target devices.
