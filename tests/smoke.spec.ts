@@ -58,6 +58,30 @@ test('can type text and use presentation controls', async ({ page }) => {
   await expect(page.locator('.pitch-history')).toContainText('Abgebrochen');
 });
 
+test('preview reflects settings without recording pitch history', async ({ page }) => {
+  await page.goto('/');
+
+  await page.locator('#project-text').fill('# Abschnitt\n\nVorschau Text');
+  await page.locator('#btn-preview').click();
+  await expect(page.locator('#prompter-text h1')).toHaveText('Abschnitt');
+  await expect(page.locator('#btn-playpause')).toBeDisabled();
+
+  await page.locator('#preview-fontsize').fill('80');
+  await page.keyboard.press('Space');
+  await expect(page.locator('#btn-playpause')).toHaveText('Vorschau');
+  await expect(page.locator('#time-elapsed')).toHaveText('0:00');
+  await page.keyboard.press('KeyR');
+  await expect(page.locator('#time-elapsed')).toHaveText('0:00');
+  await expect(page.locator('#prompter-text')).toHaveCSS('font-size', '80px');
+  await page.locator('#preview-mirror').selectOption('true');
+  await expect
+    .poll(async () => page.locator('#prompter-text').evaluate(el => (el as HTMLElement).style.transform))
+    .toContain('scaleX(-1)');
+
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.pitch-history')).toContainText('Noch keine Durchläufe gespeichert.');
+});
+
 test('short presentations keep timer progress even when no scrolling is needed', async ({ page }) => {
   await page.goto('/');
 
@@ -136,6 +160,22 @@ test('imports text and markdown scripts directly into the editor', async ({ page
   await expect(page.locator('#project-text')).toHaveValue('# Pitch\n\nDirekt importierter Skripttext.');
 });
 
+test('rejects oversized project files without modifying the draft', async ({ page }) => {
+  page.on('dialog', dialog => dialog.accept());
+
+  await page.goto('/');
+  await page.locator('#project-text').fill('Bleibt erhalten');
+
+  await page.setInputFiles('#file-import', {
+    name: 'too-large.prompter',
+    mimeType: 'application/json',
+    buffer: Buffer.from('x'.repeat(500_001)),
+  });
+
+  await expect(page.locator('#project-text')).toHaveValue('Bleibt erhalten');
+});
+
+
 test('loads and clears pitch history from local storage', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
@@ -146,10 +186,11 @@ test('loads and clears pitch history from local storage', async ({ page }) => {
           {
             id: 'run-1',
             date: '2026-01-02T03:04:05.000Z',
-            targetDurationSeconds: 90,
-            actualDurationSeconds: 75,
-            status: 'completed',
-          },
+          targetDurationSeconds: 90,
+          actualDurationSeconds: 75,
+          wordCount: 180,
+          status: 'completed',
+        },
         ],
       }),
     );
@@ -161,8 +202,44 @@ test('loads and clears pitch history from local storage', async ({ page }) => {
   await expect(page.locator('.pitch-history')).toContainText('Pitch-Verlauf');
   await expect(page.locator('.pitch-history')).toContainText('Abgeschlossen');
   await expect(page.locator('.pitch-history')).toContainText('1:15');
+  await expect(page.locator('#analytics-panel')).toContainText('144 WPM');
   await page.locator('#btn-clear-pitch-history').click();
   await expect(page.locator('.pitch-history')).toContainText('Noch keine Durchläufe gespeichert.');
+});
+
+test('undo restores reset draft and cleared pitch history', async ({ page }) => {
+  page.on('dialog', dialog => dialog.accept());
+
+  await page.goto('/');
+  await page.locator('#project-title').fill('Undo Projekt');
+  await page.locator('#project-text').fill('Dieser Entwurf kommt zurueck.');
+  await page.locator('#btn-reset-project').click();
+  await page.locator('#btn-undo-last-action').click();
+  await expect(page.locator('#project-title')).toHaveValue('Undo Projekt');
+  await expect(page.locator('#project-text')).toHaveValue('Dieser Entwurf kommt zurueck.');
+
+  await page.evaluate(() => {
+    window.localStorage.setItem(
+      'prompter_pitch_history_v1',
+      JSON.stringify({
+        version: 1,
+        records: [
+          {
+            id: 'run-undo',
+            date: '2026-01-02T03:04:05.000Z',
+            targetDurationSeconds: 60,
+            actualDurationSeconds: 60,
+            wordCount: 120,
+            status: 'completed',
+          },
+        ],
+      }),
+    );
+  });
+  await page.reload();
+  await page.locator('#btn-clear-pitch-history').click();
+  await page.locator('#btn-undo-last-action').click();
+  await expect(page.locator('.pitch-history')).toContainText('Abgeschlossen');
 });
 
 test('reset clears pending editor text updates', async ({ page }) => {
@@ -205,7 +282,10 @@ test('export and sanitized presentation work under production CSP', async ({ pag
   await disableCountdown(page);
   await page.locator('#project-title').fill('Runtime / Audit: File?');
   await page.locator('#project-fontsize').fill('72');
-  await page.locator('#project-text').fill('<img src=x onerror="window.__xss=1">[bad](javascript:alert(1))\n\n**safe**');
+  await page.locator('#project-lineheight').fill('1.8');
+  await page.locator('#project-fontfamily').selectOption('serif');
+  await page.locator('#project-textcolor').selectOption('highContrast');
+  await page.locator('#project-text').fill('# Heading\n\n<img src=x onerror="window.__xss=1">[bad](javascript:alert(1))\n\n**safe**');
 
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#btn-export').click();
@@ -217,14 +297,19 @@ test('export and sanitized presentation work under production CSP', async ({ pag
   const exported = JSON.parse(await readFile(path!, 'utf8'));
   expect(exported.title).toBe('Runtime / Audit: File?');
   expect(exported.text).toContain('window.__xss');
+  expect(exported.lineHeight).toBe(1.8);
+  expect(exported.fontFamily).toBe('serif');
+  expect(exported.textColorTheme).toBe('highContrast');
 
   await page.locator('input[name="focusLine"][value="true"]').check({ force: true });
   await page.locator('input[name="mirror"][value="true"]').check({ force: true });
   await page.locator('#btn-present').click();
 
   await expect(page.locator('#prompter-text')).toBeVisible();
+  await expect(page.locator('#prompter-text h1')).toHaveText('Heading');
   await expect(page.locator('.focus-line')).toBeVisible();
   await expect(page.locator('#prompter-text')).toHaveCSS('font-size', '72px');
+  await expect(page.locator('#prompter-text')).toHaveCSS('line-height', '129.6px');
   await expect(page.locator('#prompter-text')).not.toContainText('javascript:');
   const renderedHtml = await page.locator('#prompter-text').innerHTML();
   expect(renderedHtml).not.toContain('onerror');
@@ -233,10 +318,43 @@ test('export and sanitized presentation work under production CSP', async ({ pag
   expect(cspErrors).toEqual([]);
 });
 
+test('analytics history exports as CSV', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'prompter_pitch_history_v1',
+      JSON.stringify({
+        version: 1,
+        records: [
+          {
+            id: 'run,csv',
+            date: '2026-01-02T03:04:05.000Z',
+            targetDurationSeconds: 60,
+            actualDurationSeconds: 45,
+            wordCount: 120,
+            status: 'completed',
+          },
+        ],
+      }),
+    );
+  });
+  await page.goto('/');
+
+  await expect(page.locator('#analytics-panel')).toContainText('160 WPM');
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#btn-export-pitch-history').click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toContain('pitch-history.csv');
+  const path = await download.path();
+  expect(path).toBeTruthy();
+  const csv = await readFile(path!, 'utf8');
+  expect(csv).toContain('"run,csv"');
+  expect(csv).toContain('wordsPerMinute');
+});
+
 test('content routes render concrete pages', async ({ page }) => {
   await page.goto('/#/hilfe');
   await expect(page.locator('.markdown-body h1')).toHaveText('Hilfe');
-  await expect(page.locator('.markdown-body')).toContainText('Projekt exportieren');
+  await expect(page.locator('.markdown-body')).toContainText('Projekt speichern');
 
   await page.goto('/#/datenschutz');
   await expect(page.locator('.markdown-body h1')).toHaveText('Datenschutzerklärung');

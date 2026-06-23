@@ -2,9 +2,12 @@ import type {
   AppState,
   PitchRunRecord,
   PitchRunStatus,
+  PrompterFontFamily,
   ProjectImportErrorCode,
   ProjectImportResult,
   PrompterProject,
+  TextColorTheme,
+  Theme,
 } from './types';
 
 export const STORAGE_KEY = 'prompter_project_v1';
@@ -24,6 +27,9 @@ export const MIN_MANUAL_SPEED = 0.1;
 export const MAX_MANUAL_SPEED = 4;
 export const MIN_LINE_HEIGHT = 1.1;
 export const MAX_LINE_HEIGHT = 2.4;
+export const MIN_FOCUS_LINE_POSITION = 20;
+export const MAX_FOCUS_LINE_POSITION = 80;
+export const DEFAULT_FOCUS_LINE_POSITION = 50;
 
 export const DEFAULT_PROJECT: PrompterProject = {
   version: PROJECT_SCHEMA_VERSION,
@@ -34,8 +40,11 @@ export const DEFAULT_PROJECT: PrompterProject = {
   fontSize: 48,
   lineHeight: 1.5,
   theme: 'light',
+  fontFamily: 'system',
+  textColorTheme: 'dark',
   mirrorMode: false,
   focusLine: false,
+  focusLinePosition: DEFAULT_FOCUS_LINE_POSITION,
   countdownEnabled: true,
   updatedAt: new Date().toISOString(),
 };
@@ -73,6 +82,20 @@ function parseBoolean(value: unknown, fallback: boolean): boolean {
   return fallback;
 }
 
+function parseTheme(value: unknown, fallback: Theme): Theme {
+  return value === 'light' || value === 'dark' || value === 'highContrast' ? value : fallback;
+}
+
+function parseTextColorTheme(value: unknown, fallback: TextColorTheme): TextColorTheme {
+  return value === 'dark' || value === 'light' || value === 'highContrast' ? value : fallback;
+}
+
+function parseFontFamily(value: unknown, fallback: PrompterFontFamily): PrompterFontFamily {
+  return value === 'system' || value === 'serif' || value === 'mono' || value === 'dyslexic'
+    ? value
+    : fallback;
+}
+
 function parseString(value: unknown, fallback: string, maxLength: number): string {
   if (typeof value !== 'string') return fallback;
   return value.slice(0, maxLength);
@@ -86,6 +109,15 @@ function isFiniteNonNegativeNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0;
 }
 
+export function countScriptWords(text: string): number {
+  const plainText = text
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    .replace(/[#>*_[\]()~|\\-]+/g, ' ')
+    .trim();
+  return plainText ? plainText.split(/\s+/).filter(Boolean).length : 0;
+}
+
 function isPitchRunRecord(value: unknown): value is PitchRunRecord {
   if (!isRecord(value)) return false;
   return (
@@ -94,6 +126,7 @@ function isPitchRunRecord(value: unknown): value is PitchRunRecord {
     !Number.isNaN(Date.parse(value.date)) &&
     isFiniteNonNegativeNumber(value.targetDurationSeconds) &&
     isFiniteNonNegativeNumber(value.actualDurationSeconds) &&
+    (value.wordCount === undefined || isFiniteNonNegativeNumber(value.wordCount)) &&
     (value.status === 'completed' || value.status === 'cancelled')
   );
 }
@@ -113,7 +146,13 @@ export function decodePitchHistoryStorage(value: unknown): PitchRunRecord[] {
         : null;
 
   if (!records) return [];
-  return records.filter(isPitchRunRecord).slice(0, MAX_PITCH_HISTORY_RECORDS);
+  return records
+    .filter(isPitchRunRecord)
+    .map(record => ({
+      ...record,
+      wordCount: Math.round(record.wordCount ?? 0),
+    }))
+    .slice(0, MAX_PITCH_HISTORY_RECORDS);
 }
 
 export function validateProjectImport(jsonString: string): ProjectImportResult {
@@ -164,7 +203,14 @@ export function validateProjectImport(jsonString: string): ProjectImportResult {
     MAX_LINE_HEIGHT,
   );
 
-  const theme = parsed.theme === 'dark' ? 'dark' : 'light';
+  const theme = parseTheme(parsed.theme, DEFAULT_PROJECT.theme);
+  const fontFamily = parseFontFamily(parsed.fontFamily, DEFAULT_PROJECT.fontFamily);
+  const textColorTheme = parseTextColorTheme(parsed.textColorTheme, DEFAULT_PROJECT.textColorTheme);
+  const focusLinePosition = clamp(
+    parseFiniteNumber(parsed.focusLinePosition, DEFAULT_PROJECT.focusLinePosition),
+    MIN_FOCUS_LINE_POSITION,
+    MAX_FOCUS_LINE_POSITION,
+  );
 
   return {
     ok: true,
@@ -178,8 +224,11 @@ export function validateProjectImport(jsonString: string): ProjectImportResult {
       fontSize,
       lineHeight,
       theme,
+      fontFamily,
+      textColorTheme,
       mirrorMode: parseBoolean(parsed.mirrorMode, DEFAULT_PROJECT.mirrorMode),
       focusLine: parseBoolean(parsed.focusLine, DEFAULT_PROJECT.focusLine),
+      focusLinePosition,
       countdownEnabled: parseBoolean(parsed.countdownEnabled, DEFAULT_PROJECT.countdownEnabled),
       updatedAt: new Date().toISOString(),
     },
@@ -196,7 +245,14 @@ export function sanitizeProjectForUpdate(project: PrompterProject): PrompterProj
     manualSpeed: clamp(project.manualSpeed, MIN_MANUAL_SPEED, MAX_MANUAL_SPEED),
     fontSize: clamp(project.fontSize, MIN_FONT_SIZE, MAX_FONT_SIZE),
     lineHeight: clamp(project.lineHeight, MIN_LINE_HEIGHT, MAX_LINE_HEIGHT),
-    theme: project.theme === 'dark' ? 'dark' : 'light',
+    theme: parseTheme(project.theme, DEFAULT_PROJECT.theme),
+    fontFamily: parseFontFamily(project.fontFamily, DEFAULT_PROJECT.fontFamily),
+    textColorTheme: parseTextColorTheme(project.textColorTheme, DEFAULT_PROJECT.textColorTheme),
+    focusLinePosition: clamp(
+      project.focusLinePosition,
+      MIN_FOCUS_LINE_POSITION,
+      MAX_FOCUS_LINE_POSITION,
+    ),
   };
 }
 
@@ -211,7 +267,8 @@ export class Store {
       project: this.loadFromStorage(),
       pitchHistory: this.loadPitchHistoryFromStorage(),
       viewMode: 'editor',
-      language: this.loadLanguageFromStorage()
+      language: this.loadLanguageFromStorage(),
+      lastUndoAction: null,
     };
   }
 
@@ -266,6 +323,7 @@ export class Store {
   }
 
   public updateProject(partial: Partial<PrompterProject>) {
+    this.clearUndoAction();
     this.state.project = sanitizeProjectForUpdate({
       ...this.state.project,
       ...partial,
@@ -281,12 +339,14 @@ export class Store {
   }
 
   public addPitchRun(status: PitchRunStatus, actualDurationSeconds: number) {
+    this.clearUndoAction();
     const project = this.state.project;
     const record: PitchRunRecord = {
       id: createRecordId(),
       date: new Date().toISOString(),
       targetDurationSeconds: project.targetDurationSeconds,
       actualDurationSeconds: Math.max(0, Math.round(actualDurationSeconds)),
+      wordCount: countScriptWords(project.text),
       status,
     };
     this.state.pitchHistory = [record, ...this.state.pitchHistory].slice(0, MAX_PITCH_HISTORY_RECORDS);
@@ -295,6 +355,10 @@ export class Store {
   }
 
   public clearPitchHistory() {
+    this.state.lastUndoAction = {
+      type: 'historyClear',
+      pitchHistory: [...this.state.pitchHistory],
+    };
     this.state.pitchHistory = [];
     try {
       this.storage?.removeItem(PITCH_HISTORY_STORAGE_KEY);
@@ -326,6 +390,10 @@ export class Store {
   }
   
   public resetProject() {
+    this.state.lastUndoAction = {
+      type: 'projectReset',
+      project: { ...this.state.project },
+    };
     this.state.project = { ...DEFAULT_PROJECT, updatedAt: new Date().toISOString() };
     try {
       this.storage?.removeItem(STORAGE_KEY);
@@ -338,11 +406,29 @@ export class Store {
   public importProject(jsonString: string): ProjectImportResult {
     const result = validateProjectImport(jsonString);
     if (result.ok) {
+      this.clearUndoAction();
       this.state.project = result.project;
       this.saveToStorage();
       this.notify();
     }
     return result;
+  }
+
+  public undoLastAction(): boolean {
+    const action = this.state.lastUndoAction;
+    if (!action) return false;
+
+    if (action.type === 'projectReset') {
+      this.state.project = sanitizeProjectForUpdate(action.project);
+      this.saveToStorage();
+    } else {
+      this.state.pitchHistory = action.pitchHistory.slice(0, MAX_PITCH_HISTORY_RECORDS);
+      this.savePitchHistoryToStorage();
+    }
+
+    this.state.lastUndoAction = null;
+    this.notify();
+    return true;
   }
 
   public subscribe(callback: Subscriber): () => void {
@@ -352,6 +438,10 @@ export class Store {
 
   private notify() {
     this.subscribers.forEach(sub => sub(this.state));
+  }
+
+  private clearUndoAction() {
+    this.state.lastUndoAction = null;
   }
 }
 

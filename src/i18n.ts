@@ -24,6 +24,17 @@ export type TranslationKey =
   | 'editor.settings.theme'
   | 'editor.settings.themeLight'
   | 'editor.settings.themeDark'
+  | 'editor.settings.themeHighContrast'
+  | 'editor.settings.fontFamily'
+  | 'editor.settings.textColorTheme'
+  | 'editor.settings.focusLinePosition'
+  | 'editor.font.system'
+  | 'editor.font.serif'
+  | 'editor.font.mono'
+  | 'editor.font.dyslexic'
+  | 'editor.textColor.dark'
+  | 'editor.textColor.light'
+  | 'editor.textColor.highContrast'
   | 'editor.settings.focusLine'
   | 'editor.settings.mirrorMode'
   | 'editor.settings.countdown'
@@ -34,7 +45,14 @@ export type TranslationKey =
   | 'editor.history.empty'
   | 'editor.history.completed'
   | 'editor.history.cancelled'
+  | 'editor.history.exportCsv'
+  | 'editor.analytics.completed'
+  | 'editor.analytics.averageWpm'
+  | 'editor.analytics.fastestSlowest'
+  | 'editor.analytics.averageDeviation'
+  | 'editor.analytics.trend'
   | 'editor.stats.words'
+  | 'editor.stats.characters'
   | 'editor.stats.readTime'
   | 'editor.text.title'
   | 'editor.text.label'
@@ -45,7 +63,11 @@ export type TranslationKey =
   | 'editor.actions.reset'
   | 'editor.actions.import'
   | 'editor.actions.export'
+  | 'editor.actions.preview'
   | 'editor.actions.present'
+  | 'editor.undo.action'
+  | 'editor.undo.resetReady'
+  | 'editor.undo.historyReady'
   | 'editor.prompt.reset'
   | 'editor.prompt.resetLocal'
   | 'editor.prompt.importReplace'
@@ -73,6 +95,12 @@ export type TranslationKey =
   | 'presentation.noScrollNeeded'
   | 'presentation.speedDecrease'
   | 'presentation.speedIncrease'
+  | 'presentation.sections'
+  | 'presentation.previousSection'
+  | 'presentation.nextSection'
+  | 'preview.back'
+  | 'preview.static'
+  | 'preview.settings'
   | 'content.notFound'
   | 'content.back';
 
@@ -101,6 +129,17 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.settings.theme': 'Farbschema',
     'editor.settings.themeLight': 'Hell',
     'editor.settings.themeDark': 'Dunkel',
+    'editor.settings.themeHighContrast': 'Hoher Kontrast',
+    'editor.settings.fontFamily': 'Schriftart',
+    'editor.settings.textColorTheme': 'Prompter-Farben',
+    'editor.settings.focusLinePosition': 'Position der Fokus-Linie',
+    'editor.font.system': 'System',
+    'editor.font.serif': 'Serif',
+    'editor.font.mono': 'Monospace',
+    'editor.font.dyslexic': 'Lesefreundlich',
+    'editor.textColor.dark': 'Hell auf Dunkel',
+    'editor.textColor.light': 'Dunkel auf Hell',
+    'editor.textColor.highContrast': 'Hoher Kontrast',
     'editor.settings.focusLine': 'Fokus-Linie anzeigen',
     'editor.settings.mirrorMode': 'Für Spiegel umkehren (Mirror Mode)',
     'editor.settings.countdown': '3-Sekunden Countdown vor Start',
@@ -111,7 +150,14 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.history.empty': 'Noch keine Durchläufe gespeichert.',
     'editor.history.completed': 'Abgeschlossen',
     'editor.history.cancelled': 'Abgebrochen',
+    'editor.history.exportCsv': 'CSV',
+    'editor.analytics.completed': 'Durchläufe',
+    'editor.analytics.averageWpm': 'Ø Tempo',
+    'editor.analytics.fastestSlowest': 'Schnell/Langsam',
+    'editor.analytics.averageDeviation': 'Ø Abweichung',
+    'editor.analytics.trend': 'Trend',
     'editor.stats.words': 'Wörter',
+    'editor.stats.characters': 'Zeichen',
     'editor.stats.readTime': 'Lesezeit',
     'editor.text.title': 'Text',
     'editor.text.label': 'Präsentationstext',
@@ -120,9 +166,13 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.options.on': 'An',
     'editor.options.off': 'Aus',
     'editor.actions.reset': 'Neu',
-    'editor.actions.import': 'Importieren',
+    'editor.actions.import': 'Projekt öffnen',
     'editor.actions.export': 'Projekt speichern',
+    'editor.actions.preview': 'Vorschau',
     'editor.actions.present': 'Präsentieren',
+    'editor.undo.action': 'Rückgängig',
+    'editor.undo.resetReady': 'Entwurf wurde zurückgesetzt.',
+    'editor.undo.historyReady': 'Pitch-Verlauf wurde geleert.',
     'editor.prompt.reset': 'Möchtest du das aktuelle Projekt wirklich verwerfen? Alle ungespeicherten Änderungen gehen verloren.',
     'editor.prompt.resetLocal': 'Lokale Daten zurücksetzen? Der aktuelle Entwurf wird aus diesem Browser entfernt.',
     'editor.prompt.importReplace': 'Das Öffnen einer Projektdatei ersetzt den aktuellen lokalen Entwurf. Trotzdem öffnen?',
@@ -150,6 +200,12 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'presentation.noScrollNeeded': 'Kein Scroll nötig',
     'presentation.speedDecrease': 'Geschwindigkeit verringern',
     'presentation.speedIncrease': 'Geschwindigkeit erhöhen',
+    'presentation.sections': 'Abschnitte',
+    'presentation.previousSection': 'Vorheriger Abschnitt',
+    'presentation.nextSection': 'Nächster Abschnitt',
+    'preview.back': 'Vorschau schließen',
+    'preview.static': 'Vorschau',
+    'preview.settings': 'Vorschau-Einstellungen',
     'content.notFound': 'Seite nicht gefunden',
     'content.back': 'Zurück zur App',
   },
@@ -177,6 +233,17 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.settings.theme': 'Theme',
     'editor.settings.themeLight': 'Light',
     'editor.settings.themeDark': 'Dark',
+    'editor.settings.themeHighContrast': 'High contrast',
+    'editor.settings.fontFamily': 'Font family',
+    'editor.settings.textColorTheme': 'Prompter colors',
+    'editor.settings.focusLinePosition': 'Focus line position',
+    'editor.font.system': 'System',
+    'editor.font.serif': 'Serif',
+    'editor.font.mono': 'Monospace',
+    'editor.font.dyslexic': 'Readable',
+    'editor.textColor.dark': 'Light on dark',
+    'editor.textColor.light': 'Dark on light',
+    'editor.textColor.highContrast': 'High contrast',
     'editor.settings.focusLine': 'Show focus line',
     'editor.settings.mirrorMode': 'Mirror text (Teleprompter mode)',
     'editor.settings.countdown': '3-second countdown before start',
@@ -187,7 +254,14 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.history.empty': 'No runs saved yet.',
     'editor.history.completed': 'Completed',
     'editor.history.cancelled': 'Cancelled',
+    'editor.history.exportCsv': 'CSV',
+    'editor.analytics.completed': 'Runs',
+    'editor.analytics.averageWpm': 'Avg speed',
+    'editor.analytics.fastestSlowest': 'Fast/slow',
+    'editor.analytics.averageDeviation': 'Avg deviation',
+    'editor.analytics.trend': 'Trend',
     'editor.stats.words': 'words',
+    'editor.stats.characters': 'characters',
     'editor.stats.readTime': 'read time',
     'editor.text.title': 'Text',
     'editor.text.label': 'Presentation text',
@@ -196,9 +270,13 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.options.on': 'On',
     'editor.options.off': 'Off',
     'editor.actions.reset': 'New',
-    'editor.actions.import': 'Import',
+    'editor.actions.import': 'Open Project',
     'editor.actions.export': 'Save Project',
+    'editor.actions.preview': 'Preview',
     'editor.actions.present': 'Present',
+    'editor.undo.action': 'Undo',
+    'editor.undo.resetReady': 'Draft was reset.',
+    'editor.undo.historyReady': 'Pitch history was cleared.',
     'editor.prompt.reset': 'Do you really want to discard the current project? All unsaved changes will be lost.',
     'editor.prompt.resetLocal': 'Reset local data? The current draft will be removed from this browser.',
     'editor.prompt.importReplace': 'Opening a project file replaces the current local draft. Open it anyway?',
@@ -226,6 +304,12 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'presentation.noScrollNeeded': 'No scrolling needed',
     'presentation.speedDecrease': 'Decrease speed',
     'presentation.speedIncrease': 'Increase speed',
+    'presentation.sections': 'Sections',
+    'presentation.previousSection': 'Previous section',
+    'presentation.nextSection': 'Next section',
+    'preview.back': 'Close preview',
+    'preview.static': 'Preview',
+    'preview.settings': 'Preview settings',
     'content.notFound': 'Page not found',
     'content.back': 'Back to app',
   }

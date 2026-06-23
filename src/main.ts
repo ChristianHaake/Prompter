@@ -53,8 +53,13 @@ function updateShellTranslations() {
   document.documentElement.lang = store.getState().language;
 }
 
+function updateProjectTheme() {
+  document.documentElement.dataset.theme = store.getState().project.theme;
+}
+
 // Initial translation
 updateShellTranslations();
+updateProjectTheme();
 
 const appDiv = document.querySelector<HTMLDivElement>('#app')!;
 const shellHeader = document.querySelector<HTMLElement>('.app-header');
@@ -69,6 +74,7 @@ let currentLanguage = store.getState().language;
 function renderApp() {
   const state = store.getState();
   const langChanged = state.language !== currentLanguage;
+  updateProjectTheme();
   
   if (langChanged) {
     currentLanguage = state.language;
@@ -89,14 +95,17 @@ function renderApp() {
     
     currentViewMode = state.viewMode;
     
-    if (currentViewMode === 'presentation') {
+    if (currentViewMode === 'presentation' || currentViewMode === 'preview') {
       // Hide shell header/footer during presentation
       if (shellHeader) shellHeader.style.display = 'none';
       if (shellFooter) shellFooter.style.display = 'none';
       if (educationNotice) educationNotice.style.display = 'none';
       appDiv.style.padding = '0'; // Remove workspace padding
       
-      currentViewInstance = new PresentationView(appDiv);
+      currentViewInstance = new PresentationView(
+        appDiv,
+        currentViewMode === 'preview' ? 'preview' : 'presentation',
+      );
       currentViewInstance.mount();
     } else {
       // Show shell header/footer

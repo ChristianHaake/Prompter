@@ -17,11 +17,12 @@ Workshop-Teams und alle, die kurze Präsentationen kontrolliert vortragen wollen
 Der kürzeste Workflow:
 
 1. Text in den Editor einfügen oder schreiben.
-2. Zieldauer per Timer-Vorlage oder freiem Wert, Schriftgröße und
-   Prompter-Optionen einstellen.
-3. Präsentation starten und mit Leertaste, Pfeiltasten und Reset steuern.
-4. Durchläufe im lokalen Pitch-Verlauf auswerten.
-5. Projekt als `.prompter`-Datei exportieren, wenn ein dauerhaftes Backup nötig
+2. Zieldauer per Timer-Vorlage oder freiem Wert, Schriftgröße, Zeilenabstand,
+   Farben und Prompter-Optionen einstellen.
+3. Vorschau öffnen oder Präsentation starten und mit Leertaste, Pfeiltasten,
+   Abschnittstasten und Reset steuern.
+4. Durchläufe im lokalen Pitch-Verlauf auswerten oder als CSV exportieren.
+5. Projekt als `.prompter`-Datei speichern, wenn ein dauerhaftes Backup nötig
    ist.
 
 ## Privacy and Storage
@@ -32,18 +33,19 @@ in the same browser.
 
 Presentation run history is stored separately under
 `prompter_pitch_history_v1`. It contains timestamps, target duration, actual
-duration, and whether a run was completed or cancelled. It can be cleared from
-the editor.
+duration, word count, and whether a run was completed or cancelled. It can be
+cleared from the editor and exported as a local CSV file.
 
 Project files are JSON files with the `.prompter` extension and schema version
 `1.0`. Imports are validated before replacing the current project. Plain `.txt`
 and `.md` files can also be imported as script text. Unsupported future versions
 and invalid project files are rejected.
 
-Autosave is only a recovery mechanism. For durable backups, export a project
-file. The current draft can be cleared from the app with "Lokale Daten
-zurücksetzen"; pitch history has its own clear action. All local site data can
-also be removed through the browser's site-data settings.
+Autosave is only a recovery mechanism. For durable backups, save a project
+file. The current draft can be cleared from the app with "Neu"; pitch history
+has its own clear action. Both destructive actions provide an in-memory undo
+until the next edit or tab close. All local site data can also be removed
+through the browser's site-data settings.
 
 The static site is served through Cloudflare Pages. Cloudflare processes
 technical connection data such as IP address, timestamp, requested files, and

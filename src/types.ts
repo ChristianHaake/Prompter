@@ -1,4 +1,6 @@
-export type Theme = "light" | "dark";
+export type Theme = 'light' | 'dark' | 'highContrast';
+export type TextColorTheme = 'dark' | 'light' | 'highContrast';
+export type PrompterFontFamily = 'system' | 'serif' | 'mono' | 'dyslexic';
 
 export type PrompterProject = {
   version: string;
@@ -9,8 +11,11 @@ export type PrompterProject = {
   fontSize: number;
   lineHeight: number;
   theme: Theme;
+  fontFamily: PrompterFontFamily;
+  textColorTheme: TextColorTheme;
   mirrorMode: boolean;
   focusLine: boolean;
+  focusLinePosition: number;
   countdownEnabled: boolean;
   updatedAt: string;
 };
@@ -22,11 +27,12 @@ export type PitchRunRecord = {
   date: string;
   targetDurationSeconds: number;
   actualDurationSeconds: number;
+  wordCount: number;
   status: PitchRunStatus;
 };
 
 // Application View State
-export type ViewMode = 'editor' | 'presentation';
+export type ViewMode = 'editor' | 'preview' | 'presentation';
 
 export type Language = 'de' | 'en';
 
@@ -35,7 +41,12 @@ export type AppState = {
   pitchHistory: PitchRunRecord[];
   viewMode: ViewMode;
   language: Language;
+  lastUndoAction: UndoAction | null;
 };
+
+export type UndoAction =
+  | { type: 'projectReset'; project: PrompterProject }
+  | { type: 'historyClear'; pitchHistory: PitchRunRecord[] };
 
 export type ProjectImportResult =
   | { ok: true; project: PrompterProject }

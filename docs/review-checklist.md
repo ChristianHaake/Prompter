@@ -5,19 +5,21 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 
 ## Release
 
-- Version: `1.0.0-quality-pass`
-- Review date: `2026-06-17`
+- Version: `1.0.0-phased-v1`
+- Review date: `2026-06-23`
 - Reviewer: Codex
 
 ## Results
 
 - [x] Intended users and educational purpose are explicit.
 - [x] Core workflow works without login.
-- [x] Autosave, project import/export, and reset behavior are implemented.
+- [x] Autosave, project open/save, preview, and reset behavior are implemented.
+- [x] Destructive reset/history-clear actions expose an undo path.
 - [x] Imported projects are validated before replacing state.
 - [x] Failed imports preserve current work.
 - [x] Footer links to help, about, privacy, imprint, and GitHub.
 - [x] Markdown content is sanitized before rendering.
+- [x] Pitch history analytics and CSV export are local browser features.
 - [x] Build, lint, typecheck, unit tests, and Playwright smoke tests are wired
   through `npm run verify`.
 - [x] Production dependency audit is wired through `npm run verify`.
@@ -42,5 +44,8 @@ wrong word-count parsing, stale E2E selectors, and oversized PWA image assets.
 
 Current production build precaches 16 entries at about 681 KB.
 
-The app still needs manual device, PWA install, offline, and screen-reader
-checks before a full release sign-off.
+This pass adds preview mode, display customization, undo safeguards, analytics,
+CSV history export, markdown presentation styling, and keyboard section jumps.
+
+The app still needs manual device, PWA install, offline, 200% zoom, high
+contrast, and screen-reader checks before a full release sign-off.

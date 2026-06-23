@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { calculatePitchAnalytics, exportPitchHistoryCsv } from '../src/analytics';
 import {
   decodePitchHistoryStorage,
   DEFAULT_PROJECT,
@@ -88,6 +89,7 @@ describe('Store persistence and imports', () => {
       manualSpeed: 99,
       fontSize: 999,
       lineHeight: 99,
+      focusLinePosition: 99,
       text: 'x'.repeat(120_000),
     }));
 
@@ -97,7 +99,33 @@ describe('Store persistence and imports', () => {
       expect(result.project.manualSpeed).toBe(4);
       expect(result.project.fontSize).toBe(160);
       expect(result.project.lineHeight).toBe(2.4);
+      expect(result.project.focusLinePosition).toBe(80);
       expect(result.project.text).toHaveLength(100_000);
+    }
+  });
+
+  test('defaults optional v1 project fields for older files', () => {
+    const result = validateProjectImport(JSON.stringify({
+      version: PROJECT_SCHEMA_VERSION,
+      title: 'Alt',
+      text: 'Alter Text',
+      targetDurationSeconds: 60,
+      manualSpeed: 1,
+      fontSize: 48,
+      lineHeight: 1.5,
+      theme: 'unknown',
+      mirrorMode: false,
+      focusLine: false,
+      countdownEnabled: true,
+      updatedAt: new Date().toISOString(),
+    }));
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.project.theme).toBe(DEFAULT_PROJECT.theme);
+      expect(result.project.fontFamily).toBe(DEFAULT_PROJECT.fontFamily);
+      expect(result.project.textColorTheme).toBe(DEFAULT_PROJECT.textColorTheme);
+      expect(result.project.focusLinePosition).toBe(DEFAULT_PROJECT.focusLinePosition);
     }
   });
 
@@ -124,6 +152,23 @@ describe('Store persistence and imports', () => {
     expect(store.getState().project.text).toBe(DEFAULT_PROJECT.text);
   });
 
+  test('undo restores reset project until a further edit happens', () => {
+    const storage = new MemoryStorage();
+    const store = new Store(storage);
+    store.updateProject({ title: 'Undo Titel', text: 'Undo Text' });
+
+    store.resetProject();
+    expect(store.getState().lastUndoAction?.type).toBe('projectReset');
+    expect(store.undoLastAction()).toBe(true);
+    expect(store.getState().project.title).toBe('Undo Titel');
+    expect(store.getState().project.text).toBe('Undo Text');
+
+    store.resetProject();
+    store.updateProject({ title: 'Neue Arbeit' });
+    expect(store.getState().lastUndoAction).toBeNull();
+    expect(store.undoLastAction()).toBe(false);
+  });
+
   test('records, restores, and clears capped pitch history', () => {
     const storage = new MemoryStorage();
     const store = new Store(storage);
@@ -145,6 +190,19 @@ describe('Store persistence and imports', () => {
     expect(storage.getItem(PITCH_HISTORY_STORAGE_KEY)).toBeNull();
   });
 
+  test('undo restores cleared pitch history', () => {
+    const storage = new MemoryStorage();
+    const store = new Store(storage);
+    store.updateProject({ text: 'Eins zwei drei vier', targetDurationSeconds: 30 });
+    store.addPitchRun('completed', 30);
+
+    store.clearPitchHistory();
+    expect(store.getState().pitchHistory).toHaveLength(0);
+    expect(store.undoLastAction()).toBe(true);
+    expect(store.getState().pitchHistory).toHaveLength(1);
+    expect(store.getState().pitchHistory[0].wordCount).toBe(4);
+  });
+
   test('decodes only valid pitch history records from versioned storage', () => {
     const records = Array.from({ length: 55 }, (_, index) => ({
       id: `run-${index}`,
@@ -164,6 +222,47 @@ describe('Store persistence and imports', () => {
 
     expect(decoded).toHaveLength(50);
     expect(decoded[0].id).toBe('run-0');
-    expect(decodePitchHistoryStorage({ version: 999, records })).toEqual([]);
+      expect(decodePitchHistoryStorage({ version: 999, records })).toEqual([]);
+  });
+
+  test('calculates pitch analytics and exports escaped CSV', () => {
+    const records = [
+      {
+        id: '=run,1',
+        date: '2026-01-02T03:04:05.000Z',
+        targetDurationSeconds: 60,
+        actualDurationSeconds: 45,
+        wordCount: 120,
+        status: 'completed' as const,
+      },
+      {
+        id: 'run-2',
+        date: '2026-01-03T03:04:05.000Z',
+        targetDurationSeconds: 60,
+        actualDurationSeconds: 90,
+        wordCount: 120,
+        status: 'completed' as const,
+      },
+      {
+        id: 'run-3',
+        date: '2026-01-04T03:04:05.000Z',
+        targetDurationSeconds: 60,
+        actualDurationSeconds: 10,
+        wordCount: 120,
+        status: 'cancelled' as const,
+      },
+    ];
+
+    const analytics = calculatePitchAnalytics(records);
+    expect(analytics.completedRuns).toBe(2);
+    expect(Math.round(analytics.averageWordsPerMinute ?? 0)).toBe(120);
+    expect(Math.round(analytics.fastestWordsPerMinute ?? 0)).toBe(160);
+    expect(Math.round(analytics.slowestWordsPerMinute ?? 0)).toBe(80);
+    expect(analytics.averageDeviationSeconds).toBe(7.5);
+
+    const csv = exportPitchHistoryCsv(records);
+    expect(csv).toContain('"\'=run,1"');
+    expect(csv).toContain('deviationSeconds');
+    expect(csv).toContain('160');
   });
 });

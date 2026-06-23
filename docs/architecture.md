@@ -17,7 +17,7 @@ prompter.
 - Runtime: static browser app, no backend.
 - Build: Vite with Vanilla TypeScript.
 - Rendering: direct DOM components in `src/EditorView.ts` and
-  `src/PresentationView.ts`.
+  mode-aware `src/PresentationView.ts`.
 - Markdown: `marked` plus `DOMPurify` for bundled content pages and presentation
   text rendering.
 - PWA: `vite-plugin-pwa` with generated service worker and local app icons.
@@ -31,11 +31,13 @@ one presentation view, and a small local store.
 
 - `src/main.ts`: shell routing, Markdown content pages, and view mounting.
 - `src/store.ts`: app state, localStorage persistence, project validation, import
-  and reset behavior, pitch run history.
+  and reset behavior, undo snapshots, pitch run history.
 - `src/EditorView.ts`: editor UI, text/project import, export/reset controls,
-  project form, timer presets, pitch history.
-- `src/PresentationView.ts`: prompter playback, countdown, fullscreen, keyboard
-  controls, progress, timing, wake lock, end signal, run recording.
+  project form, timer presets, analytics, pitch history.
+- `src/PresentationView.ts`: preview and presentation rendering, countdown,
+  fullscreen, keyboard controls, section navigation, progress, timing, wake lock,
+  end signal, run recording.
+- `src/analytics.ts`: pure pitch-history analytics and CSV export mapping.
 - `content/`: bundled Markdown pages for help, about, privacy, and imprint.
 - `tests/`: Vitest unit tests and Playwright browser tests.
 
@@ -47,18 +49,21 @@ The active project is held in memory by the `Store` class and persisted to
 - Storage key: `prompter_project_v1`
 - Project schema version: `1.0`
 - Durable backup: user-exported `.prompter` JSON file
-- Reset behavior: "Lokale Daten zurücksetzen" removes the localStorage entry and
-  restores the default project in memory.
+- Reset behavior: "Neu" removes the localStorage entry and restores the default
+  project in memory. The previous project can be restored from an in-memory undo
+  snapshot until another edit/import or tab close occurs.
 
 Presentation run history is held in the same store and persisted separately.
 
 - Storage key: `prompter_pitch_history_v1`
 - History schema version: `1`
 - Maximum records: 50
-- Recorded fields: timestamp, target duration, actual duration, completed or
-  cancelled status.
+- Recorded fields: timestamp, target duration, actual duration, word count,
+  completed or cancelled status.
 - Clear behavior: the editor's pitch-history clear action removes only the
-  history entry, not the current project.
+  history entry, not the current project. The previous history can be restored
+  from an in-memory undo snapshot until another edit/history mutation or tab
+  close occurs.
 
 Imported and restored projects are validated at runtime. Invalid files,
 unsupported versions, missing title/text fields, and malformed JSON are rejected
@@ -72,7 +77,8 @@ before state replacement.
 - Maximum import size: 500 KB
 - Maximum title length: 120 characters
 - Maximum text length: 100,000 characters
-- Duration, font size, line height, and speed are clamped to application limits.
+- Duration, font size, line height, focus-line position, color theme, font
+  family, and speed are clamped or defaulted to application limits.
 
 Failed imports preserve the current project.
 
@@ -86,10 +92,15 @@ the configured target duration and current manual speed multiplier. Timer
 presets in the editor write the same `targetDurationSeconds` project field as
 manual duration input.
 
+Preview mode uses the same sanitized Markdown rendering and typography settings
+as presentation mode, but it does not start playback, request wake lock, enter
+fullscreen, or record pitch history.
+
 When a presentation reaches the end, Prompter records a completed run and plays a
 short local Web Audio signal. Reset or exit after elapsed playback records a
 cancelled run. The screen Wake Lock API is requested while playback is active
-when the browser supports it; lack of support is ignored.
+when the browser supports it; lack of support is ignored. Keyboard shortcuts
+cover play/pause, exit, reset, speed changes, and section jumps.
 
 ## Network and Privacy
 

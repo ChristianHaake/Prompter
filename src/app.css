@@ -229,9 +229,10 @@ main {
   gap: 24px;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   padding: 18px 22px;
   border-top: 1px solid var(--border-soft);
-  background: white;
+  background: var(--panel-bg);
 }
 
 .stats {
@@ -310,6 +311,8 @@ main {
 }
 
 .present-action {
+  display: grid;
+  gap: 10px;
   margin-top: 1rem;
 }
 
@@ -326,19 +329,25 @@ main {
   font-weight: 750;
 }
 
-.field input {
+.field input,
+.field select {
   width: 100%;
   border: 1px solid #cfd5dd;
   border-radius: 10px;
   color: var(--text-main);
-  background: #fff;
+  background: var(--panel-bg);
   transition: border-color 140ms ease, box-shadow 140ms ease;
   min-height: 40px;
   padding: 0 12px;
 }
 
-.field input:hover {
+.field input:hover,
+.field select:hover {
   border-color: #9da7b5;
+}
+
+.field input[type="range"] {
+  padding: 0;
 }
 
 .timer-preset-grid {
@@ -392,6 +401,50 @@ main {
   border: 1px solid var(--border-soft);
   border-radius: 8px;
   background: #f8fafc;
+}
+
+.undo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #b8e6c9;
+  border-radius: 8px;
+  color: #0f512a;
+  background: #edfbf2;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.undo-banner[hidden] {
+  display: none;
+}
+
+.analytics-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.analytics-panel div {
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: var(--accent-soft);
+}
+
+.analytics-panel span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.analytics-panel strong {
+  color: var(--text-main);
+  font-size: 0.9rem;
 }
 
 .pitch-history__item strong,
@@ -489,6 +542,44 @@ main {
   position: relative;
 }
 
+.presentation-layout--preview .presentation-header {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.preview-settings {
+  position: absolute;
+  top: 86px;
+  left: clamp(12px, 4vw, 64px);
+  right: clamp(12px, 4vw, 64px);
+  z-index: 12;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 8px;
+  background: rgb(0 0 0 / 72%);
+}
+
+.preview-settings label {
+  display: grid;
+  gap: 5px;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.preview-settings input,
+.preview-settings select {
+  min-height: 34px;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 6px;
+  color: white;
+  background: rgb(255 255 255 / 10%);
+  padding: 0 8px;
+}
+
 .presentation-header {
   position: absolute;
   top: 0;
@@ -541,6 +632,70 @@ main {
   letter-spacing: 0;
   will-change: transform;
   color: rgba(255, 255, 255, 0.9);
+}
+
+.prompter-text h1,
+.prompter-text h2,
+.prompter-text h3 {
+  margin: 0.9em 0 0.35em;
+  font-weight: 850;
+  line-height: 1.12;
+}
+
+.prompter-text h1 {
+  font-size: 1.35em;
+}
+
+.prompter-text h2 {
+  font-size: 1.2em;
+}
+
+.prompter-text h3 {
+  font-size: 1.08em;
+}
+
+.prompter-text hr {
+  width: 40%;
+  margin: 1.2em 0;
+  border: 0;
+  border-top: 3px solid currentColor;
+  opacity: 0.8;
+}
+
+.prompter-theme--light {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.prompter-theme--light .prompter-text {
+  color: #111827;
+}
+
+.prompter-theme--light .presentation-footer {
+  background: linear-gradient(to top, rgb(255 255 255 / 92%), transparent);
+}
+
+.prompter-theme--light .presentation-header .button--secondary,
+.prompter-theme--light .presentation-controls .icon-button,
+.prompter-theme--light .presentation-footer > .icon-button {
+  color: #111827;
+  background: rgb(255 255 255 / 78%);
+  border-color: rgb(17 24 39 / 22%);
+}
+
+.prompter-theme--highContrast {
+  background-color: #000000;
+  color: #ffff00;
+}
+
+.prompter-theme--highContrast .prompter-text {
+  color: #ffff00;
+}
+
+.prompter-theme--highContrast .focus-line,
+.prompter-theme--highContrast .progress-fill {
+  background-color: #00ffff;
+  box-shadow: 0 0 0 2px #000000, 0 0 16px #00ffff;
 }
 
 .countdown-overlay {
@@ -622,6 +777,24 @@ main {
   margin: 0 1rem;
 }
 
+.section-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.section-controls .icon-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.section-controls .icon-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .presentation-controls .icon-button {
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -701,6 +874,41 @@ main {
 .github-link:hover {
   border-color: #9da7b5;
   background: #f8fafc;
+}
+
+:root[data-theme="dark"] .app-header,
+:root[data-theme="dark"] .button--secondary,
+:root[data-theme="dark"] .icon-button,
+:root[data-theme="dark"] .github-link,
+:root[data-theme="dark"] .pitch-history__item {
+  color: var(--text-main);
+  background: #182230;
+}
+
+:root[data-theme="dark"] .field-label,
+:root[data-theme="dark"] .segmented-field legend,
+:root[data-theme="dark"] .analytics-panel span {
+  color: var(--text-muted);
+}
+
+:root[data-theme="dark"] .segmented-control {
+  background: #111827;
+}
+
+:root[data-theme="dark"] .segmented-control input:checked + span {
+  background: #263241;
+}
+
+:root[data-theme="highContrast"] .button,
+:root[data-theme="highContrast"] .icon-button,
+:root[data-theme="highContrast"] input,
+:root[data-theme="highContrast"] select,
+:root[data-theme="highContrast"] textarea,
+:root[data-theme="highContrast"] .segmented-control,
+:root[data-theme="highContrast"] .pitch-history__item,
+:root[data-theme="highContrast"] .analytics-panel div {
+  border-color: #000000;
+  box-shadow: none;
 }
 
 .legal-page {
@@ -795,12 +1003,22 @@ main {
     padding: 14px 12px;
   }
 
+  .preview-settings {
+    top: 66px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 10px;
+  }
+
   .progress-track {
     order: -1;
     flex-basis: 100%;
   }
 
   .presentation-controls {
+    order: 2;
+  }
+
+  .section-controls {
     order: 2;
   }
 

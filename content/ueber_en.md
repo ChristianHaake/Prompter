@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Prompter helps you prepare and deliver short presentations, pitches, classroom contributions, and workshop scripts. The app is deliberately local-first: writing, saving, opening, and presenting run entirely in the browser.
+Prompter helps you prepare and deliver short presentations, pitches, classroom contributions, and workshop scripts. The app is deliberately local-first: script writing, project files, and presenting run in the browser; hosting and analytics metadata are described in the privacy policy.
 
 ## Functionality
 

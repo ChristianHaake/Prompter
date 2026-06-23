@@ -22,6 +22,29 @@
   --shadow-soft: 0 18px 45px rgb(15 23 42 / 8%);
 }
 
+:root[data-theme="dark"] {
+  --app-bg: #111827;
+  --panel-bg: #182230;
+  --text-main: #f9fafb;
+  --text-muted: #d0d5dd;
+  --border-soft: #344054;
+  --accent-soft: #1d2939;
+  color: var(--text-main);
+}
+
+:root[data-theme="highContrast"] {
+  --app-bg: #ffffff;
+  --panel-bg: #ffffff;
+  --text-main: #000000;
+  --text-muted: #1f2937;
+  --border-soft: #000000;
+  --accent: #0047ff;
+  --accent-dark: #002a99;
+  --accent-soft: #ffff00;
+  --shadow-soft: none;
+  color: var(--text-main);
+}
+
 * {
   box-sizing: border-box;
 }

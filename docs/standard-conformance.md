@@ -5,7 +5,7 @@ https://github.com/ChristianHaake/haak3-webapp-standard
 
 Standard version: `1.0.0-draft`
 
-Last reviewed: `2026-06-17`
+Last reviewed: `2026-06-23`
 
 ## App-Specific Decisions
 
@@ -14,15 +14,17 @@ Last reviewed: `2026-06-17`
 - User content is stored only in `localStorage` and user-exported `.prompter`
   files. IndexedDB is not needed because the app does not manage images or large
   project archives.
-- Project imports use JSON schema version `1.0` and reject unsupported future
-  versions.
+- Project imports use JSON schema version `1.0`; new optional display fields
+  default safely so older valid project files still open.
+- Pitch-history CSV export is a local browser download. No history data is sent
+  to an app backend.
 
 ## Exceptions and Release Gaps
 
 ```text
 Rule: Full release accessibility review should include manual screen-reader checks.
 Reason: Automated and keyboard-path tests can run locally, but manual screen-reader validation has not been recorded.
-Scope: Primary editor, import errors, reset confirmation, presentation controls
+Scope: Primary editor, import errors, undo status, analytics, preview controls, presentation controls
 Temporary or permanent: Temporary
 Review date: Before public production release
 ```

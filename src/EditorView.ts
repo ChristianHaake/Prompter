@@ -1,6 +1,7 @@
 import { DEFAULT_PROJECT, MAX_PROJECT_FILE_BYTES, TIMER_PRESETS_SECONDS, store } from './store';
 import type { PitchRunRecord, ProjectImportResult, PrompterProject } from './types';
 import { t, type TranslationKey } from './i18n';
+import { calculatePitchAnalytics, exportPitchHistoryCsv, formatSignedSeconds } from './analytics';
 
 const READING_SPEED_WPM = 130;
 
@@ -51,7 +52,9 @@ export class EditorView {
 
   // DOM Elements
   private presentBtn!: HTMLButtonElement;
+  private previewBtn!: HTMLButtonElement;
   private wordCountEl!: HTMLSpanElement;
+  private charCountEl!: HTMLSpanElement;
   private readTimeEl!: HTMLSpanElement;
   private exportBtn!: HTMLButtonElement;
   private importBtn!: HTMLButtonElement;
@@ -60,9 +63,17 @@ export class EditorView {
   private titleInput!: HTMLInputElement;
   private durationInput!: HTMLInputElement;
   private fontSizeInput!: HTMLInputElement;
+  private lineHeightInput!: HTMLInputElement;
+  private themeSelect!: HTMLSelectElement;
+  private fontFamilySelect!: HTMLSelectElement;
+  private textColorThemeSelect!: HTMLSelectElement;
+  private focusLinePositionInput!: HTMLInputElement;
   private textInput!: HTMLTextAreaElement;
   private pitchHistoryList!: HTMLDivElement;
+  private analyticsEl!: HTMLDivElement;
+  private undoBanner!: HTMLDivElement;
   private clearPitchHistoryBtn!: HTMLButtonElement;
+  private exportHistoryBtn!: HTMLButtonElement;
   private pendingText: string | null = null;
   private textUpdateTimeoutId: number | null = null;
 
@@ -82,10 +93,12 @@ export class EditorView {
       this.syncFormWithProject();
       this.updateStats();
       this.updatePitchHistoryUI();
+      this.updateUndoBanner();
     });
     this.syncFormWithProject();
     this.updateStats();
     this.updatePitchHistoryUI();
+    this.updateUndoBanner();
   }
 
   public unmount() {
@@ -172,6 +185,39 @@ export class EditorView {
                 </div>
 
                 <div class="field">
+                  <label class="field-label" for="project-lineheight">${t('editor.settings.lineHeight')}</label>
+                  <input type="number" id="project-lineheight" value="${this.currentProject.lineHeight}" min="1.1" max="2.4" step="0.1" />
+                </div>
+
+                <div class="field">
+                  <label class="field-label" for="project-fontfamily">${t('editor.settings.fontFamily')}</label>
+                  <select id="project-fontfamily">
+                    <option value="system" ${this.currentProject.fontFamily === 'system' ? 'selected' : ''}>${t('editor.font.system')}</option>
+                    <option value="serif" ${this.currentProject.fontFamily === 'serif' ? 'selected' : ''}>${t('editor.font.serif')}</option>
+                    <option value="mono" ${this.currentProject.fontFamily === 'mono' ? 'selected' : ''}>${t('editor.font.mono')}</option>
+                    <option value="dyslexic" ${this.currentProject.fontFamily === 'dyslexic' ? 'selected' : ''}>${t('editor.font.dyslexic')}</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label class="field-label" for="project-theme">${t('editor.settings.theme')}</label>
+                  <select id="project-theme">
+                    <option value="light" ${this.currentProject.theme === 'light' ? 'selected' : ''}>${t('editor.settings.themeLight')}</option>
+                    <option value="dark" ${this.currentProject.theme === 'dark' ? 'selected' : ''}>${t('editor.settings.themeDark')}</option>
+                    <option value="highContrast" ${this.currentProject.theme === 'highContrast' ? 'selected' : ''}>${t('editor.settings.themeHighContrast')}</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label class="field-label" for="project-textcolor">${t('editor.settings.textColorTheme')}</label>
+                  <select id="project-textcolor">
+                    <option value="dark" ${this.currentProject.textColorTheme === 'dark' ? 'selected' : ''}>${t('editor.textColor.dark')}</option>
+                    <option value="light" ${this.currentProject.textColorTheme === 'light' ? 'selected' : ''}>${t('editor.textColor.light')}</option>
+                    <option value="highContrast" ${this.currentProject.textColorTheme === 'highContrast' ? 'selected' : ''}>${t('editor.textColor.highContrast')}</option>
+                  </select>
+                </div>
+
+                <div class="field">
                   <label class="field-label">${t('editor.settings.mirrorMode')}</label>
                   <div class="segmented-control">
                     <label>
@@ -200,6 +246,11 @@ export class EditorView {
                 </div>
 
                 <div class="field">
+                  <label class="field-label" for="project-focus-position">${t('editor.settings.focusLinePosition')}</label>
+                  <input type="range" id="project-focus-position" value="${this.currentProject.focusLinePosition}" min="20" max="80" step="1" />
+                </div>
+
+                <div class="field">
                   <label class="field-label">${t('editor.settings.countdown')}</label>
                   <div class="segmented-control">
                     <label>
@@ -214,20 +265,30 @@ export class EditorView {
                 </div>
 
                 <div class="present-action">
-                  <button id="btn-present" class="button button--primary button--full">
+                  <button id="btn-preview" class="button button--secondary button--full" type="button">
+                    ${t('editor.actions.preview')}
+                  </button>
+                  <button id="btn-present" class="button button--primary button--full" type="button">
                     ${t('editor.actions.present')}
                   </button>
                 </div>
 	                <button id="btn-reset-project" class="button button--secondary" type="button">
 	                  ${t('editor.actions.reset')}
 	                </button>
+                  <div id="undo-banner" class="undo-banner" aria-live="polite"></div>
 	                <div class="pitch-history" aria-live="polite">
 	                  <div class="pitch-history__header">
 	                    <span class="field-label">${t('editor.history.title')}</span>
-	                    <button id="btn-clear-pitch-history" class="button button--secondary button--compact" type="button">
-	                      ${t('editor.history.clear')}
-	                    </button>
+                      <div class="panel-actions">
+  	                    <button id="btn-export-pitch-history" class="button button--secondary button--compact" type="button">
+  	                      ${t('editor.history.exportCsv')}
+  	                    </button>
+  	                    <button id="btn-clear-pitch-history" class="button button--secondary button--compact" type="button">
+  	                      ${t('editor.history.clear')}
+  	                    </button>
+                      </div>
 	                  </div>
+                    <div id="analytics-panel" class="analytics-panel"></div>
 	                  <div id="pitch-history-list" class="pitch-history__list"></div>
 	                </div>
 	              </div>
@@ -251,6 +312,9 @@ export class EditorView {
                     <span id="word-count">0</span> ${t('editor.stats.words')}
                   </div>
                   <div class="stats">
+                    <span id="char-count">0</span> ${t('editor.stats.characters')}
+                  </div>
+                  <div class="stats">
                     ${t('editor.stats.readTime')} <span id="read-time">0:00</span>
                   </div>
                 </div>
@@ -260,7 +324,9 @@ export class EditorView {
     `;
 
     this.presentBtn = this.container.querySelector('#btn-present') as HTMLButtonElement;
+    this.previewBtn = this.container.querySelector('#btn-preview') as HTMLButtonElement;
     this.wordCountEl = this.container.querySelector('#word-count') as HTMLSpanElement;
+    this.charCountEl = this.container.querySelector('#char-count') as HTMLSpanElement;
     this.readTimeEl = this.container.querySelector('#read-time') as HTMLSpanElement;
     
     this.exportBtn = this.container.querySelector('#btn-export') as HTMLButtonElement;
@@ -270,9 +336,17 @@ export class EditorView {
     this.titleInput = this.container.querySelector('#project-title') as HTMLInputElement;
     this.durationInput = this.container.querySelector('#project-duration') as HTMLInputElement;
     this.fontSizeInput = this.container.querySelector('#project-fontsize') as HTMLInputElement;
+    this.lineHeightInput = this.container.querySelector('#project-lineheight') as HTMLInputElement;
+    this.themeSelect = this.container.querySelector('#project-theme') as HTMLSelectElement;
+    this.fontFamilySelect = this.container.querySelector('#project-fontfamily') as HTMLSelectElement;
+    this.textColorThemeSelect = this.container.querySelector('#project-textcolor') as HTMLSelectElement;
+    this.focusLinePositionInput = this.container.querySelector('#project-focus-position') as HTMLInputElement;
     this.textInput = this.container.querySelector('#project-text') as HTMLTextAreaElement;
     this.pitchHistoryList = this.container.querySelector('#pitch-history-list') as HTMLDivElement;
+    this.analyticsEl = this.container.querySelector('#analytics-panel') as HTMLDivElement;
+    this.undoBanner = this.container.querySelector('#undo-banner') as HTMLDivElement;
     this.clearPitchHistoryBtn = this.container.querySelector('#btn-clear-pitch-history') as HTMLButtonElement;
+    this.exportHistoryBtn = this.container.querySelector('#btn-export-pitch-history') as HTMLButtonElement;
   }
 
   private syncFormWithProject() {
@@ -287,6 +361,27 @@ export class EditorView {
     }
     if (activeElement !== this.fontSizeInput || this.fontSizeInput.value !== String(this.currentProject.fontSize)) {
       this.fontSizeInput.value = String(this.currentProject.fontSize);
+    }
+    if (activeElement !== this.lineHeightInput || this.lineHeightInput.value !== String(this.currentProject.lineHeight)) {
+      this.lineHeightInput.value = String(this.currentProject.lineHeight);
+    }
+    if (activeElement !== this.fontFamilySelect || this.fontFamilySelect.value !== this.currentProject.fontFamily) {
+      this.fontFamilySelect.value = this.currentProject.fontFamily;
+    }
+    if (activeElement !== this.themeSelect || this.themeSelect.value !== this.currentProject.theme) {
+      this.themeSelect.value = this.currentProject.theme;
+    }
+    if (
+      activeElement !== this.textColorThemeSelect ||
+      this.textColorThemeSelect.value !== this.currentProject.textColorTheme
+    ) {
+      this.textColorThemeSelect.value = this.currentProject.textColorTheme;
+    }
+    if (
+      activeElement !== this.focusLinePositionInput ||
+      this.focusLinePositionInput.value !== String(this.currentProject.focusLinePosition)
+    ) {
+      this.focusLinePositionInput.value = String(this.currentProject.focusLinePosition);
     }
     if (activeElement !== this.textInput || this.textInput.value !== this.currentProject.text) {
       this.textInput.value = this.currentProject.text;
@@ -319,6 +414,7 @@ export class EditorView {
     const text = this.currentProject.text.trim();
     const words = text ? text.split(/\s+/).length : 0;
     this.wordCountEl.textContent = words.toString();
+    this.charCountEl.textContent = this.currentProject.text.length.toString();
 
     const readTimeMinutes = words / READING_SPEED_WPM;
     const minutes = Math.floor(readTimeMinutes);
@@ -330,8 +426,10 @@ export class EditorView {
     if (!this.pitchHistoryList) return;
 
     this.clearPitchHistoryBtn.disabled = this.currentPitchHistory.length === 0;
+    this.exportHistoryBtn.disabled = this.currentPitchHistory.length === 0;
     if (this.currentPitchHistory.length === 0) {
       this.pitchHistoryList.innerHTML = `<p class="pitch-history__empty">${t('editor.history.empty')}</p>`;
+      this.updateAnalyticsUI();
       return;
     }
 
@@ -356,6 +454,55 @@ export class EditorView {
         `;
       })
       .join('');
+    this.updateAnalyticsUI();
+  }
+
+  private updateAnalyticsUI() {
+    if (!this.analyticsEl) return;
+    const analytics = calculatePitchAnalytics(this.currentPitchHistory);
+    const formatMetric = (value: number | null, suffix: string) =>
+      value === null ? '-' : `${Math.round(value)}${suffix}`;
+
+    this.analyticsEl.innerHTML = `
+      <div>
+        <span>${t('editor.analytics.completed')}</span>
+        <strong>${analytics.completedRuns}</strong>
+      </div>
+      <div>
+        <span>${t('editor.analytics.averageWpm')}</span>
+        <strong>${formatMetric(analytics.averageWordsPerMinute, ' WPM')}</strong>
+      </div>
+      <div>
+        <span>${t('editor.analytics.fastestSlowest')}</span>
+        <strong>${formatMetric(analytics.fastestWordsPerMinute, '')} / ${formatMetric(analytics.slowestWordsPerMinute, '')}</strong>
+      </div>
+      <div>
+        <span>${t('editor.analytics.averageDeviation')}</span>
+        <strong>${formatSignedSeconds(analytics.averageDeviationSeconds)}</strong>
+      </div>
+      <div>
+        <span>${t('editor.analytics.trend')}</span>
+        <strong>${formatSignedSeconds(analytics.recentDeviationTrendSeconds)}</strong>
+      </div>
+    `;
+  }
+
+  private updateUndoBanner() {
+    if (!this.undoBanner) return;
+    const action = store.getState().lastUndoAction;
+    if (!action) {
+      this.undoBanner.innerHTML = '';
+      this.undoBanner.hidden = true;
+      return;
+    }
+
+    this.undoBanner.hidden = false;
+    this.undoBanner.innerHTML = `
+      <span>${action.type === 'projectReset' ? t('editor.undo.resetReady') : t('editor.undo.historyReady')}</span>
+      <button id="btn-undo-last-action" class="button button--secondary button--compact" type="button">
+        ${t('editor.undo.action')}
+      </button>
+    `;
   }
 
   private handleInput = (e: Event) => {
@@ -371,6 +518,18 @@ export class EditorView {
     } else if (target.id === 'project-fontsize') {
       const size = parseInt((target as HTMLInputElement).value, 10) || 48;
       store.updateProject({ fontSize: size });
+    } else if (target.id === 'project-lineheight') {
+      const lineHeight = parseFloat((target as HTMLInputElement).value) || 1.5;
+      store.updateProject({ lineHeight });
+    } else if (target.id === 'project-fontfamily') {
+      store.updateProject({ fontFamily: (target as HTMLSelectElement).value as PrompterProject['fontFamily'] });
+    } else if (target.id === 'project-theme') {
+      store.updateProject({ theme: (target as HTMLSelectElement).value as PrompterProject['theme'] });
+    } else if (target.id === 'project-textcolor') {
+      store.updateProject({ textColorTheme: (target as HTMLSelectElement).value as PrompterProject['textColorTheme'] });
+    } else if (target.id === 'project-focus-position') {
+      const focusLinePosition = parseFloat((target as HTMLInputElement).value) || 50;
+      store.updateProject({ focusLine: true, focusLinePosition });
     } else if ((target as HTMLInputElement).name === 'mirror') {
       store.updateProject({ mirrorMode: (target as HTMLInputElement).value === 'true' });
     } else if ((target as HTMLInputElement).name === 'focusLine') {
@@ -383,6 +542,11 @@ export class EditorView {
   private handlePresent = () => {
     this.flushPendingTextUpdate();
     store.setViewMode('presentation');
+  };
+
+  private handlePreview = () => {
+    this.flushPendingTextUpdate();
+    store.setViewMode('preview');
   };
 
   private handleClick = (e: MouseEvent) => {
@@ -400,6 +564,16 @@ export class EditorView {
       if (window.confirm(t('editor.history.clearConfirm'))) {
         store.clearPitchHistory();
       }
+      return;
+    }
+
+    if (target.closest('#btn-undo-last-action')) {
+      store.undoLastAction();
+      return;
+    }
+
+    if (target.closest('#btn-export-pitch-history')) {
+      this.handlePitchHistoryExport();
     }
   };
 
@@ -432,6 +606,19 @@ export class EditorView {
     }
     this.fileInput.click();
   };
+
+  private handlePitchHistoryExport() {
+    const csv = exportPitchHistoryCsv(store.getState().pitchHistory);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${sanitizeFilename(store.getState().project.title)}-pitch-history.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
   private handleImport = (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -481,13 +668,15 @@ export class EditorView {
   private handleResetProject = () => {
     const shouldReset = window.confirm(t('editor.prompt.resetLocal'));
     if (!shouldReset) return;
-    this.clearPendingTextUpdate();
+    this.flushPendingTextUpdate();
     store.resetProject();
   };
 
   private attachEventListeners() {
     this.container.addEventListener('input', this.handleInput);
+    this.container.addEventListener('change', this.handleInput);
     this.container.addEventListener('click', this.handleClick);
+    this.previewBtn.addEventListener('click', this.handlePreview);
     this.presentBtn.addEventListener('click', this.handlePresent);
     this.exportBtn.addEventListener('click', this.handleExport);
     this.importBtn.addEventListener('click', this.triggerImport);
@@ -497,8 +686,10 @@ export class EditorView {
 
   private removeEventListeners() {
     this.container.removeEventListener('input', this.handleInput);
+    this.container.removeEventListener('change', this.handleInput);
     this.container.removeEventListener('click', this.handleClick);
     if (this.presentBtn) {
+      this.previewBtn.removeEventListener('click', this.handlePreview);
       this.presentBtn.removeEventListener('click', this.handlePresent);
       this.exportBtn.removeEventListener('click', this.handleExport);
       this.importBtn.removeEventListener('click', this.triggerImport);

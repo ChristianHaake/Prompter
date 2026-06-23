@@ -87,8 +87,9 @@ löschen.
 
 Der Pitch-Verlauf wird getrennt unter dem `localStorage`-Schlüssel
 `prompter_pitch_history_v1` gespeichert. Er enthält Zeitpunkte, Zielzeiten,
-tatsächliche Laufzeiten sowie den Status "abgeschlossen" oder "abgebrochen".
-Diese Daten bleiben im Browser und können im Editor gelöscht werden.
+tatsächliche Laufzeiten, Wortzahlen sowie den Status "abgeschlossen" oder
+"abgebrochen". Diese Daten bleiben im Browser, können im Editor gelöscht und als
+lokale CSV-Datei exportiert werden.
 
 Exportierte `.prompter`-Dateien werden lokal durch den Browser erzeugt und liegen
 anschließend außerhalb der App im Dateisystem der Nutzer.

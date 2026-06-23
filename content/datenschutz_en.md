@@ -65,8 +65,9 @@ browser.
 
 Pitch history is stored separately under the `localStorage` key
 `prompter_pitch_history_v1`. It contains timestamps, target durations, actual
-durations, and whether a run was completed or cancelled. This data stays in the
-browser and can be cleared in the editor.
+durations, word counts, and whether a run was completed or cancelled. This data
+stays in the browser, can be cleared in the editor, and can be exported as a
+local CSV file.
 
 Users can delete the current draft with "Reset local data" in the app. Pitch
 history has its own clear action. All local site data can also be removed
