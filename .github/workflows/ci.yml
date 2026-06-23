@@ -22,17 +22,11 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Run ESLint
-      run: npm run lint -- --max-warnings=0
-      
-    - name: Build production bundle
-      run: npm run build
-      
     - name: Install Playwright browsers
       run: npx playwright install --with-deps chromium
-      
-    - name: Run Smoke tests
-      run: npx playwright test
+
+    - name: Run verification gate
+      run: npm run verify
       
     - name: Upload Playwright report
       if: always()

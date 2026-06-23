@@ -44,6 +44,15 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   await expect(page.locator('.footer-nav')).toContainText('Über das Projekt');
   await expect(page.locator('.app-footer')).toHaveCSS('position', 'fixed');
   await expect(page.locator('.app-footer')).toHaveCSS('bottom', '0px');
+  await expect
+    .poll(async () => page.evaluate(() => {
+      const main = document.querySelector('#app');
+      const footer = document.querySelector('.app-footer');
+      if (!main || !footer) return false;
+      const mainPaddingBottom = parseFloat(getComputedStyle(main).paddingBottom);
+      return mainPaddingBottom >= footer.getBoundingClientRect().height;
+    }))
+    .toBe(true);
   const footerLinks = page.locator('.footer-nav a');
   await expect(footerLinks.nth(0)).toHaveText('Hilfe');
   await expect(footerLinks.nth(1)).toHaveText('Über das Projekt');
@@ -99,7 +108,12 @@ test('PWA manifest and service worker are available in production preview', asyn
 
   const swResponse = await page.goto('/sw.js');
   expect(swResponse?.ok()).toBe(true);
-  expect(await page.locator('body').textContent()).toContain('precacheAndRoute');
+  const serviceWorkerText = await page.locator('body').textContent() ?? '';
+  expect(serviceWorkerText).toContain('precacheAndRoute');
+  expect(serviceWorkerText).toContain('logo.png');
+  expect(serviceWorkerText).not.toContain('icons.svg');
+  expect(serviceWorkerText.match(/icons\/icon-192\.png/g)).toHaveLength(1);
+  expect(serviceWorkerText.match(/manifest\.webmanifest/g)).toHaveLength(1);
 });
 
 test('service worker keeps the app shell navigable offline', async ({ page, context }) => {
@@ -379,7 +393,7 @@ test('export and sanitized presentation work under production CSP', async ({ pag
   await page.locator('#project-lineheight').fill('1.8');
   await page.locator('#project-fontfamily').selectOption('serif');
   await page.locator('#project-textcolor').selectOption('highContrast');
-  await page.locator('#project-text').fill('# Heading\n\n<img src=x onerror="window.__xss=1">[bad](javascript:alert(1))\n\n**safe**');
+  await page.locator('#project-text').fill('# Heading\n\n<img src=x onerror="window.__xss=1">[bad](javascript:alert(1))\n\n<span style="color:red">styled</span>\n\n**safe**');
 
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#btn-export').click();
@@ -408,6 +422,7 @@ test('export and sanitized presentation work under production CSP', async ({ pag
   const renderedHtml = await page.locator('#prompter-text').innerHTML();
   expect(renderedHtml).not.toContain('onerror');
   expect(renderedHtml).not.toContain('javascript:');
+  expect(renderedHtml).not.toContain('style=');
   expect(await page.locator('#prompter-text').evaluate(el => el.style.transform)).toContain('scaleX(-1)');
   expect(cspErrors).toEqual([]);
 });

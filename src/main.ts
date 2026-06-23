@@ -1,10 +1,9 @@
 import './style.css';
 import './app.css';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import { store } from './store';
 import { EditorView } from './EditorView';
 import { PresentationView } from './PresentationView';
+import { renderSafeMarkdown } from './sanitizeHtml';
 
 import hilfeMd from '../content/hilfe.md?raw';
 import ueberMd from '../content/ueber.md?raw';
@@ -118,7 +117,7 @@ function renderApp() {
       // Show shell header/footer
       if (shellHeader) shellHeader.style.display = 'flex';
       if (shellFooter) shellFooter.style.display = 'flex';
-      appDiv.style.padding = '2rem';
+      appDiv.style.removeProperty('padding');
       
       currentViewInstance = new EditorView(appDiv);
       currentViewInstance.mount();
@@ -137,14 +136,13 @@ function renderContentPage(page: string) {
   // Show shell header/footer
   if (shellHeader) shellHeader.style.display = 'flex';
   if (shellFooter) shellFooter.style.display = 'flex';
-  appDiv.style.padding = '2rem';
+  appDiv.style.removeProperty('padding');
 
   const lang = store.getState().language;
   const mdContentObj = contentMap[page];
   
   if (mdContentObj && mdContentObj[lang]) {
-    const rawHtml = marked.parse(mdContentObj[lang]) as string;
-    const htmlContent = DOMPurify.sanitize(rawHtml);
+    const htmlContent = renderSafeMarkdown(mdContentObj[lang]);
     appDiv.innerHTML = `
       <div class="legal-page">
         <a href="#" class="back-link">&larr; ${t('content.back')}</a>
