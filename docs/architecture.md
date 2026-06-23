@@ -22,7 +22,8 @@ prompter.
   text rendering.
 - PWA: `vite-plugin-pwa` with generated service worker and local app icons.
 - Tests: Vitest for store/import behavior and Playwright for browser smoke
-  workflows.
+  workflows, production-preview CSP checks, PWA manifest/service-worker checks,
+  and an automated app-shell offline fallback check.
 
 Vanilla TypeScript is sufficient because the application has one compact editor,
 one presentation view, and a small local store.
@@ -123,6 +124,8 @@ The app targets Cloudflare Pages.
 - SPA fallback: Vite PWA uses `navigateFallback: /index.html`
 - Headers: `public/_headers`
 - Cache policy: HTML revalidates; fingerprinted assets are immutable.
+- Manual device, install, and screen-reader release checks are listed in
+  `docs/manual-release-checks.md`.
 
 ## Decisions and Exceptions
 

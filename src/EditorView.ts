@@ -170,7 +170,7 @@ export class EditorView {
 
 	                <div class="field">
 	                  <label class="field-label">${t('editor.timer.presets')}</label>
-	                  <div class="timer-preset-grid" aria-label="${t('editor.timer.presets')}">
+	                  <div class="timer-preset-grid" role="group" aria-label="${t('editor.timer.presets')}">
 	                    ${TIMER_PRESETS_SECONDS.map(seconds => `
 	                      <button class="button button--secondary button--compact timer-preset-button" type="button" data-timer-preset="${seconds}">
 	                        ${seconds}s
@@ -219,7 +219,7 @@ export class EditorView {
 
                 <div class="field">
                   <label class="field-label">${t('editor.settings.mirrorMode')}</label>
-                  <div class="segmented-control">
+                  <div class="segmented-control" role="radiogroup" aria-label="${t('editor.settings.mirrorMode')}">
                     <label>
 	                      <input type="radio" name="mirror" value="false" ${!this.currentProject.mirrorMode ? 'checked' : ''} />
 	                      <span>${t('editor.options.normal')}</span>
@@ -233,7 +233,7 @@ export class EditorView {
 
                 <div class="field">
                   <label class="field-label">${t('editor.settings.focusLine')}</label>
-                  <div class="segmented-control">
+                  <div class="segmented-control" role="radiogroup" aria-label="${t('editor.settings.focusLine')}">
                     <label>
 	                      <input type="radio" name="focusLine" value="true" ${this.currentProject.focusLine ? 'checked' : ''} />
 	                      <span>${t('editor.options.on')}</span>
@@ -247,12 +247,12 @@ export class EditorView {
 
                 <div class="field">
                   <label class="field-label" for="project-focus-position">${t('editor.settings.focusLinePosition')}</label>
-                  <input type="range" id="project-focus-position" value="${this.currentProject.focusLinePosition}" min="20" max="80" step="1" />
+                  <input type="range" id="project-focus-position" value="${this.currentProject.focusLinePosition}" min="20" max="80" step="1" aria-valuetext="${this.currentProject.focusLinePosition}%" />
                 </div>
 
                 <div class="field">
                   <label class="field-label">${t('editor.settings.countdown')}</label>
-                  <div class="segmented-control">
+                  <div class="segmented-control" role="radiogroup" aria-label="${t('editor.settings.countdown')}">
                     <label>
 	                      <input type="radio" name="countdown" value="true" ${this.currentProject.countdownEnabled ? 'checked' : ''} />
 	                      <span>${t('editor.options.on')}</span>
@@ -393,6 +393,7 @@ export class EditorView {
     ) {
       this.focusLinePositionInput.value = String(this.currentProject.focusLinePosition);
     }
+    this.focusLinePositionInput.setAttribute('aria-valuetext', `${this.currentProject.focusLinePosition}%`);
     if (activeElement !== this.textInput || this.textInput.value !== this.currentProject.text) {
       this.textInput.value = this.currentProject.text;
     }

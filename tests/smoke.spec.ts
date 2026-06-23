@@ -26,6 +26,32 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   await expect(githubLink).toContainText('GitHub');
 });
 
+test('PWA manifest and service worker are available in production preview', async ({ page }) => {
+  const manifestResponse = await page.goto('/manifest.webmanifest');
+  expect(manifestResponse?.ok()).toBe(true);
+  const manifest = JSON.parse(await page.locator('body').textContent() ?? '{}');
+  expect(manifest.name).toBe('Prompter');
+  expect(manifest.display).toBe('standalone');
+  expect(manifest.icons.some((icon: { purpose?: string }) => icon.purpose === 'maskable')).toBe(true);
+
+  const swResponse = await page.goto('/sw.js');
+  expect(swResponse?.ok()).toBe(true);
+  expect(await page.locator('body').textContent()).toContain('precacheAndRoute');
+});
+
+test('service worker keeps the app shell navigable offline', async ({ page, context }) => {
+  await page.goto('/');
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+
+  await context.setOffline(true);
+  await page.goto('/');
+  await expect(page.locator('#btn-present')).toBeVisible();
+  await expect(page.locator('#project-text')).toBeVisible();
+  await context.setOffline(false);
+});
+
 test('can type text and use presentation controls', async ({ page }) => {
   await page.goto('/');
 

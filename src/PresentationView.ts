@@ -159,8 +159,8 @@ export class PresentationView {
         </div>
         ${isPreview ? this.renderPreviewSettings() : ''}
         
-        <div id="prompter-viewport" class="prompter-viewport">
-          <div id="prompter-text" class="prompter-text">
+        <div id="prompter-viewport" class="prompter-viewport" role="region" aria-label="${t('presentation.viewport')}">
+          <div id="prompter-text" class="prompter-text" aria-live="${isPreview ? 'polite' : 'off'}">
             ${cleanHtml}
           </div>
           ${this.project.focusLine ? '<div class="focus-line"></div>' : ''}
@@ -220,7 +220,7 @@ export class PresentationView {
         </label>
         <label>
           <span>${t('editor.settings.focusLinePosition')}</span>
-          <input id="preview-focus-position" type="range" min="20" max="80" step="1" value="${this.project.focusLinePosition}" />
+          <input id="preview-focus-position" type="range" min="20" max="80" step="1" value="${this.project.focusLinePosition}" aria-valuetext="${this.project.focusLinePosition}%" />
         </label>
         <label>
           <span>${t('editor.settings.mirrorMode')}</span>

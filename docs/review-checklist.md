@@ -24,6 +24,8 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
   through `npm run verify`.
 - [x] Production dependency audit is wired through `npm run verify`.
 - [x] Playwright smoke tests run against production preview headers.
+- [x] Playwright smoke tests cover PWA manifest, generated service worker, and
+  app-shell offline fallback.
 - [x] PWA manifest and local PNG icons are configured with correct pixel sizes.
 - [x] Production precache avoids oversized public image assets.
 - [ ] Mobile and tablet workflow manually tested on target devices.
@@ -42,10 +44,12 @@ stubbed tests, mobile overflow in core controls, dead header controls, missing
 reset behavior, weak project validation, placeholder product documentation,
 wrong word-count parsing, stale E2E selectors, and oversized PWA image assets.
 
-Current production build precaches 16 entries at about 681 KB.
+Manual checks are specified in `docs/manual-release-checks.md`.
+
+Current production build precaches 16 entries at about 725 KB.
 
 This pass adds preview mode, display customization, undo safeguards, analytics,
 CSV history export, markdown presentation styling, and keyboard section jumps.
 
-The app still needs manual device, PWA install, offline, 200% zoom, high
-contrast, and screen-reader checks before a full release sign-off.
+The app still needs manual device, PWA install, installed-app offline, 200% zoom,
+high contrast, and screen-reader checks before a full release sign-off.

@@ -104,6 +104,7 @@ export type TranslationKey =
   | 'presentation.speedIncrease'
   | 'presentation.elapsed'
   | 'presentation.remaining'
+  | 'presentation.viewport'
   | 'presentation.sections'
   | 'presentation.previousSection'
   | 'presentation.nextSection'
@@ -218,6 +219,7 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'presentation.speedIncrease': 'Geschwindigkeit erhöhen',
     'presentation.elapsed': 'Verstrichene Zeit',
     'presentation.remaining': 'Verbleibende Zeit',
+    'presentation.viewport': 'Teleprompter-Text',
     'presentation.sections': 'Abschnitte',
     'presentation.previousSection': 'Vorheriger Abschnitt',
     'presentation.nextSection': 'Nächster Abschnitt',
@@ -331,6 +333,7 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'presentation.speedIncrease': 'Increase speed',
     'presentation.elapsed': 'Elapsed time',
     'presentation.remaining': 'Remaining time',
+    'presentation.viewport': 'Teleprompter text',
     'presentation.sections': 'Sections',
     'presentation.previousSection': 'Previous section',
     'presentation.nextSection': 'Next section',
