@@ -1,96 +1,148 @@
 # Prompter
 
-Prompter ist eine browserbasierte Teleprompter-App für Pitches, Unterricht,
-Workshops und kurze Präsentationen.
+Prompter ist eine lokale, browserbasierte Teleprompter-App für kurze
+Präsentationen, Pitches, Unterrichtsbeiträge und Workshop-Skripte.
 
-Die Anwendung läuft lokal im Browser. Es gibt kein Backend, keine Anmeldung und
-keine serverseitige Speicherung eingegebener Inhalte.
+Live: [https://prompter.haak3.de](https://prompter.haak3.de)
 
-Live application: [https://prompter.haak3.de](https://prompter.haak3.de)
+## Ziel
 
-## Zweck
+Prompter hilft dabei, Skripte zu schreiben, als Teleprompter zu prüfen und in
+einer kontrollierten Präsentationsansicht abzuspielen. Die App benötigt kein
+Login, kein Backend und keinen Upload der Skriptinhalte.
 
-Prompter hilft dabei, Skripte zu schreiben, als Teleprompter abzuspielen und als
-editierbare Projektdatei zu sichern. Zielgruppe sind Lehrkräfte, Lernende,
-Workshop-Teams und alle, die kurze Präsentationen kontrolliert vortragen wollen.
+Der Kernworkflow:
 
-Der kürzeste Workflow:
+1. Skript schreiben oder als `.txt` / `.md` importieren.
+2. Zieldauer, Schriftgröße, Zeilenabstand, Farben, Fokus-Linie und Mirror-Modus
+   einstellen.
+3. Vorschau öffnen, Darstellung prüfen und Einstellungen live anpassen.
+4. Präsentation starten und per Tastatur oder Buttons steuern.
+5. Durchläufe lokal auswerten, Pitch-Verlauf als CSV exportieren und Projekt als
+   `.prompter`-Datei sichern.
 
-1. Text in den Editor einfügen oder schreiben.
-2. Zieldauer per Timer-Vorlage oder freiem Wert, Schriftgröße, Zeilenabstand,
-   Farben und Prompter-Optionen einstellen.
-3. Vorschau öffnen oder Präsentation starten und mit Leertaste, Pfeiltasten,
-   Abschnittstasten und Reset steuern.
-4. Durchläufe im lokalen Pitch-Verlauf auswerten oder als CSV exportieren.
-5. Projekt als `.prompter`-Datei speichern, wenn ein dauerhaftes Backup nötig
-   ist.
+## Funktionen
 
-## Privacy and Storage
+- Markdown-Skripte mit Überschriften, Fett- und Kursivformatierung.
+- Vorschau-Modus ohne Countdown, Wake Lock, Fullscreen oder Pitch-History-Eintrag.
+- Präsentationsmodus mit automatischem Scrollen, Countdown, Fokus-Linie,
+  Mirror-Modus, Abschnittsnavigation und optionalem Wake Lock.
+- Projekt öffnen/speichern über validierte `.prompter`-JSON-Dateien.
+- Skript-Import für `.txt` und `.md`.
+- Lokaler Pitch-Verlauf mit Status, Zielzeit, Ist-Zeit, Wortzahl und CSV-Export.
+- Analytics für durchschnittliches Tempo, schnellste/langsamste Läufe und
+  Zielzeit-Abweichung.
+- Undo für destruktive Aktionen wie neues Projekt und Verlauf leeren.
+- Deutsch/Englisch UI, Help/About/Privacy/Imprint-Seiten und PWA-Unterstützung.
 
-User-created content stays in the browser. The active project is stored in
-`localStorage` under `prompter_project_v1` so the current draft survives reloads
-in the same browser.
+## Tastatursteuerung
 
-Presentation run history is stored separately under
-`prompter_pitch_history_v1`. It contains timestamps, target duration, actual
-duration, word count, and whether a run was completed or cancelled. It can be
-cleared from the editor and exported as a local CSV file.
+- `Space`: Start, Pause, Fortsetzen.
+- `Escape`: Vorschau oder Präsentation schließen.
+- `ArrowUp` / `ArrowDown`: Geschwindigkeit erhöhen oder verringern.
+- `ArrowLeft` / `ArrowRight`: vorheriger oder nächster Abschnitt.
+- `PageUp` / `PageDown`: vorheriger oder nächster Abschnitt.
+- `R`: Präsentation zurücksetzen.
 
-Project files are JSON files with the `.prompter` extension and schema version
-`1.0`. Imports are validated before replacing the current project. Plain `.txt`
-and `.md` files can also be imported as script text. Unsupported future versions
-and invalid project files are rejected.
+## Datenschutz und Speicherung
 
-Autosave is only a recovery mechanism. For durable backups, save a project
-file. The current draft can be cleared from the app with "Neu"; pitch history
-has its own clear action. Both destructive actions provide an in-memory undo
-until the next edit or tab close. All local site data can also be removed
-through the browser's site-data settings.
+Skript- und Projektdaten bleiben im Browser. Es gibt keine App-Accounts, keine
+App-Datenbank und keinen Upload der eingegebenen Inhalte an den Betreiber.
 
-The static site is served through Cloudflare Pages. Cloudflare processes
-technical connection data such as IP address, timestamp, requested files, and
-browser metadata. The production site also uses Cloudflare Web Analytics as
-documented in the privacy page.
+Lokale Speicherorte:
 
-## Development
+- `prompter_project_v1`: aktuelles Projekt im `localStorage`.
+- `prompter_pitch_history_v1`: lokale Pitch-History im `localStorage`.
+- `prompter_language`: gewählte Sprache.
 
-Requirements:
+Projektdateien sind lokale JSON-Dateien mit der Endung `.prompter` und
+Schema-Version `1.0`. Importierte Projekte werden vor dem Ersetzen des aktuellen
+Entwurfs validiert. Fehlerhafte, zu große oder zukünftige Projektdateien werden
+abgelehnt, ohne den aktuellen Entwurf zu ändern.
+
+Die Website wird über Cloudflare Pages ausgeliefert. Cloudflare verarbeitet
+technische Verbindungsdaten. Cloudflare Web Analytics ist in der
+Datenschutzerklärung dokumentiert; Skriptinhalte werden dabei nicht als
+App-Daten übertragen.
+
+## Sicherheit
+
+- Markdown wird mit `marked` gerendert und anschließend mit `DOMPurify`
+  bereinigt.
+- Projektimporte haben Größen-, Schema- und Feldvalidierung.
+- Exportdateinamen werden bereinigt.
+- Produktions-Header liegen in `public/_headers` und werden in Playwright gegen
+  eine Produktions-Preview geprüft.
+- Produktionsabhängigkeiten werden mit `npm audit --omit=dev` geprüft.
+
+## Entwicklung
+
+Voraussetzungen:
 
 - Node.js `>=20.0.0`
-- npm compatible with the checked-in `package-lock.json`
+- npm kompatibel mit `package-lock.json`
 
 ```bash
 npm ci
 npm run dev
 ```
 
-## Verification
+Nützliche Befehle:
 
 ```bash
+npm run clean
 npm run lint
 npm run typecheck
 npm run test
 npm run audit
-npm run test:e2e
 npm run build
+npm run test:e2e
 npm run verify
 ```
 
-`npm run verify` runs lint, typecheck, unit tests, production build, and
-Playwright smoke tests against production preview headers. It also runs a
-production dependency audit.
+`npm run verify` ist das Release-Gate. Es führt Linting, Typecheck, Unit-Tests,
+Produktions-Audit, Build und Playwright-Tests gegen eine Produktions-Preview aus.
 
-## Architecture
+## Projektstruktur
 
-See [docs/architecture.md](docs/architecture.md).
+- `src/EditorView.ts`: Editor, Einstellungen, Import/Export, Verlauf, Analytics.
+- `src/PresentationView.ts`: Vorschau und Präsentationsruntime.
+- `src/store.ts`: Projektzustand, Validierung, Persistenz, Undo, Pitch-History.
+- `src/analytics.ts`: Analytics und CSV-Export.
+- `content/`: gebündelte Markdown-Seiten.
+- `public/_headers`: Produktions-Header für Cloudflare Pages.
+- `tests/`: Vitest-Unit-Tests und Playwright-Smoke-Tests.
+- `docs/`: Architektur, Review-Checklist und manuelle Release-Checks.
 
-## haak3 Standard
+Weitere Details stehen in [docs/architecture.md](docs/architecture.md).
 
-This app follows the
-[haak3 Web App Standard](https://github.com/ChristianHaake/haak3-webapp-standard).
-Conformance and known release gaps are documented in
+## Release
+
+Vor einem 1.0-Release müssen mindestens diese Checks grün sein:
+
+```bash
+npm run verify
+```
+
+Zusätzlich bleiben manuelle Checks notwendig:
+
+- Mobile, Tablet und Desktop auf echten Zielbrowsern.
+- 200% Zoom und High-Contrast-Darstellung.
+- Screen-Reader-Basisprüfung.
+- PWA-Installierbarkeit und Offline-Verhalten.
+- Rechtstexte und Cloudflare/Web-Analytics-Aussagen durch den Betreiber prüfen.
+
+Die offenen manuellen Punkte stehen in
+[docs/manual-release-checks.md](docs/manual-release-checks.md) und
 [docs/standard-conformance.md](docs/standard-conformance.md).
 
-## License
+## Standard
 
-GNU General Public License v3.0 only. See [LICENSE](LICENSE).
+Prompter folgt dem
+[haak3 Web App Standard](https://github.com/ChristianHaake/haak3-webapp-standard).
+Abweichungen und offene Release-Gaps werden in
+[docs/standard-conformance.md](docs/standard-conformance.md) dokumentiert.
+
+## Lizenz
+
+GNU General Public License v3.0 only. Siehe [LICENSE](LICENSE).

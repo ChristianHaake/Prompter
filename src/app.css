@@ -1162,7 +1162,7 @@ main {
 
 @media (max-width: 640px) {
   :root {
-    --fixed-footer-space: 122px;
+    --fixed-footer-space: 172px;
   }
 
   .app-header {

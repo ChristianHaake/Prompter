@@ -27,7 +27,10 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 - [x] Playwright smoke tests cover PWA manifest, generated service worker, and
   app-shell offline fallback.
 - [x] PWA manifest and local PNG icons are configured with correct pixel sizes.
-- [x] Production precache avoids oversized public image assets.
+- [x] Production precache avoids oversized or unreferenced public image assets.
+- [x] Service worker, Workbox runtime, registration script, manifest, and
+  favicon revalidate instead of relying on long-lived edge cache.
+- [x] CI runs the same `npm run verify` gate used locally.
 - [ ] Mobile and tablet workflow manually tested on target devices.
 - [ ] Manual screen-reader check completed.
 - [x] Legal and privacy content populated from the operator's existing
@@ -46,7 +49,8 @@ wrong word-count parsing, stale E2E selectors, and oversized PWA image assets.
 
 Manual checks are specified in `docs/manual-release-checks.md`.
 
-Current production build precaches 16 entries at about 725 KB.
+Current production build precaches 10 referenced app-shell entries at about
+171 KB and avoids the old unused icon sprite.
 
 This pass adds preview mode, display customization, undo safeguards, analytics,
 CSV history export, markdown presentation styling, and keyboard section jumps.

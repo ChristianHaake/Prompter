@@ -123,7 +123,8 @@ The app targets Cloudflare Pages.
 - Output directory: `dist`
 - SPA fallback: Vite PWA uses `navigateFallback: /index.html`
 - Headers: `public/_headers`
-- Cache policy: HTML revalidates; fingerprinted assets are immutable.
+- Cache policy: HTML, service worker, registration script, manifest, and
+  favicon revalidate; fingerprinted assets are immutable.
 - Manual device, install, and screen-reader release checks are listed in
   `docs/manual-release-checks.md`.
 

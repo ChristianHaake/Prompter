@@ -1,8 +1,7 @@
 import { MAX_MANUAL_SPEED, MIN_MANUAL_SPEED, store } from './store';
 import type { PrompterProject } from './types';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import { t } from './i18n';
+import { renderSafeMarkdown } from './sanitizeHtml';
 
 type PresentationMode = 'preview' | 'presentation';
 
@@ -147,8 +146,7 @@ export class PresentationView {
   }
 
   private render() {
-    const rawHtml = marked.parse(this.project.text, { breaks: true, async: false }) as string;
-    const cleanHtml = DOMPurify.sanitize(rawHtml);
+    const cleanHtml = renderSafeMarkdown(this.project.text, { breaks: true });
     const isPreview = this.mode === 'preview';
     
     this.container.innerHTML = `

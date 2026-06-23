@@ -18,7 +18,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script-defer',
-      includeAssets: ['favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'],
+      includeAssets: ['logo.png'],
       manifest: {
         name: 'Prompter',
         short_name: 'Prompter',
@@ -51,7 +51,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,woff2}'],
         navigateFallback: '/index.html',
         cleanupOutdatedCaches: true,
         clientsClaim: true,
