@@ -124,6 +124,25 @@ Vor einem 1.0-Release müssen mindestens diese Checks grün sein:
 npm run verify
 ```
 
+Zusätzlich bleiben manuelle Checks notwendig:
+
+- Mobile, Tablet und Desktop auf echten Zielbrowsern.
+- 200% Zoom und High-Contrast-Darstellung.
+- Screen-Reader-Basisprüfung.
+- PWA-Installierbarkeit und Offline-Verhalten.
+- Rechtstexte und Cloudflare/Web-Analytics-Aussagen durch den Betreiber prüfen.
+
+Die offenen manuellen Punkte stehen in
+[docs/manual-release-checks.md](docs/manual-release-checks.md) und
+[docs/standard-conformance.md](docs/standard-conformance.md).
+
+## Standard
+
+Prompter folgt dem
+[haak3 Web App Standard](https://github.com/ChristianHaake/haak3-webapp-standard).
+Abweichungen und offene Release-Gaps werden in
+[docs/standard-conformance.md](docs/standard-conformance.md) dokumentiert.
+
 ## Lizenz
 
 GNU General Public License v3.0 only. Siehe [LICENSE](LICENSE).
