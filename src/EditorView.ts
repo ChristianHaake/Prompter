@@ -163,58 +163,61 @@ export class EditorView {
                   <input type="text" id="project-title" value="${escapeHtml(this.currentProject.title)}" placeholder="${t('editor.placeholder.title')}" />
                 </div>
 
-                <div class="field">
+                <div class="field duration-control">
                   <label class="field-label" for="project-duration">${t('editor.settings.duration')}</label>
-	                  <input type="number" id="project-duration" value="${this.currentProject.targetDurationSeconds / 60}" min="0.5" step="0.5" />
-	                </div>
-
-	                <div class="field">
-	                  <label class="field-label">${t('editor.timer.presets')}</label>
-	                  <div class="timer-preset-grid" role="group" aria-label="${t('editor.timer.presets')}">
-	                    ${TIMER_PRESETS_SECONDS.map(seconds => `
-	                      <button class="button button--secondary button--compact timer-preset-button" type="button" data-timer-preset="${seconds}">
-	                        ${seconds}s
-	                      </button>
-	                    `).join('')}
-	                  </div>
-	                </div>
-
-                <div class="field">
-                  <label class="field-label" for="project-fontsize">${t('editor.settings.fontSize')}</label>
-	                  <input type="number" id="project-fontsize" value="${this.currentProject.fontSize}" min="16" max="160" step="4" />
+                  <div class="duration-control__body">
+                    <div class="timer-preset-grid" role="group" aria-label="${t('editor.timer.presets')}">
+                      ${TIMER_PRESETS_SECONDS.map(seconds => `
+                        <button class="button button--secondary button--compact timer-preset-button" type="button" data-timer-preset="${seconds}">
+                          ${seconds}s
+                        </button>
+                      `).join('')}
+                    </div>
+                    <label class="duration-custom" for="project-duration">
+                      <span>${t('editor.timer.custom')}</span>
+                      <input type="number" id="project-duration" value="${this.currentProject.targetDurationSeconds / 60}" min="0.5" step="0.5" />
+                    </label>
+                  </div>
                 </div>
 
-                <div class="field">
-                  <label class="field-label" for="project-lineheight">${t('editor.settings.lineHeight')}</label>
-                  <input type="number" id="project-lineheight" value="${this.currentProject.lineHeight}" min="1.1" max="2.4" step="0.1" />
-                </div>
+                <div class="settings-grid">
+                  <div class="field field--compact">
+                    <label class="field-label" for="project-fontsize">${t('editor.settings.fontSize')}</label>
+                    <input type="number" id="project-fontsize" value="${this.currentProject.fontSize}" min="16" max="160" step="4" />
+                  </div>
 
-                <div class="field">
-                  <label class="field-label" for="project-fontfamily">${t('editor.settings.fontFamily')}</label>
-                  <select id="project-fontfamily">
-                    <option value="system" ${this.currentProject.fontFamily === 'system' ? 'selected' : ''}>${t('editor.font.system')}</option>
-                    <option value="serif" ${this.currentProject.fontFamily === 'serif' ? 'selected' : ''}>${t('editor.font.serif')}</option>
-                    <option value="mono" ${this.currentProject.fontFamily === 'mono' ? 'selected' : ''}>${t('editor.font.mono')}</option>
-                    <option value="dyslexic" ${this.currentProject.fontFamily === 'dyslexic' ? 'selected' : ''}>${t('editor.font.dyslexic')}</option>
-                  </select>
-                </div>
+                  <div class="field field--compact">
+                    <label class="field-label" for="project-lineheight">${t('editor.settings.lineHeight')}</label>
+                    <input type="number" id="project-lineheight" value="${this.currentProject.lineHeight}" min="1.1" max="2.4" step="0.1" />
+                  </div>
 
-                <div class="field">
-                  <label class="field-label" for="project-theme">${t('editor.settings.theme')}</label>
-                  <select id="project-theme">
-                    <option value="light" ${this.currentProject.theme === 'light' ? 'selected' : ''}>${t('editor.settings.themeLight')}</option>
-                    <option value="dark" ${this.currentProject.theme === 'dark' ? 'selected' : ''}>${t('editor.settings.themeDark')}</option>
-                    <option value="highContrast" ${this.currentProject.theme === 'highContrast' ? 'selected' : ''}>${t('editor.settings.themeHighContrast')}</option>
-                  </select>
-                </div>
+                  <div class="field field--compact">
+                    <label class="field-label" for="project-fontfamily">${t('editor.settings.fontFamily')}</label>
+                    <select id="project-fontfamily">
+                      <option value="system" ${this.currentProject.fontFamily === 'system' ? 'selected' : ''}>${t('editor.font.system')}</option>
+                      <option value="serif" ${this.currentProject.fontFamily === 'serif' ? 'selected' : ''}>${t('editor.font.serif')}</option>
+                      <option value="mono" ${this.currentProject.fontFamily === 'mono' ? 'selected' : ''}>${t('editor.font.mono')}</option>
+                      <option value="dyslexic" ${this.currentProject.fontFamily === 'dyslexic' ? 'selected' : ''}>${t('editor.font.dyslexic')}</option>
+                    </select>
+                  </div>
 
-                <div class="field">
-                  <label class="field-label" for="project-textcolor">${t('editor.settings.textColorTheme')}</label>
-                  <select id="project-textcolor">
-                    <option value="dark" ${this.currentProject.textColorTheme === 'dark' ? 'selected' : ''}>${t('editor.textColor.dark')}</option>
-                    <option value="light" ${this.currentProject.textColorTheme === 'light' ? 'selected' : ''}>${t('editor.textColor.light')}</option>
-                    <option value="highContrast" ${this.currentProject.textColorTheme === 'highContrast' ? 'selected' : ''}>${t('editor.textColor.highContrast')}</option>
-                  </select>
+                  <div class="field field--compact">
+                    <label class="field-label" for="project-theme">${t('editor.settings.theme')}</label>
+                    <select id="project-theme">
+                      <option value="light" ${this.currentProject.theme === 'light' ? 'selected' : ''}>${t('editor.settings.themeLight')}</option>
+                      <option value="dark" ${this.currentProject.theme === 'dark' ? 'selected' : ''}>${t('editor.settings.themeDark')}</option>
+                      <option value="highContrast" ${this.currentProject.theme === 'highContrast' ? 'selected' : ''}>${t('editor.settings.themeHighContrast')}</option>
+                    </select>
+                  </div>
+
+                  <div class="field field--compact field--wide">
+                    <label class="field-label" for="project-textcolor">${t('editor.settings.textColorTheme')}</label>
+                    <select id="project-textcolor">
+                      <option value="dark" ${this.currentProject.textColorTheme === 'dark' ? 'selected' : ''}>${t('editor.textColor.dark')}</option>
+                      <option value="light" ${this.currentProject.textColorTheme === 'light' ? 'selected' : ''}>${t('editor.textColor.light')}</option>
+                      <option value="highContrast" ${this.currentProject.textColorTheme === 'highContrast' ? 'selected' : ''}>${t('editor.textColor.highContrast')}</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div class="field">
@@ -264,17 +267,6 @@ export class EditorView {
                   </div>
                 </div>
 
-                <div class="present-action">
-                  <button id="btn-preview" class="button button--secondary button--full" type="button">
-                    ${t('editor.actions.preview')}
-                  </button>
-                  <button id="btn-present" class="button button--primary button--full" type="button">
-                    ${t('editor.actions.present')}
-                  </button>
-                </div>
-	                <button id="btn-reset-project" class="button button--secondary" type="button">
-	                  ${t('editor.actions.reset')}
-	                </button>
                   <details class="shortcuts-panel">
                     <summary>${t('editor.shortcuts.title')}</summary>
                     <dl>
@@ -285,7 +277,6 @@ export class EditorView {
                       <div><dt>R / Escape</dt><dd>${t('editor.shortcuts.resetExit')}</dd></div>
                     </dl>
                   </details>
-                  <div id="undo-banner" class="undo-banner" role="status" aria-live="polite"></div>
 	                <div class="pitch-history" aria-live="polite" aria-labelledby="pitch-history-title">
 	                  <div class="pitch-history__header">
 	                    <span id="pitch-history-title" class="field-label">${t('editor.history.title')}</span>
@@ -308,11 +299,6 @@ export class EditorView {
             <div class="preview-panel">
               <div class="preview-panel__header">
 	                <h2>${t('editor.text.title')}</h2>
-	                <div class="panel-actions">
-	                  <button id="btn-import" class="button button--secondary button--compact">${t('editor.actions.import')}</button>
-	                  <button id="btn-export" class="button button--secondary button--compact">${t('editor.actions.export')}</button>
-	                  <input type="file" id="file-import" accept=".prompter,.txt,.md,application/json,text/plain,text/markdown" hidden />
-	                </div>
 	              </div>
 	              <div class="preview-panel__content">
 	                <label class="visually-hidden" for="project-text">${t('editor.text.label')}</label>
@@ -327,6 +313,19 @@ export class EditorView {
                   <div class="stats">
                     ${t('editor.stats.readTime')} <span id="read-time">0:00</span>
                   </div>
+                </div>
+                <div class="editor-floating-actions" aria-label="${t('editor.text.title')}">
+                  <div class="editor-floating-actions__row">
+                    <button id="btn-preview" class="floating-pill" type="button">${t('editor.actions.preview')}</button>
+                    <button id="btn-present" class="floating-pill floating-pill--primary" type="button">${t('editor.actions.present')}</button>
+                    <button id="btn-reset-project" class="floating-pill floating-pill--danger" type="button">${t('editor.actions.reset')}</button>
+                  </div>
+                  <div class="editor-floating-actions__row">
+                    <button id="btn-import" class="floating-pill" type="button">${t('editor.actions.import')}</button>
+                    <button id="btn-export" class="floating-pill" type="button">${t('editor.actions.export')}</button>
+                    <div id="undo-banner" class="undo-banner undo-banner--floating" role="status" aria-live="polite"></div>
+                  </div>
+                  <input type="file" id="file-import" accept=".prompter,.txt,.md,application/json,text/plain,text/markdown" hidden />
                 </div>
               </div>
             </div>

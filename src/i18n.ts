@@ -4,7 +4,7 @@ export type TranslationKey =
   | 'app.title'
   | 'app.tagline'
   | 'app.privacyBadge'
-  | 'app.educationNotice'
+  | 'app.footerPrivacy'
   | 'nav.help'
   | 'nav.about'
   | 'nav.privacy'
@@ -46,6 +46,7 @@ export type TranslationKey =
   | 'editor.settings.mirrorMode'
   | 'editor.settings.countdown'
   | 'editor.timer.presets'
+  | 'editor.timer.custom'
   | 'editor.history.title'
   | 'editor.history.clear'
   | 'editor.history.clearConfirm'
@@ -118,10 +119,10 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
   de: {
     'app.title': 'Prompter',
     'app.tagline': 'Werkstatt für digitale Formate',
-    'app.privacyBadge': 'Inhalte bleiben lokal',
-    'app.educationNotice': 'Diese Simulation dient ausschließlich dem Bildungszweck.',
+    'app.privacyBadge': 'Lokale Verarbeitung im Browser',
+    'app.footerPrivacy': 'Alle Daten bleiben lokal im Browser. Keine Serverübertragung.',
     'nav.help': 'Hilfe',
-    'nav.about': 'Über',
+    'nav.about': 'Über das Projekt',
     'nav.privacy': 'Datenschutz',
     'nav.imprint': 'Impressum',
     'nav.github': 'GitHub',
@@ -161,6 +162,7 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.settings.mirrorMode': 'Für Spiegel umkehren (Mirror Mode)',
     'editor.settings.countdown': '3-Sekunden Countdown vor Start',
     'editor.timer.presets': 'Timer-Vorlagen',
+    'editor.timer.custom': 'Benutzerdefiniert',
     'editor.history.title': 'Pitch-Verlauf',
     'editor.history.clear': 'Leeren',
     'editor.history.clearConfirm': 'Pitch-Verlauf in diesem Browser löschen?',
@@ -232,10 +234,10 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
   en: {
     'app.title': 'Prompter',
     'app.tagline': 'Digital format workshop',
-    'app.privacyBadge': 'Data stays local',
-    'app.educationNotice': 'This simulation is for educational purposes only.',
+    'app.privacyBadge': 'Local processing in browser',
+    'app.footerPrivacy': 'All data stays local in the browser. No server transfer.',
     'nav.help': 'Help',
-    'nav.about': 'About',
+    'nav.about': 'About the project',
     'nav.privacy': 'Privacy',
     'nav.imprint': 'Imprint',
     'nav.github': 'GitHub',
@@ -275,6 +277,7 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.settings.mirrorMode': 'Mirror text (Teleprompter mode)',
     'editor.settings.countdown': '3-second countdown before start',
     'editor.timer.presets': 'Timer presets',
+    'editor.timer.custom': 'Custom',
     'editor.history.title': 'Pitch history',
     'editor.history.clear': 'Clear',
     'editor.history.clearConfirm': 'Delete pitch history in this browser?',

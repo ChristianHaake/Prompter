@@ -19,8 +19,14 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   await expect(page).toHaveTitle(/Prompter/);
   await expect(page.locator('.brand__logo')).toBeVisible();
   await expect(page.locator('.brand__logo')).toHaveAttribute('alt', 'Prompter Logo');
-  await expect(page.locator('.brand')).toContainText('Prompter');
-  await expect(page.locator('.privacy-badge')).toContainText('Inhalte bleiben lokal');
+  await expect(page.locator('.brand')).not.toContainText('Werkstatt');
+  const viewport = page.viewportSize();
+  await expect(page.locator('.brand__logo')).toHaveCSS(
+    'width',
+    viewport && viewport.width >= 640 ? '184px' : '142px',
+  );
+  await expect(page.locator('.privacy-badge')).toContainText('Lokale Verarbeitung im Browser');
+  await expect(page.locator('.education-notice')).toHaveCount(0);
   await expect(page.locator('#lang-current')).toHaveText('DE');
   await expect(page.locator('#lang-target')).toHaveText('EN');
 
@@ -33,6 +39,52 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   await expect(supportLink).toBeVisible();
   await expect(supportLink).toHaveAttribute('href', 'https://buymeacoffee.com/haak3');
   await expect(supportLink).toContainText('Buy me a coffee');
+
+  await expect(page.locator('.footer-local')).toContainText('Alle Daten bleiben lokal im Browser');
+  await expect(page.locator('.footer-nav')).toContainText('Über das Projekt');
+  const footerLinks = page.locator('.footer-nav a');
+  await expect(footerLinks.nth(0)).toHaveText('Hilfe');
+  await expect(footerLinks.nth(1)).toHaveText('Über das Projekt');
+  await expect(footerLinks.nth(2)).toHaveText('Impressum');
+  await expect(footerLinks.nth(3)).toHaveText('Datenschutz');
+});
+
+test('editor workflow actions are floating pills below the text editor', async ({ page }) => {
+  await page.goto('/');
+
+  const textBox = await page.locator('#project-text').boundingBox();
+  const previewBox = await page.locator('#btn-preview').boundingBox();
+  const presentBox = await page.locator('#btn-present').boundingBox();
+  const resetBox = await page.locator('#btn-reset-project').boundingBox();
+  const importBox = await page.locator('#btn-import').boundingBox();
+  const exportBox = await page.locator('#btn-export').boundingBox();
+  expect(textBox).toBeTruthy();
+  expect(previewBox).toBeTruthy();
+  expect(presentBox).toBeTruthy();
+  expect(resetBox).toBeTruthy();
+  expect(importBox).toBeTruthy();
+  expect(exportBox).toBeTruthy();
+  expect(previewBox!.y).toBeGreaterThan(textBox!.y + textBox!.height);
+  expect(importBox!.y).toBeGreaterThan(textBox!.y + textBox!.height);
+  const viewport = page.viewportSize();
+  if (viewport && viewport.width >= 640) {
+    expect(Math.abs(previewBox!.y - presentBox!.y)).toBeLessThan(4);
+    expect(Math.abs(presentBox!.y - resetBox!.y)).toBeLessThan(4);
+    expect(Math.abs(importBox!.y - exportBox!.y)).toBeLessThan(4);
+    expect(importBox!.y).toBeGreaterThan(previewBox!.y);
+  } else {
+    expect(presentBox!.y).toBeGreaterThan(previewBox!.y);
+    expect(resetBox!.y).toBeGreaterThan(presentBox!.y);
+    expect(exportBox!.y).toBeGreaterThan(importBox!.y);
+    await expect
+      .poll(async () => page.evaluate(() => document.body.scrollWidth <= window.innerWidth))
+      .toBe(true);
+  }
+
+  page.on('dialog', dialog => dialog.accept());
+  await page.locator('#project-text').fill('Undo Floating Pill');
+  await page.locator('#btn-reset-project').click();
+  await expect(page.locator('.editor-floating-actions #btn-undo-last-action')).toBeVisible();
 });
 
 test('PWA manifest and service worker are available in production preview', async ({ page }) => {
@@ -65,8 +117,6 @@ test('can type text and use presentation controls', async ({ page }) => {
   await page.goto('/');
 
   await disableCountdown(page);
-  await page.locator('[data-timer-preset="30"]').click();
-  await expect(page.locator('#project-duration')).toHaveValue('0.5');
   await page.locator('#project-duration').fill('0.5');
   await page.locator('#project-text').fill('Willkommen zum Teleprompter Test!\n\n'.repeat(30));
   await expect(page.locator('#word-count')).toHaveText('120');
@@ -442,4 +492,45 @@ test('large fonts and high contrast keep keyboard and layout paths usable', asyn
   await expect
     .poll(async () => page.evaluate(() => document.body.scrollWidth <= window.innerWidth))
     .toBe(true);
+});
+
+test('display settings use compact responsive layout', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+
+  const desktopColumns = await page.locator('.settings-grid').evaluate(element => {
+    return getComputedStyle(element).gridTemplateColumns.split(' ').length;
+  });
+  expect(desktopColumns).toBe(2);
+
+  const fontSizeBox = await page.locator('#project-fontsize').boundingBox();
+  const lineHeightBox = await page.locator('#project-lineheight').boundingBox();
+  expect(fontSizeBox).toBeTruthy();
+  expect(lineHeightBox).toBeTruthy();
+  expect(Math.abs(fontSizeBox!.y - lineHeightBox!.y)).toBeLessThan(4);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileColumns = await page.locator('.settings-grid').evaluate(element => {
+    return getComputedStyle(element).gridTemplateColumns.split(' ').length;
+  });
+  expect(mobileColumns).toBe(1);
+  await expect
+    .poll(async () => page.evaluate(() => document.body.scrollWidth <= window.innerWidth))
+    .toBe(true);
+});
+
+test('duration presets and custom duration share one compact control', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+
+  await expect(page.locator('.duration-control')).toContainText('Zieldauer');
+  await expect(page.locator('.duration-control')).toContainText('Benutzerdefiniert');
+  const presetBox = await page.locator('[data-timer-preset="60"]').boundingBox();
+  const durationBox = await page.locator('#project-duration').boundingBox();
+  expect(presetBox).toBeTruthy();
+  expect(durationBox).toBeTruthy();
+  expect(Math.abs(presetBox!.y - durationBox!.y)).toBeLessThan(16);
+
+  await page.locator('[data-timer-preset="90"]').click();
+  await expect(page.locator('#project-duration')).toHaveValue('1.5');
 });
