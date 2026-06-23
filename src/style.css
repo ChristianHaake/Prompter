@@ -20,6 +20,7 @@
   --radius-lg: 20px;
   --radius-md: 12px;
   --shadow-soft: 0 18px 45px rgb(15 23 42 / 8%);
+  --fixed-footer-space: 88px;
 }
 
 :root[data-theme="dark"] {
@@ -51,6 +52,7 @@
 
 html {
   min-width: 320px;
+  scroll-padding-bottom: calc(var(--fixed-footer-space) + 24px);
   background: var(--app-bg);
 }
 
