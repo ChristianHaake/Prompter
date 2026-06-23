@@ -93,6 +93,24 @@ a {
   color: inherit;
 }
 
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  transform: translateY(-160%);
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--accent);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

@@ -262,6 +262,11 @@ test('language switch updates visible and accessible shell text', async ({ page 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('#lang-switch-btn')).toHaveAttribute('aria-label', 'Switch language');
   await expect(page.locator('#btn-present')).toContainText('Present');
+  await page.reload();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('.skip-link')).toBeFocused();
+  await page.locator('.shortcuts-panel summary').click();
+  await expect(page.locator('.shortcuts-panel')).toContainText('Keyboard shortcuts');
 
   await page.goto('/#/datenschutz');
   await expect(page.locator('.markdown-body h1')).toHaveText('Privacy Policy');
@@ -373,6 +378,29 @@ test('mobile editor and presentation do not overflow horizontally', async ({ pag
   await page.locator('#project-text').fill('Mobiler Prompter Test\n\n'.repeat(40));
   await page.locator('#btn-present').click();
 
+  await expect(page.locator('#prompter-text')).toBeVisible();
+  await expect
+    .poll(async () => page.evaluate(() => document.body.scrollWidth <= window.innerWidth))
+    .toBe(true);
+});
+
+test('large fonts and high contrast keep keyboard and layout paths usable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  await disableCountdown(page);
+  await page.locator('#project-theme').selectOption('highContrast');
+  await page.locator('#project-textcolor').selectOption('highContrast');
+  await page.locator('#project-fontsize').fill('160');
+  await page.locator('#project-lineheight').fill('2.4');
+  await page.locator('#project-text').fill('# Abschnitt\n\nGroßer Text\n\n---\n\nWeiterer Abschnitt');
+  await expect
+    .poll(async () => page.evaluate(() => document.body.scrollWidth <= window.innerWidth))
+    .toBe(true);
+
+  await page.locator('#btn-present').click();
+  await expect(page.locator('.progress-track')).toHaveAttribute('role', 'progressbar');
+  await page.keyboard.press('ArrowRight');
   await expect(page.locator('#prompter-text')).toBeVisible();
   await expect
     .poll(async () => page.evaluate(() => document.body.scrollWidth <= window.innerWidth))

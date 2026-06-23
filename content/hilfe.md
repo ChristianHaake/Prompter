@@ -28,6 +28,16 @@ Der Editor unterstützt Markdown im Skript. Überschriften, **fette** und
 *kursive* Hervorhebungen werden in Vorschau und Präsentation gerendert.
 Horizontale Linien (`---`) können als Abschnittsmarken dienen.
 
+## Tastaturbedienung
+
+- `Tab`: Bedienelemente im Editor und in der Präsentation erreichen.
+- `Space`: Präsentation starten, pausieren oder fortsetzen.
+- `Pfeil hoch` / `Pfeil runter`: Geschwindigkeit ändern.
+- `Pfeil links` / `Pfeil rechts` oder `Bild auf` / `Bild ab`: zwischen
+  Abschnitten wechseln.
+- `R`: Präsentation zurücksetzen.
+- `Escape`: Vorschau oder Präsentation schließen.
+
 ## Projekte speichern und öffnen
 
 Der aktuelle Entwurf wird automatisch im Browser gespeichert. Diese Speicherung

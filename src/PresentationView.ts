@@ -170,15 +170,15 @@ export class PresentationView {
         </div>
 
         <div class="presentation-footer">
-           <span id="time-elapsed" class="presentation-stats">0:00</span>
-           <div class="progress-track">
+           <span class="presentation-stats"><span class="visually-hidden">${t('presentation.elapsed')}</span><span id="time-elapsed">0:00</span></span>
+           <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
              <div id="progress-bar" class="progress-fill"></div>
            </div>
-           <span id="time-remaining" class="presentation-stats">${this.formatTime(this.project.targetDurationSeconds)}</span>
+           <span class="presentation-stats"><span class="visually-hidden">${t('presentation.remaining')}</span><span id="time-remaining">${this.formatTime(this.project.targetDurationSeconds)}</span></span>
           
            <div class="presentation-controls">
               <button id="btn-slower" class="icon-button" aria-label="${t('presentation.speedDecrease')}">-</button>
-              <span class="speed-indicator">${this.project.manualSpeed.toFixed(1)}x</span>
+              <span class="speed-indicator" role="status" aria-live="polite">${this.project.manualSpeed.toFixed(1)}x</span>
               <button id="btn-faster" class="icon-button" aria-label="${t('presentation.speedIncrease')}">+</button>
            </div>
            <div class="section-controls" aria-label="${t('presentation.sections')}">
@@ -428,6 +428,7 @@ export class PresentationView {
         ? Math.min(100, (this.elapsedSeconds / Math.max(1, this.project.targetDurationSeconds)) * 100)
         : Math.min(100, (this.scrollPosition / this.totalScrollDistance) * 100);
     this.progressBar.style.width = `${progress}%`;
+    this.progressBar.parentElement?.setAttribute('aria-valuenow', String(Math.round(progress)));
     this.timeElapsedEl.textContent = this.formatTime(this.elapsedSeconds);
     const remaining = this.getRemainingSeconds();
     this.timeRemainingEl.textContent = this.formatTime(remaining);

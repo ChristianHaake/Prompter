@@ -35,6 +35,13 @@ export type TranslationKey =
   | 'editor.textColor.dark'
   | 'editor.textColor.light'
   | 'editor.textColor.highContrast'
+  | 'editor.shortcuts.title'
+  | 'editor.shortcuts.preview'
+  | 'editor.shortcuts.present'
+  | 'editor.shortcuts.playPause'
+  | 'editor.shortcuts.speed'
+  | 'editor.shortcuts.sections'
+  | 'editor.shortcuts.resetExit'
   | 'editor.settings.focusLine'
   | 'editor.settings.mirrorMode'
   | 'editor.settings.countdown'
@@ -95,6 +102,8 @@ export type TranslationKey =
   | 'presentation.noScrollNeeded'
   | 'presentation.speedDecrease'
   | 'presentation.speedIncrease'
+  | 'presentation.elapsed'
+  | 'presentation.remaining'
   | 'presentation.sections'
   | 'presentation.previousSection'
   | 'presentation.nextSection'
@@ -140,6 +149,13 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.textColor.dark': 'Hell auf Dunkel',
     'editor.textColor.light': 'Dunkel auf Hell',
     'editor.textColor.highContrast': 'Hoher Kontrast',
+    'editor.shortcuts.title': 'Tastaturkürzel',
+    'editor.shortcuts.preview': 'Vorschau schließen',
+    'editor.shortcuts.present': 'Präsentation starten',
+    'editor.shortcuts.playPause': 'Start/Pause/Fortsetzen',
+    'editor.shortcuts.speed': 'Geschwindigkeit ändern',
+    'editor.shortcuts.sections': 'Abschnitt wechseln',
+    'editor.shortcuts.resetExit': 'Zurücksetzen / Beenden',
     'editor.settings.focusLine': 'Fokus-Linie anzeigen',
     'editor.settings.mirrorMode': 'Für Spiegel umkehren (Mirror Mode)',
     'editor.settings.countdown': '3-Sekunden Countdown vor Start',
@@ -200,6 +216,8 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'presentation.noScrollNeeded': 'Kein Scroll nötig',
     'presentation.speedDecrease': 'Geschwindigkeit verringern',
     'presentation.speedIncrease': 'Geschwindigkeit erhöhen',
+    'presentation.elapsed': 'Verstrichene Zeit',
+    'presentation.remaining': 'Verbleibende Zeit',
     'presentation.sections': 'Abschnitte',
     'presentation.previousSection': 'Vorheriger Abschnitt',
     'presentation.nextSection': 'Nächster Abschnitt',
@@ -244,6 +262,13 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'editor.textColor.dark': 'Light on dark',
     'editor.textColor.light': 'Dark on light',
     'editor.textColor.highContrast': 'High contrast',
+    'editor.shortcuts.title': 'Keyboard shortcuts',
+    'editor.shortcuts.preview': 'Close preview',
+    'editor.shortcuts.present': 'Start presentation',
+    'editor.shortcuts.playPause': 'Start/pause/resume',
+    'editor.shortcuts.speed': 'Change speed',
+    'editor.shortcuts.sections': 'Change section',
+    'editor.shortcuts.resetExit': 'Reset / exit',
     'editor.settings.focusLine': 'Show focus line',
     'editor.settings.mirrorMode': 'Mirror text (Teleprompter mode)',
     'editor.settings.countdown': '3-second countdown before start',
@@ -304,6 +329,8 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'presentation.noScrollNeeded': 'No scrolling needed',
     'presentation.speedDecrease': 'Decrease speed',
     'presentation.speedIncrease': 'Increase speed',
+    'presentation.elapsed': 'Elapsed time',
+    'presentation.remaining': 'Remaining time',
     'presentation.sections': 'Sections',
     'presentation.previousSection': 'Previous section',
     'presentation.nextSection': 'Next section',

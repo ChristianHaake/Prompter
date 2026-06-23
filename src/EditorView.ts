@@ -275,10 +275,20 @@ export class EditorView {
 	                <button id="btn-reset-project" class="button button--secondary" type="button">
 	                  ${t('editor.actions.reset')}
 	                </button>
-                  <div id="undo-banner" class="undo-banner" aria-live="polite"></div>
-	                <div class="pitch-history" aria-live="polite">
+                  <details class="shortcuts-panel">
+                    <summary>${t('editor.shortcuts.title')}</summary>
+                    <dl>
+                      <div><dt>Escape</dt><dd>${t('editor.shortcuts.preview')}</dd></div>
+                      <div><dt>Space</dt><dd>${t('editor.shortcuts.playPause')}</dd></div>
+                      <div><dt>Arrow Up / Down</dt><dd>${t('editor.shortcuts.speed')}</dd></div>
+                      <div><dt>Arrow Left / Right</dt><dd>${t('editor.shortcuts.sections')}</dd></div>
+                      <div><dt>R / Escape</dt><dd>${t('editor.shortcuts.resetExit')}</dd></div>
+                    </dl>
+                  </details>
+                  <div id="undo-banner" class="undo-banner" role="status" aria-live="polite"></div>
+	                <div class="pitch-history" aria-live="polite" aria-labelledby="pitch-history-title">
 	                  <div class="pitch-history__header">
-	                    <span class="field-label">${t('editor.history.title')}</span>
+	                    <span id="pitch-history-title" class="field-label">${t('editor.history.title')}</span>
                       <div class="panel-actions">
   	                    <button id="btn-export-pitch-history" class="button button--secondary button--compact" type="button">
   	                      ${t('editor.history.exportCsv')}
@@ -288,7 +298,7 @@ export class EditorView {
   	                    </button>
                       </div>
 	                  </div>
-                    <div id="analytics-panel" class="analytics-panel"></div>
+                    <div id="analytics-panel" class="analytics-panel" aria-label="${t('editor.analytics.averageWpm')}"></div>
 	                  <div id="pitch-history-list" class="pitch-history__list"></div>
 	                </div>
 	              </div>

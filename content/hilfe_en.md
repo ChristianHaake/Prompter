@@ -20,6 +20,15 @@ Preview uses the same display as presentation mode, but it does not start a run 
 
 The editor supports Markdown in the script. Headings, **bold**, and *italic* text are rendered in preview and presentation. Horizontal rules (`---`) can be used as section markers.
 
+## Keyboard Use
+
+- `Tab`: reach controls in the editor and presentation.
+- `Space`: start, pause, or resume presentation.
+- `Arrow Up` / `Arrow Down`: change speed.
+- `Arrow Left` / `Arrow Right` or `Page Up` / `Page Down`: move between sections.
+- `R`: reset presentation.
+- `Escape`: close preview or presentation.
+
 ## Save and Open Projects
 
 The current draft is automatically saved in the browser. This storage is only a recovery aid for the same browser.
