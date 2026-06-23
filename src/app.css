@@ -1,6 +1,5 @@
 /* --- Application Shell --- */
 .app-shell {
-  --fixed-footer-space: 88px;
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
@@ -240,9 +239,12 @@ main {
 }
 
 .editor-floating-actions {
+  position: relative;
+  z-index: 25;
   display: grid;
   gap: 12px;
   padding: 0 22px 22px;
+  scroll-margin-bottom: calc(var(--fixed-footer-space) + 24px);
   background: var(--panel-bg);
 }
 
@@ -258,6 +260,7 @@ main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  scroll-margin-bottom: calc(var(--fixed-footer-space) + 24px);
   min-height: 44px;
   min-width: 168px;
   padding: 0 22px;
@@ -531,6 +534,7 @@ main {
 }
 
 .undo-banner--floating {
+  scroll-margin-bottom: calc(var(--fixed-footer-space) + 24px);
   min-height: 44px;
   padding: 0 10px 0 16px;
   border-radius: 16px;
@@ -1157,8 +1161,8 @@ main {
 }
 
 @media (max-width: 640px) {
-  .app-shell {
-    --fixed-footer-space: 172px;
+  :root {
+    --fixed-footer-space: 122px;
   }
 
   .app-header {
@@ -1274,15 +1278,25 @@ main {
   }
 
   .app-footer {
+    flex-direction: column;
+    justify-content: center;
     align-items: flex-start;
-    gap: 12px;
-    padding: 20px 16px;
+    gap: 10px;
+    padding: 14px 16px;
   }
 
   .footer-nav {
+    width: 100%;
+    flex-wrap: nowrap;
     justify-content: flex-start;
     gap: 14px;
     margin-left: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .footer-nav::-webkit-scrollbar {
+    display: none;
   }
 }
 
