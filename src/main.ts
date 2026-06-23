@@ -29,6 +29,8 @@ const contentMap: Record<string, Record<'de' | 'en', string>> = {
 };
 
 const langSwitchBtn = document.getElementById('lang-switch-btn');
+const langCurrentEl = document.getElementById('lang-current');
+const langTargetEl = document.getElementById('lang-target');
 if (langSwitchBtn) {
   langSwitchBtn.removeAttribute('onclick'); // Remove the alert
   langSwitchBtn.addEventListener('click', () => {
@@ -49,6 +51,13 @@ function updateShellTranslations() {
     const label = t('lang.switchLabel');
     langSwitchBtn.setAttribute('title', label);
     langSwitchBtn.setAttribute('aria-label', label);
+  }
+  const language = store.getState().language;
+  if (langCurrentEl) {
+    langCurrentEl.textContent = language.toUpperCase();
+  }
+  if (langTargetEl) {
+    langTargetEl.textContent = language === 'de' ? 'EN' : 'DE';
   }
   document.documentElement.lang = store.getState().language;
 }

@@ -96,7 +96,7 @@ describe('Store persistence and imports', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.project.targetDurationSeconds).toBe(3600);
-      expect(result.project.manualSpeed).toBe(4);
+      expect(result.project.manualSpeed).toBe(8);
       expect(result.project.fontSize).toBe(160);
       expect(result.project.lineHeight).toBe(2.4);
       expect(result.project.focusLinePosition).toBe(80);

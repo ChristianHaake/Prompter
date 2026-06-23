@@ -1,4 +1,4 @@
-import { store } from './store';
+import { MAX_MANUAL_SPEED, MIN_MANUAL_SPEED, store } from './store';
 import type { PrompterProject } from './types';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
@@ -450,7 +450,7 @@ export class PresentationView {
   }
 
   private adjustSpeed = (delta: number) => {
-    const newSpeed = Math.max(0.1, this.project.manualSpeed + delta);
+    const newSpeed = Math.min(MAX_MANUAL_SPEED, Math.max(MIN_MANUAL_SPEED, this.project.manualSpeed + delta));
     store.updateProject({ manualSpeed: newSpeed });
     this.project = store.getState().project;
     this.container.querySelector('.speed-indicator')!.textContent = `${this.project.manualSpeed.toFixed(1)}x`;
@@ -526,11 +526,11 @@ export class PresentationView {
         break;
       case 'ArrowUp':
         e.preventDefault();
-        this.adjustSpeed(0.1);
+        this.adjustSpeed(0.5);
         break;
       case 'ArrowDown':
         e.preventDefault();
-        this.adjustSpeed(-0.1);
+        this.adjustSpeed(-0.5);
         break;
       case 'KeyR':
         e.preventDefault();
@@ -629,8 +629,8 @@ export class PresentationView {
     this.container.querySelector('#btn-playpause')?.addEventListener('click', this.togglePlayPause);
     this.container.querySelector('#btn-reset')?.addEventListener('click', this.reset);
     
-    this.container.querySelector('#btn-faster')?.addEventListener('click', () => this.adjustSpeed(0.1));
-    this.container.querySelector('#btn-slower')?.addEventListener('click', () => this.adjustSpeed(-0.1));
+    this.container.querySelector('#btn-faster')?.addEventListener('click', () => this.adjustSpeed(0.5));
+    this.container.querySelector('#btn-slower')?.addEventListener('click', () => this.adjustSpeed(-0.5));
     this.container.querySelector('#btn-section-prev')?.addEventListener('click', () => this.jumpToSection(-1));
     this.container.querySelector('#btn-section-next')?.addEventListener('click', () => this.jumpToSection(1));
     this.container.querySelector('#preview-fontsize')?.addEventListener('input', event => {

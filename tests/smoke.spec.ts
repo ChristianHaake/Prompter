@@ -19,11 +19,20 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   await expect(page).toHaveTitle(/Prompter/);
   await expect(page.locator('.brand__logo')).toBeVisible();
   await expect(page.locator('.brand__logo')).toHaveAttribute('alt', 'Prompter Logo');
+  await expect(page.locator('.brand')).toContainText('Prompter');
+  await expect(page.locator('.privacy-badge')).toContainText('Inhalte bleiben lokal');
+  await expect(page.locator('#lang-current')).toHaveText('DE');
+  await expect(page.locator('#lang-target')).toHaveText('EN');
 
   const githubLink = page.locator('.github-link');
   await expect(githubLink).toBeVisible();
   await expect(githubLink).toHaveAttribute('href', 'https://github.com/ChristianHaake/Prompter');
   await expect(githubLink).toContainText('GitHub');
+
+  const supportLink = page.locator('.support-link');
+  await expect(supportLink).toBeVisible();
+  await expect(supportLink).toHaveAttribute('href', 'https://buymeacoffee.com/haak3');
+  await expect(supportLink).toContainText('Buy me a coffee');
 });
 
 test('PWA manifest and service worker are available in production preview', async ({ page }) => {
@@ -75,7 +84,7 @@ test('can type text and use presentation controls', async ({ page }) => {
   await expect(page.locator('#btn-playpause')).toHaveText('Weiter');
 
   await page.keyboard.press('ArrowUp');
-  await expect(page.locator('.speed-indicator')).toHaveText('1.1x');
+  await expect(page.locator('.speed-indicator')).toHaveText('2.5x');
 
   await page.keyboard.press('KeyR');
   await expect(page.locator('#time-elapsed')).toHaveText('0:00');
@@ -287,6 +296,8 @@ test('language switch updates visible and accessible shell text', async ({ page 
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('#lang-switch-btn')).toHaveAttribute('aria-label', 'Switch language');
+  await expect(page.locator('#lang-current')).toHaveText('EN');
+  await expect(page.locator('#lang-target')).toHaveText('DE');
   await expect(page.locator('#btn-present')).toContainText('Present');
   await page.reload();
   await page.keyboard.press('Tab');

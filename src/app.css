@@ -11,9 +11,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
-  min-height: 76px;
-  padding: 12px clamp(20px, 4vw, 64px);
+  min-height: 98px;
+  padding: 14px clamp(24px, 4vw, 78px);
   border-bottom: 1px solid var(--border-soft);
   background: rgb(255 255 255 / 90%);
   backdrop-filter: blur(14px);
@@ -22,14 +23,14 @@
 
 .brand {
   display: inline-flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
   text-decoration: none;
 }
 
 .brand__logo {
-  height: 38px;
-  width: auto;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
 }
 
@@ -39,18 +40,22 @@
 }
 
 .brand strong {
-  font-size: 1rem;
+  color: var(--text-main);
+  font-size: 1.28rem;
+  font-weight: 850;
+  line-height: 1.1;
 }
 
 .brand small {
-  margin-top: 2px;
+  margin-top: 4px;
   color: var(--text-muted);
-  font-size: 0.73rem;
+  font-size: 0.84rem;
+  font-weight: 650;
 }
 
 .header-meta {
   display: flex;
-  gap: 18px;
+  gap: 22px;
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -62,9 +67,9 @@
   align-items: center;
   background: none;
   border: none;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  font-weight: 600;
+  color: var(--text-main);
+  font-size: 0.94rem;
+  font-weight: 800;
   cursor: pointer;
   padding: 8px;
   border-radius: 6px;
@@ -78,15 +83,52 @@
 
 .privacy-badge {
   display: inline-flex;
-  gap: 7px;
+  gap: 9px;
   align-items: center;
   color: #0f512a;
-  font-size: 0.82rem;
-  font-weight: 700;
-  padding: 8px 11px;
+  font-size: 0.91rem;
+  font-weight: 850;
+  padding: 11px 17px;
   border: 1px solid #b8e6c9;
   border-radius: 999px;
   background: #edfbf2;
+}
+
+.language-toggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+.language-toggle__button {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px;
+  border: 1px solid #d6dbe4;
+  border-radius: 13px;
+  background: #f8fafc;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
+}
+
+.language-toggle__active,
+.language-toggle__inactive {
+  display: inline-grid;
+  min-width: 44px;
+  min-height: 32px;
+  place-items: center;
+  border-radius: 9px;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.language-toggle__active {
+  color: #ffffff;
+  background: var(--accent);
+  box-shadow: 0 2px 5px rgb(36 93 204 / 24%);
+}
+
+.language-toggle__inactive {
+  color: var(--text-muted);
 }
 
 .education-notice {
@@ -893,11 +935,21 @@ main {
 }
 
 .footer-nav a:hover,
-.github-link:hover {
+.github-link:hover,
+.support-link:hover {
   color: var(--text-main);
 }
 
-.github-link {
+.footer-external {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.github-link,
+.support-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -911,7 +963,14 @@ main {
   box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
 }
 
-.github-link:hover {
+.support-link {
+  border-color: #f6c76f;
+  color: #5f4700;
+  background: #fff8e8;
+}
+
+.github-link:hover,
+.support-link:hover {
   border-color: #9da7b5;
   background: #f8fafc;
 }
@@ -920,6 +979,7 @@ main {
 :root[data-theme="dark"] .button--secondary,
 :root[data-theme="dark"] .icon-button,
 :root[data-theme="dark"] .github-link,
+:root[data-theme="dark"] .support-link,
 :root[data-theme="dark"] .pitch-history__item {
   color: var(--text-main);
   background: #182230;
@@ -999,6 +1059,19 @@ main {
   .app-header {
     align-items: flex-start;
     padding: 12px 16px;
+  }
+
+  .header-meta {
+    gap: 10px;
+  }
+
+  .brand__logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .brand strong {
+    font-size: 1rem;
   }
 
   .brand {
