@@ -42,6 +42,8 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
 
   await expect(page.locator('.footer-local')).toContainText('Alle Daten bleiben lokal im Browser');
   await expect(page.locator('.footer-nav')).toContainText('Über das Projekt');
+  await expect(page.locator('.app-footer')).toHaveCSS('position', 'fixed');
+  await expect(page.locator('.app-footer')).toHaveCSS('bottom', '0px');
   const footerLinks = page.locator('.footer-nav a');
   await expect(footerLinks.nth(0)).toHaveText('Hilfe');
   await expect(footerLinks.nth(1)).toHaveText('Über das Projekt');
