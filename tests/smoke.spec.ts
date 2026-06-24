@@ -29,6 +29,14 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   await expect(page.locator('.education-notice')).toHaveCount(0);
   await expect(page.locator('#lang-current')).toHaveText('DE');
   await expect(page.locator('#lang-target')).toHaveText('EN');
+  const privacyBox = await page.locator('.privacy-badge').boundingBox();
+  const languageBox = await page.locator('.language-toggle').boundingBox();
+  const teacherBox = await page.locator('.header-button').boundingBox();
+  expect(privacyBox).toBeTruthy();
+  expect(languageBox).toBeTruthy();
+  expect(teacherBox).toBeTruthy();
+  expect(privacyBox!.y).toBeLessThan(languageBox!.y);
+  expect(privacyBox!.y).toBeLessThan(teacherBox!.y);
 
   const githubLink = page.locator('.github-link');
   await expect(githubLink).toBeVisible();

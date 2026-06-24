@@ -13,8 +13,8 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 24px;
-  min-height: 112px;
-  padding: 15px clamp(24px, 4vw, 78px);
+  min-height: 106px;
+  padding: 12px clamp(24px, 4vw, 78px);
   border-bottom: 1px solid var(--border-soft);
   background: rgb(255 255 255 / 90%);
   backdrop-filter: blur(14px);
@@ -35,11 +35,19 @@
 
 .header-meta {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: center;
   margin-left: auto;
+}
+
+.header-actions {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .header-button {
@@ -52,7 +60,7 @@
   font-size: 0.94rem;
   font-weight: 800;
   cursor: pointer;
-  padding: 8px;
+  padding: 6px 8px;
   border-radius: 6px;
   text-decoration: none;
 }
@@ -67,9 +75,9 @@
   gap: 11px;
   align-items: center;
   color: #0f512a;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 850;
-  padding: 12px 22px;
+  padding: 10px 20px;
   border: 0;
   border-radius: 999px;
   background: #edfbf2;
@@ -1172,8 +1180,14 @@ main {
 
   .header-meta {
     gap: 10px;
+    align-items: flex-start;
     justify-content: flex-start;
     margin-left: 0;
+  }
+
+  .header-actions {
+    gap: 10px;
+    justify-content: flex-start;
   }
 
   .brand__logo {
