@@ -168,7 +168,7 @@ test('can type text and use presentation controls', async ({ page }) => {
   await expect(page.locator('#btn-playpause')).toHaveText('Weiter');
 
   await page.keyboard.press('ArrowUp');
-  await expect(page.locator('.speed-indicator')).toHaveText('2.5x');
+  await expect(page.locator('.speed-indicator')).toHaveText('5.5x');
 
   await page.keyboard.press('KeyR');
   await expect(page.locator('#time-elapsed')).toHaveText('0:00');

@@ -24,7 +24,8 @@ export const MAX_DURATION_SECONDS = 60 * 60;
 export const MIN_FONT_SIZE = 16;
 export const MAX_FONT_SIZE = 160;
 export const MIN_MANUAL_SPEED = 0.25;
-export const MAX_MANUAL_SPEED = 8;
+export const MAX_MANUAL_SPEED = 10;
+const LEGACY_DEFAULT_MANUAL_SPEEDS = [1.0, 2.0] as const;
 export const MIN_LINE_HEIGHT = 1.1;
 export const MAX_LINE_HEIGHT = 2.4;
 export const MIN_FOCUS_LINE_POSITION = 20;
@@ -36,7 +37,7 @@ export const DEFAULT_PROJECT: PrompterProject = {
   title: 'Beispiel-Pitch',
   text: 'Hallo und herzlich willkommen!\n\nMit Prompter kannst du deine Präsentationen ganz einfach ablesen und perfektionieren.\n\nDer Text scrollt automatisch nach oben. Du kannst die Geschwindigkeit jederzeit anpassen, den Text für Teleprompter-Spiegel umdrehen oder eine Fokus-Linie einschalten, um den Überblick zu behalten.\n\nProbier es einfach aus, indem du auf "Präsentieren" klickst!',
   targetDurationSeconds: 60,
-  manualSpeed: 2.0,
+  manualSpeed: 5.0,
   fontSize: 48,
   lineHeight: 1.5,
   theme: 'light',
@@ -256,6 +257,18 @@ export function sanitizeProjectForUpdate(project: PrompterProject): PrompterProj
   };
 }
 
+function normalizeLegacyDefaultSpeed(project: PrompterProject): PrompterProject {
+  const isUnchangedExampleProject =
+    project.title === DEFAULT_PROJECT.title &&
+    project.text === DEFAULT_PROJECT.text &&
+    project.targetDurationSeconds === DEFAULT_PROJECT.targetDurationSeconds &&
+    (LEGACY_DEFAULT_MANUAL_SPEEDS as readonly number[]).includes(project.manualSpeed);
+
+  return isUnchangedExampleProject
+    ? { ...project, manualSpeed: DEFAULT_PROJECT.manualSpeed }
+    : project;
+}
+
 export class Store {
   private state: AppState;
   private subscribers: Set<Subscriber> = new Set();
@@ -277,7 +290,7 @@ export class Store {
       const stored = this.storage?.getItem(STORAGE_KEY);
       if (stored) {
         const result = validateProjectImport(stored);
-        if (result.ok) return result.project;
+        if (result.ok) return normalizeLegacyDefaultSpeed(result.project);
       }
     } catch (e) {
       console.error('Failed to load project from local storage', e);

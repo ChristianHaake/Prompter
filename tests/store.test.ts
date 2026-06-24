@@ -62,6 +62,34 @@ describe('Store persistence and imports', () => {
     expect(storage.getItem(STORAGE_KEY)).toContain('Importierter Text');
   });
 
+  test('normalizes legacy default project speed from storage', () => {
+    const storage = new MemoryStorage();
+    storage.setItem(STORAGE_KEY, validProject({
+      title: DEFAULT_PROJECT.title,
+      text: DEFAULT_PROJECT.text,
+      targetDurationSeconds: DEFAULT_PROJECT.targetDurationSeconds,
+      manualSpeed: 1,
+    }));
+
+    const restored = new Store(storage);
+
+    expect(restored.getState().project.manualSpeed).toBe(DEFAULT_PROJECT.manualSpeed);
+  });
+
+  test('normalizes older default project speed from storage', () => {
+    const storage = new MemoryStorage();
+    storage.setItem(STORAGE_KEY, validProject({
+      title: DEFAULT_PROJECT.title,
+      text: DEFAULT_PROJECT.text,
+      targetDurationSeconds: DEFAULT_PROJECT.targetDurationSeconds,
+      manualSpeed: 2,
+    }));
+
+    const restored = new Store(storage);
+
+    expect(restored.getState().project.manualSpeed).toBe(DEFAULT_PROJECT.manualSpeed);
+  });
+
   test('rejects invalid imports without replacing current work', () => {
     const storage = new MemoryStorage();
     const store = new Store(storage);
@@ -96,7 +124,7 @@ describe('Store persistence and imports', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.project.targetDurationSeconds).toBe(3600);
-      expect(result.project.manualSpeed).toBe(8);
+      expect(result.project.manualSpeed).toBe(10);
       expect(result.project.fontSize).toBe(160);
       expect(result.project.lineHeight).toBe(2.4);
       expect(result.project.focusLinePosition).toBe(80);
