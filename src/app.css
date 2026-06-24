@@ -210,6 +210,17 @@ main {
   font-size: 1.15rem;
 }
 
+.panel-heading,
+.preview-panel__header {
+  padding: 16px 24px 14px;
+}
+
+.panel-heading h2,
+.preview-panel__header h2 {
+  margin: 0;
+  line-height: 1.15;
+}
+
 .panel-actions {
   display: flex;
   gap: 12px;

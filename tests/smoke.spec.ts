@@ -106,6 +106,16 @@ test('editor workflow actions are floating pills below the text editor', async (
   await expect(page.locator('.editor-floating-actions #btn-undo-last-action')).toBeVisible();
 });
 
+test('text panel heading reflects the project title with fallback', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('#text-panel-title')).toHaveText('Beispiel-Pitch');
+  await page.locator('#project-title').fill('Neue Probe');
+  await expect(page.locator('#text-panel-title')).toHaveText('Neue Probe');
+  await page.locator('#project-title').fill('   ');
+  await expect(page.locator('#text-panel-title')).toHaveText('Text');
+});
+
 test('PWA manifest and service worker are available in production preview', async ({ page }) => {
   const manifestResponse = await page.goto('/manifest.webmanifest');
   expect(manifestResponse?.ok()).toBe(true);
