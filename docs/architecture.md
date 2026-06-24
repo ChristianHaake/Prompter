@@ -110,17 +110,19 @@ content to an app server. Production CSP allows same-origin connections for
 Cloudflare Pages/Web Analytics behavior and is enforced in production-preview
 browser tests.
 
-The production site is served through Cloudflare Pages. Cloudflare receives
-technical request metadata, and Cloudflare Web Analytics is documented on the
-privacy page. User-created project content remains local to the browser unless a
-user exports or imports a local `.prompter` file.
+The production site is served through Cloudflare as static assets from the
+Vite-built `dist` directory. Cloudflare receives technical request metadata, and
+Cloudflare Web Analytics is documented on the privacy page. User-created
+project content remains local to the browser unless a user exports or imports a
+local `.prompter` file.
 
 ## Deployment
 
-The app targets Cloudflare Pages.
+The app targets Cloudflare static asset deployment via Wrangler.
 
 - Build command: `npm run build`
 - Output directory: `dist`
+- Wrangler config: `wrangler.jsonc`
 - SPA fallback: Vite PWA uses `navigateFallback: /index.html`
 - Headers: `public/_headers`
 - Cache policy: HTML, service worker, registration script, manifest, and

@@ -56,6 +56,7 @@ export class EditorView {
   private wordCountEl!: HTMLSpanElement;
   private charCountEl!: HTMLSpanElement;
   private readTimeEl!: HTMLSpanElement;
+  private textPanelTitleEl!: HTMLHeadingElement;
   private exportBtn!: HTMLButtonElement;
   private importBtn!: HTMLButtonElement;
   private resetBtn!: HTMLButtonElement;
@@ -139,6 +140,10 @@ export class EditorView {
       this.textUpdateTimeoutId = null;
     }
     this.pendingText = null;
+  }
+
+  private getTextPanelTitle(): string {
+    return this.currentProject.title.trim() || t('editor.text.title');
   }
 
   private render() {
@@ -298,7 +303,7 @@ export class EditorView {
             <!-- Text Editor -->
             <div class="preview-panel">
               <div class="preview-panel__header">
-	                <h2>${t('editor.text.title')}</h2>
+	                <h2 id="text-panel-title">${escapeHtml(this.getTextPanelTitle())}</h2>
 	              </div>
 	              <div class="preview-panel__content">
 	                <label class="visually-hidden" for="project-text">${t('editor.text.label')}</label>
@@ -337,6 +342,7 @@ export class EditorView {
     this.wordCountEl = this.container.querySelector('#word-count') as HTMLSpanElement;
     this.charCountEl = this.container.querySelector('#char-count') as HTMLSpanElement;
     this.readTimeEl = this.container.querySelector('#read-time') as HTMLSpanElement;
+    this.textPanelTitleEl = this.container.querySelector('#text-panel-title') as HTMLHeadingElement;
     
     this.exportBtn = this.container.querySelector('#btn-export') as HTMLButtonElement;
     this.importBtn = this.container.querySelector('#btn-import') as HTMLButtonElement;
@@ -365,6 +371,7 @@ export class EditorView {
     if (activeElement !== this.titleInput || this.titleInput.value !== this.currentProject.title) {
       this.titleInput.value = this.currentProject.title;
     }
+    this.textPanelTitleEl.textContent = this.getTextPanelTitle();
     if (activeElement !== this.durationInput || this.durationInput.value !== String(this.currentProject.targetDurationSeconds / 60)) {
       this.durationInput.value = String(this.currentProject.targetDurationSeconds / 60);
     }

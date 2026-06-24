@@ -60,10 +60,11 @@ Schema-Version `1.0`. Importierte Projekte werden vor dem Ersetzen des aktuellen
 Entwurfs validiert. Fehlerhafte, zu große oder zukünftige Projektdateien werden
 abgelehnt, ohne den aktuellen Entwurf zu ändern.
 
-Die Website wird über Cloudflare Pages ausgeliefert. Cloudflare verarbeitet
-technische Verbindungsdaten. Cloudflare Web Analytics ist in der
-Datenschutzerklärung dokumentiert; Skriptinhalte werden dabei nicht als
-App-Daten übertragen.
+Die Website wird über Cloudflare ausgeliefert. Der Produktions-Build erzeugt
+statische Dateien in `dist`, die per Wrangler-Static-Assets-Konfiguration
+bereitgestellt werden. Cloudflare verarbeitet technische Verbindungsdaten.
+Cloudflare Web Analytics ist in der Datenschutzerklärung dokumentiert;
+Skriptinhalte werden dabei nicht als App-Daten übertragen.
 
 ## Sicherheit
 
