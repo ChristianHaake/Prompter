@@ -66,8 +66,8 @@
 }
 
 .header-button:hover {
-  background: var(--bg-hover);
-  color: var(--text);
+  background: var(--accent-soft);
+  color: var(--text-main);
 }
 
 .privacy-badge {
@@ -468,7 +468,7 @@ main {
 
 .timer-preset-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 

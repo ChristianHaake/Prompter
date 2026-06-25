@@ -293,4 +293,20 @@ describe('Store persistence and imports', () => {
     expect(csv).toContain('deviationSeconds');
     expect(csv).toContain('160');
   });
+
+  test('escapes whitespace-prefixed spreadsheet formulas in CSV cells', () => {
+    const csv = exportPitchHistoryCsv([
+      {
+        id: ' \t=cmd',
+        date: '\n@date',
+        targetDurationSeconds: 60,
+        actualDurationSeconds: 60,
+        wordCount: 120,
+        status: 'completed' as const,
+      },
+    ]);
+
+    expect(csv).toContain('\' \t=cmd');
+    expect(csv).toContain('"\'\n@date"');
+  });
 });
