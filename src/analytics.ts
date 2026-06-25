@@ -48,7 +48,8 @@ export function calculatePitchAnalytics(records: PitchRunRecord[]): PitchAnalyti
 
 function escapeCsvCell(value: string | number): string {
   let text = String(value);
-  if (/^[=+\-@\t\r]/.test(text)) {
+  const firstNonWhitespace = text.trimStart().charAt(0);
+  if (/^[\t\r\n]/.test(text) || '=+-@'.includes(firstNonWhitespace)) {
     text = `'${text}`;
   }
   if (!/[",\n\r]/.test(text)) return text;

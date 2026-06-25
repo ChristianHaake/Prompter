@@ -86,6 +86,7 @@ label[for] {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
+select:focus-visible,
 textarea:focus-visible {
   outline: 3px solid rgb(36 93 204 / 28%);
   outline-offset: 2px;
