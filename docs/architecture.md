@@ -107,8 +107,8 @@ cover play/pause, exit, reset, speed changes, and section jumps.
 
 The app has no application backend and does not send user-created project
 content to an app server. Production CSP allows same-origin connections for
-Cloudflare Pages/Web Analytics behavior and is enforced in production-preview
-browser tests.
+Cloudflare hosting behavior and Cloudflare Web Analytics and is enforced in
+production-preview browser tests.
 
 The production site is served through Cloudflare as static assets from the
 Vite-built `dist` directory. Cloudflare receives technical request metadata, and
