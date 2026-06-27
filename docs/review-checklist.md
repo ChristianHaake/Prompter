@@ -5,8 +5,8 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 
 ## Release
 
-- Version: `1.0.0-phased-v1`
-- Review date: `2026-06-23`
+- Version: `1.0.0`
+- Review date: `2026-06-27`
 - Reviewer: Codex
 
 ## Results
@@ -42,18 +42,13 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 
 ## Notes
 
-This pass fixes the previously known prototype gaps: import/editor state drift,
-stubbed tests, mobile overflow in core controls, dead header controls, missing
-reset behavior, weak project validation, placeholder product documentation,
-wrong word-count parsing, stale E2E selectors, and oversized PWA image assets.
+Release 1.0.0 includes the full local-first Prompter workflow: editor autosave,
+validated project open/save, `.txt`/`.md` script import, preview mode,
+presentation mode, display customization, undo safeguards, pitch-history
+analytics, CSV export, Markdown presentation styling, keyboard controls, PWA
+shell, and Cloudflare static-asset deployment wiring.
 
 Manual checks are specified in `docs/manual-release-checks.md`.
-
-Current production build precaches 10 referenced app-shell entries at about
-171 KB and avoids the old unused icon sprite.
-
-This pass adds preview mode, display customization, undo safeguards, analytics,
-CSV history export, markdown presentation styling, and keyboard section jumps.
 
 The app still needs manual device, PWA install, installed-app offline, 200% zoom,
 high contrast, and screen-reader checks before a full release sign-off.
