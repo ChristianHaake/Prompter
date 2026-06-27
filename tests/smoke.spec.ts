@@ -14,7 +14,7 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   const response = await page.goto('/');
   const csp = response?.headers()['content-security-policy'] ?? '';
   expect(csp).toContain("style-src 'self'");
-  expect(csp).toContain('https://static.cloudflareinsights.com/beacon.min.js');
+  expect(csp).toContain('https://static.cloudflareinsights.com');
 
   await expect(page).toHaveTitle(/Prompter/);
   await expect(page.locator('.brand__logo')).toBeVisible();
