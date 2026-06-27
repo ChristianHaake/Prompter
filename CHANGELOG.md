@@ -9,7 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes yet.
 
-## [1.0.0] - 2026-06-27
+## [1.0.0] - 2026-06-28
+
+### Feature names
+- Script Editor for local drafting, autosave, Markdown rendering, word count,
+  character count, and reading-time feedback.
+- Timer Studio for 60-, 90-, and 120-second presets plus custom target
+  durations.
+- Live Preview for checking final Prompter typography without starting a run.
+- Teleprompter Runtime for automatic scrolling, countdown, live speed changes,
+  progress, fullscreen, section jumps, end signal, and optional Wake Lock.
+- Readability Setup for font size, line height, font family, app theme,
+  Prompter color theme, focus line, focus-line position, and Mirror Mode.
+- Local Project Files for validated `.prompter` open/save plus `.txt` and `.md`
+  script import.
+- Pitch History & Analytics for local run records, CSV export, pace analysis,
+  timing deviation, and trend.
+- Recovery Flow for undoing destructive project-reset and history-clear actions.
+- Multilingual App Shell with German/English UI, help, about, privacy, imprint,
+  teacher guidance, local storage, and PWA support.
+- Screenshot Asset Pack in `docs/screenshots/` for blog and social posts.
 
 ### Added
 - Local-first editor for short scripts with autosave, word count, character

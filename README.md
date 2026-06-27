@@ -25,34 +25,51 @@ Der Kernworkflow:
 
 ### Release 1.0.0
 
-- Editor für kurze Skripte mit Autosave, Wort-/Zeichenzählung, Lesezeit und
-  Markdown-Ausgabe für Überschriften, Listen, Trennlinien sowie Fett- und
-  Kursivformatierung.
-- Timer-Steuerung über 60-/90-/120-Sekunden-Vorlagen oder freie Zieldauer.
-- Vorschau-Modus mit derselben Typografie wie die Präsentation, aber ohne
-  Countdown, Wake Lock, Fullscreen oder Pitch-History-Eintrag.
-- Präsentationsmodus mit automatischem Scrollen, 3-Sekunden-Countdown,
+- **Skript-Editor**: lokale Texteingabe mit Autosave, Titel, Wort- und
+  Zeichenzählung, Lesezeit und Markdown-Ausgabe für Überschriften, Listen,
+  Trennlinien sowie Fett- und Kursivformatierung.
+- **Timer Studio**: 60-, 90- und 120-Sekunden-Vorlagen plus freie Zieldauer für
+  Pitches, Unterrichtsbeiträge und kurze Präsentationen.
+- **Live Preview**: typografisch identische Prompter-Vorschau ohne Countdown,
+  Wake Lock, Fullscreen oder Pitch-History-Eintrag.
+- **Teleprompter Runtime**: automatisches Scrollen, 3-Sekunden-Countdown,
   Live-Geschwindigkeit, Fortschrittsanzeige, Endsignal, Fullscreen,
-  Abschnittsnavigation und optionalem Wake Lock.
-- Darstellungsoptionen für Schriftgröße, Zeilenabstand, Schriftfamilie,
-  Hell/Dunkel/High-Contrast-Theme, Prompter-Farben, Fokus-Linie und
-  Spiegelmodus.
-- Projekt öffnen/speichern über validierte `.prompter`-JSON-Dateien sowie
-  Skript-Import für `.txt` und `.md`.
-- Lokaler Pitch-Verlauf mit abgeschlossen/abgebrochen-Status, Zielzeit,
-  Ist-Zeit, Wortzahl, CSV-Export und Analytics zu Tempo, Ausreißern,
-  Zielzeit-Abweichung und Trend.
-- Undo für destruktive Aktionen wie neues Projekt und Verlauf leeren.
-- Deutsch/Englisch UI, Help/About/Privacy/Imprint/Teachers-Seiten, lokales
-  Browser-Speichermodell und PWA-Unterstützung.
+  Abschnittsnavigation und optionaler Wake Lock.
+- **Lesbarkeits-Setup**: Schriftgröße, Zeilenabstand, Schriftfamilie,
+  Hell/Dunkel/High-Contrast-App-Theme, Prompter-Farben, Fokus-Linie mit
+  Positionssteuerung und Mirror Mode für Teleprompter-Spiegel.
+- **Lokale Projektdateien**: validierte `.prompter`-JSON-Dateien zum Öffnen und
+  Speichern sowie direkter Skript-Import für `.txt` und `.md`.
+- **Pitch History & Analytics**: lokaler Verlauf mit
+  abgeschlossen/abgebrochen-Status, Zielzeit, Ist-Zeit, Wortzahl, CSV-Export,
+  Durchschnittstempo, schnellstem/langsamstem Lauf, Zielzeit-Abweichung und
+  Trend.
+- **Recovery Flow**: Rückgängig-Funktion für destruktive Aktionen wie neues
+  Projekt und Verlauf leeren.
+- **Mehrsprachige App-Shell**: Deutsch/Englisch, Hilfe, Über das Projekt,
+  Datenschutz, Impressum, Für Lehrkräfte, lokales Browser-Speichermodell und
+  PWA-Unterstützung.
+
+## Screenshots
+
+Die Bilddateien für Blogposts und Social Media liegen in
+`docs/screenshots/`:
+
+- `prompter-blog-editor-desktop.png`: Editor, Einstellungen und Textbereich im
+  Desktop-Layout.
+- `prompter-blog-preview-desktop.png`: Prompter-Vorschau mit Fokus auf
+  Typografie und Lesbarkeit.
+- `prompter-blog-presentation-desktop.png`: laufende Präsentationsansicht mit
+  Steuerleiste.
+- `prompter-social-square.png`: quadratischer Social-Media-Ausschnitt.
+- `prompter-social-mobile.png`: mobiles Hochformat für Stories/Reels/Posts.
 
 ## Release-Status
 
-`1.0.0` ist als lokaler Browser-Release vorbereitet. Das automatisierte
-Release-Gate ist `npm run verify`; offene manuelle Checks stehen in
-[docs/manual-release-checks.md](docs/manual-release-checks.md). Nicht
-automatisiert abgehakt sind aktuell echte Zielgeräte, Screen Reader,
-PWA-Installierbarkeit und installierte Offline-Nutzung.
+`1.0.0` ist die erste fertige Prompter-Version. Das automatisierte Release-Gate
+ist `npm run verify`; manuelle Zielgeräte-, Screenreader- und PWA-Prüfungen
+stehen in [docs/manual-release-checks.md](docs/manual-release-checks.md), weil
+sie nicht ehrlich automatisiert abgehakt werden können.
 
 ## Tastatursteuerung
 
