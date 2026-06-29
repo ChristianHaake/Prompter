@@ -262,8 +262,9 @@ export class PresentationView {
 
   private calculateScrollDistance() {
     const viewportHeight = this.viewport.clientHeight;
-    this.textContainer.style.paddingTop = `${viewportHeight / 2}px`;
-    this.textContainer.style.paddingBottom = `${viewportHeight / 2}px`;
+    const focusPosition = (this.project.focusLinePosition || 50) / 100;
+    this.textContainer.style.paddingTop = `${viewportHeight * focusPosition}px`;
+    this.textContainer.style.paddingBottom = `${viewportHeight * (1 - focusPosition)}px`;
     this.totalScrollDistance = Math.max(0, this.textContainer.scrollHeight - viewportHeight);
   }
 
