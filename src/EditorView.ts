@@ -1,4 +1,4 @@
-import { DEFAULT_PROJECT, MAX_PROJECT_FILE_BYTES, TIMER_PRESETS_SECONDS, store } from './store';
+import { countScriptWords, DEFAULT_PROJECT, MAX_PROJECT_FILE_BYTES, TIMER_PRESETS_SECONDS, store } from './store';
 import type { PitchRunRecord, ProjectImportResult, PrompterProject } from './types';
 import { t, type TranslationKey } from './i18n';
 import { calculatePitchAnalytics, exportPitchHistoryCsv, formatSignedSeconds } from './analytics';
@@ -428,8 +428,7 @@ export class EditorView {
   }
 
   private updateStats() {
-    const text = this.currentProject.text.trim();
-    const words = text ? text.split(/\s+/).length : 0;
+    const words = countScriptWords(this.currentProject.text);
     this.wordCountEl.textContent = words.toString();
     this.charCountEl.textContent = this.currentProject.text.length.toString();
 
@@ -691,7 +690,6 @@ export class EditorView {
 
   private attachEventListeners() {
     this.container.addEventListener('input', this.handleInput);
-    this.container.addEventListener('change', this.handleInput);
     this.container.addEventListener('click', this.handleClick);
     this.previewBtn.addEventListener('click', this.handlePreview);
     this.presentBtn.addEventListener('click', this.handlePresent);
@@ -703,7 +701,6 @@ export class EditorView {
 
   private removeEventListeners() {
     this.container.removeEventListener('input', this.handleInput);
-    this.container.removeEventListener('change', this.handleInput);
     this.container.removeEventListener('click', this.handleClick);
     if (this.presentBtn) {
       this.previewBtn.removeEventListener('click', this.handlePreview);

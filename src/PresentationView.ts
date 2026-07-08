@@ -97,8 +97,11 @@ export class PresentationView {
     if (this.mode === 'preview') {
       this.unsubscribe = store.subscribe(state => {
         this.project = state.project;
-        this.render();
-        this.attachElementEventListeners();
+        // Do NOT re-render: rebuilding innerHTML would destroy the settings
+        // input the user is editing and drop focus mid-keystroke/drag. Only
+        // the derived text styling and settings values need to sync.
+        this.syncPreviewSettings();
+        this.applyTextStyle();
         requestAnimationFrame(() => {
           this.calculateScrollDistance();
           this.updateProgressUI();
@@ -161,7 +164,7 @@ export class PresentationView {
           <div id="prompter-text" class="prompter-text" aria-live="${isPreview ? 'polite' : 'off'}">
             ${cleanHtml}
           </div>
-          ${this.project.focusLine ? '<div class="focus-line"></div>' : ''}
+          <div class="focus-line"${this.project.focusLine ? '' : ' hidden'}></div>
           <div id="countdown-overlay" class="countdown-overlay hidden">
             <span id="countdown-number">3</span>
           </div>
@@ -231,12 +234,31 @@ export class PresentationView {
     `;
   }
 
+  private syncPreviewSettings() {
+    if (this.mode !== 'preview') return;
+    const active = document.activeElement;
+    const syncInput = (selector: string, value: string) => {
+      const el = this.container.querySelector<HTMLInputElement>(selector);
+      if (el && el !== active && el.value !== value) el.value = value;
+    };
+    syncInput('#preview-fontsize', String(this.project.fontSize));
+    syncInput('#preview-lineheight', String(this.project.lineHeight));
+    const focusPos = this.container.querySelector<HTMLInputElement>('#preview-focus-position');
+    if (focusPos && focusPos !== active) {
+      focusPos.value = String(this.project.focusLinePosition);
+      focusPos.setAttribute('aria-valuetext', `${this.project.focusLinePosition}%`);
+    }
+    const mirror = this.container.querySelector<HTMLSelectElement>('#preview-mirror');
+    if (mirror && mirror !== active) mirror.value = String(this.project.mirrorMode);
+  }
+
   private applyTextStyle() {
     this.textContainer.style.fontSize = `${this.project.fontSize || 48}px`;
     this.textContainer.style.lineHeight = String(this.project.lineHeight || 1.5);
     this.textContainer.style.fontFamily = this.getFontFamily();
     const focusLine = this.container.querySelector<HTMLElement>('.focus-line');
     if (focusLine) {
+      focusLine.hidden = !this.project.focusLine;
       focusLine.style.top = `${this.project.focusLinePosition}%`;
     }
     this.updateTextTransform();
@@ -503,15 +525,18 @@ export class PresentationView {
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
+    // Escape always exits, even when a settings control has focus — it is the
+    // documented "exit" shortcut and must not be swallowed by the editable guard.
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      this.handleExit();
+      return;
+    }
     if (this.isEditableShortcutTarget(e.target)) return;
     switch (e.code) {
       case 'Space':
         e.preventDefault();
         this.togglePlayPause();
-        break;
-      case 'Escape':
-        e.preventDefault();
-        this.handleExit();
         break;
       case 'ArrowLeft':
       case 'PageUp':
@@ -614,11 +639,21 @@ export class PresentationView {
     this.wakeLockSentinel = null;
   };
 
+  // Browsers auto-release the screen wake lock when the tab is hidden. Re-acquire
+  // it when the presentation tab becomes visible again while still playing.
+  private handleVisibilityChange = () => {
+    if (this.mode !== 'presentation') return;
+    if (document.visibilityState === 'visible' && this.isPlaying) {
+      void this.requestWakeLock();
+    }
+  };
+
   private attachEventListeners() {
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('resize', this.handleResize);
     this.attachElementEventListeners();
     document.addEventListener('fullscreenchange', this.updateFullscreenButton);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
   private attachElementEventListeners() {
@@ -653,5 +688,6 @@ export class PresentationView {
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('resize', this.handleResize);
     document.removeEventListener('fullscreenchange', this.updateFullscreenButton);
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 }
