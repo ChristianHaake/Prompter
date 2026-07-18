@@ -187,7 +187,7 @@ export class PresentationView {
               <button id="btn-section-next" class="icon-button" aria-label="${t('presentation.nextSection')}">↓</button>
            </div>
            
-           ${isPreview ? '' : `<button id="btn-reset" class="icon-button" aria-label="${t('presentation.reset')}">↺</button>`}
+           ${isPreview ? '' : `<button id="btn-reset" class="icon-button" aria-label="${t('presentation.reset')}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg></button>`}
            <button id="btn-playpause" class="button button--primary" ${isPreview ? 'disabled' : ''}>${isPreview ? t('preview.static') : t('presentation.startHint')}</button>
         </div>
       </div>
@@ -285,8 +285,19 @@ export class PresentationView {
   private calculateScrollDistance() {
     const viewportHeight = this.viewport.clientHeight;
     const focusPosition = (this.project.focusLinePosition || 50) / 100;
+    // The footer (controls/progress bar) floats over the viewport rather than
+    // taking up flex space, so it can visually cover the last lines of text
+    // unless the bottom padding is at least as tall as the footer itself.
+    const footerEl = this.container.querySelector<HTMLElement>('.presentation-footer');
+    const footerHeight = footerEl?.offsetHeight ?? 0;
     this.textContainer.style.paddingTop = `${viewportHeight * focusPosition}px`;
-    this.textContainer.style.paddingBottom = `${viewportHeight * (1 - focusPosition)}px`;
+    this.textContainer.style.paddingBottom = `${Math.max(viewportHeight * (1 - focusPosition), footerHeight + 24)}px`;
+    // Keep the readable-text fade-out (mask-image) above the footer's solid
+    // background so scrolling lines are never crisp behind the controls.
+    if (viewportHeight > 0) {
+      const fadeStart = Math.min(85, Math.max(50, 100 - ((footerHeight + 16) / viewportHeight) * 100));
+      this.viewport.style.setProperty('--fade-start', `${fadeStart}%`);
+    }
     this.totalScrollDistance = Math.max(0, this.textContainer.scrollHeight - viewportHeight);
   }
 

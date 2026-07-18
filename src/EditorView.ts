@@ -686,6 +686,7 @@ export class EditorView {
     if (!shouldReset) return;
     this.flushPendingTextUpdate();
     store.resetProject();
+    window.scrollTo(0, 0);
   };
 
   private attachEventListeners() {

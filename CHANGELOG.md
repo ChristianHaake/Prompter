@@ -7,7 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes yet.
+### Added
+- Cloudflare Web Analytics, with the analytics domain added to the
+  Content-Security-Policy and a smoke test asserting the CSP entry.
+
+### Fixed
+- Presentation view now honors `focusLinePosition` (default 50%) instead of
+  always centering the focus line, and long words wrap instead of overflowing
+  the layout.
+- Escape now always exits the presentation, even while a settings control is
+  focused.
+- Screen Wake Lock is re-acquired when the presentation tab regains
+  visibility mid-run instead of staying released.
+- Preview mode syncs settings changes without a full re-render, so focus and
+  in-progress edits in preview settings inputs are no longer lost.
+- Fixed footer no longer overlaps page content on tablet-width viewports
+  (`--fixed-footer-space` is now reserved between 641px and 1024px, not just
+  below 640px).
+- Presentation controls no longer sit as a crisp block over the last lines of
+  scrolling script text on tablet and mobile; the readable-text fade now
+  scales with the actual control-bar height instead of a fixed 15%.
+- The reset button icon is visible in all themes (was rendering white-on-white
+  outside the themed control groups).
+- The disabled state of the preview mode's static play button is now visibly
+  muted instead of looking identical to an active button.
+- Navigating to a content page (Help, About, Privacy, Imprint, For Teachers)
+  or resetting the draft with "New" now scrolls back to the top instead of
+  leaving the view stuck mid-scroll on a blank section.
+
+### Changed
+- Extracted word-counting into a reusable `countScriptWords` helper and
+  removed a redundant editor `change` listener.
 
 ## [1.0.0] - 2026-06-28
 
