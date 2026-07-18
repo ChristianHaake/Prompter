@@ -3,6 +3,10 @@
 Prompter ist eine lokale, browserbasierte Teleprompter-App für kurze
 Präsentationen, Pitches, Unterrichtsbeiträge und Workshop-Skripte.
 
+[![CI](https://github.com/ChristianHaake/Prompter/actions/workflows/ci.yml/badge.svg)](https://github.com/ChristianHaake/Prompter/actions/workflows/ci.yml)
+[![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](package.json)
+
 Live: [https://prompter.haak3.de](https://prompter.haak3.de)
 
 ## Ziel
@@ -20,6 +24,15 @@ Der Kernworkflow:
 4. Präsentation starten und per Tastatur oder Buttons steuern.
 5. Durchläufe lokal auswerten, Pitch-Verlauf als CSV exportieren und Projekt als
    `.prompter`-Datei sichern.
+
+## Zielgruppe & Einsatzszenarien
+
+Prompter richtet sich an Schülerinnen und Schüler, Lehrkräfte, Fortbildende und
+alle, die kurze geskriptete Vorträge oder Aufnahmen vorbereiten. Typische
+Einsatzszenarien: Referate und mündliche Prüfungen, Pitches und kurze
+Präsentationen, Erklärvideos und Videostatements, Unterrichts- und
+Workshop-Beiträge sowie Podcast- oder Nachrichtenformate mit vorbereitetem
+Skript.
 
 ## Funktionen
 

@@ -166,12 +166,14 @@ function router() {
   if (hash.startsWith('#/') && hash.length > 2) {
     const page = hash.substring(2);
     renderContentPage(page);
+    window.scrollTo(0, 0);
   } else {
     // Reset view instance to force re-mount if coming from a content page
     if (!currentViewInstance) {
       currentViewMode = store.getState().viewMode;
       // Triggers re-render
       renderApp();
+      window.scrollTo(0, 0);
     }
   }
 }
