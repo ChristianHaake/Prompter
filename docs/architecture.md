@@ -40,6 +40,8 @@ one presentation view, and a small local store.
   end signal, run recording.
 - `src/analytics.ts`: pure pitch-history analytics and CSV export mapping.
 - `content/`: bundled Markdown pages for help, about, privacy, and imprint.
+- `docs/examples/`: importable release/example project files and generated
+  screenshots for demonstrating the school-oriented Prompter workflow.
 - `tests/`: Vitest unit tests and Playwright browser tests.
 
 ## State

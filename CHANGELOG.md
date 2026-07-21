@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-07-21
+
 ### Added
 - Cloudflare Web Analytics, with the analytics domain added to the
   Content-Security-Policy and a smoke test asserting the CSP entry.
+- A school-ready Photosynthesis 90-second `.prompter` example plus generated
+  editor, preview, and presentation screenshots in `docs/examples/`.
 
 ### Fixed
+- Removed a stray `.DS_Store` file from `public/` so macOS metadata is no
+  longer copied into release builds.
 - Presentation view now honors `focusLinePosition` (default 50%) instead of
   always centering the focus line, and long words wrap instead of overflowing
   the layout.

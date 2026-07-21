@@ -36,7 +36,7 @@ Skript.
 
 ## Funktionen
 
-### Release 1.0.0
+### Release 1.0.1
 
 - **Skript-Editor**: lokale Texteingabe mit Autosave, Titel, Wort- und
   Zeichenzählung, Lesezeit und Markdown-Ausgabe für Überschriften, Listen,
@@ -63,6 +63,17 @@ Skript.
   Datenschutz, Impressum, Für Lehrkräfte, lokales Browser-Speichermodell und
   PWA-Unterstützung.
 
+## Beispielprojekt
+
+Ein schulbezogenes Beispiel liegt unter `docs/examples/`:
+
+- `photosynthese-90s.prompter`: importierbares 90-Sekunden-Projekt für ein
+  Biologie-Referat zur Photosynthese.
+- `photosynthese-90s-editor.png`: Editor mit importiertem Beispiel,
+  Timer-Setup und Lesbarkeitseinstellungen.
+- `photosynthese-90s-preview.png`: statische Prompter-Vorschau.
+- `photosynthese-90s-presentation.png`: laufender Präsentationsmodus.
+
 ## Screenshots
 
 Die Bilddateien für Blogposts und Social Media liegen in
@@ -79,7 +90,7 @@ Die Bilddateien für Blogposts und Social Media liegen in
 
 ## Release-Status
 
-`1.0.0` ist die erste fertige Prompter-Version. Das automatisierte Release-Gate
+`1.0.1` ist als Maintenance-Release vorbereitet. Das automatisierte Release-Gate
 ist `npm run verify`; manuelle Zielgeräte-, Screenreader- und PWA-Prüfungen
 stehen in [docs/manual-release-checks.md](docs/manual-release-checks.md), weil
 sie nicht ehrlich automatisiert abgehakt werden können.
@@ -163,7 +174,8 @@ Produktions-Audit, Build und Playwright-Tests gegen eine Produktions-Preview aus
 - `content/`: gebündelte Markdown-Seiten.
 - `public/_headers`: Produktions-Header für Cloudflare-Auslieferung.
 - `tests/`: Vitest-Unit-Tests und Playwright-Smoke-Tests.
-- `docs/`: Architektur, Review-Checklist und manuelle Release-Checks.
+- `docs/`: Architektur, Review-Checklist, Beispielprojekt, Screenshots und
+  manuelle Release-Checks.
 
 Weitere Details stehen in [docs/architecture.md](docs/architecture.md).
 
