@@ -46,7 +46,7 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
 
   const supportLink = page.locator('.support-link');
   await expect(supportLink).toBeVisible();
-  await expect(supportLink).toHaveAttribute('href', 'https://buymeacoffee.com/haak3');
+  await expect(supportLink).toHaveAttribute('href', 'https://buymeacoffee.com/haake');
   await expect(supportLink).toContainText('Buy me a coffee');
 
   await expect(page.locator('.footer-local')).toContainText('Alle Daten bleiben lokal im Browser');
