@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Privacy content refers to the actual "New"/"Neu" control instead of a
   non-existent "Reset local data" label.
 
+### Security
+- Updated `dompurify` from 3.4.11 to 3.4.12 to clear advisory GHSA-c2j3-45gr-mqc4
+  (`CUSTOM_ELEMENT_HANDLING` sanitizer bypass).
+
 ## [1.0.1] - 2026-07-21
 
 ### Added
