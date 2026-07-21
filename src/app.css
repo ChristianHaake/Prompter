@@ -986,6 +986,14 @@ main {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Keep the translucent look on hover; the base .icon-button:hover turns the
+   background white, which hides the white glyph on dark/high-contrast themes. */
+.section-controls .icon-button:hover,
+.presentation-footer > .icon-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
 .section-controls .icon-button:disabled {
   opacity: 0.45;
   cursor: not-allowed;

@@ -16,7 +16,7 @@ Prompter is a local browser teleprompter. You write or open a script, adjust the
 
 ## Preview and Formatting
 
-Preview uses the same display as presentation mode, but it does not start a run and does not write pitch history. Font size, line height, mirror mode, and focus-line changes update immediately.
+Preview uses the same display as presentation mode and can be played back, but it skips the countdown and does not write pitch history. Font size, line height, mirror mode, and focus-line changes update immediately.
 
 The editor supports Markdown in the script. Headings, **bold**, and *italic* text are rendered in preview and presentation. Horizontal rules (`---`) can be used as section markers.
 

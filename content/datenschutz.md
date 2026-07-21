@@ -82,8 +82,7 @@ dauerhaft gespeichert, soweit dies nicht ausdrücklich anders angegeben wird.
 Der aktuelle Entwurf wird im Browser unter dem `localStorage`-Schlüssel
 `prompter_project_v1` gespeichert. Diese Speicherung dient der lokalen
 Wiederherstellung des Entwurfs im selben Browser. Nutzer können diese Daten über
-"Lokale Daten zurücksetzen" in der App oder über die Website-Daten des Browsers
-löschen.
+"Neu" in der App oder über die Website-Daten des Browsers löschen.
 
 Der Pitch-Verlauf wird getrennt unter dem `localStorage`-Schlüssel
 `prompter_pitch_history_v1` gespeichert. Er enthält Zeitpunkte, Zielzeiten,

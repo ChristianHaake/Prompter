@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-22
+
+### Added
+- Preview mode is now playable: it runs the auto-scroll like presentation mode
+  so users can rehearse the scroll, while still skipping the countdown and never
+  writing a pitch-history record. Preview gains a working play/pause and reset.
+
+### Fixed
+- Footer and section icon buttons (reset, section jump) no longer turn
+  white-on-white on hover in the dark and high-contrast text themes; the hover
+  state now keeps the translucent background so the glyph stays visible.
+
+### Changed
+- Preview mode no longer shows a disabled static play button; the play and reset
+  controls are active, superseding the muted-disabled-button behavior from 1.0.1.
+- Help content now describes the playable preview (runs, skips countdown, writes
+  no pitch history).
+- Privacy content refers to the actual "New"/"Neu" control instead of a
+  non-existent "Reset local data" label.
+
 ## [1.0.1] - 2026-07-21
 
 ### Added

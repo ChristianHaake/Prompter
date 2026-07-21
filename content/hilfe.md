@@ -20,9 +20,10 @@ Skript, stellst Zieldauer und Lesbarkeit ein und startest den Präsentationsmodu
 
 ## Vorschau und Formatierung
 
-Die Vorschau nutzt dieselbe Darstellung wie der Präsentationsmodus, startet aber
-keinen Lauf und schreibt keinen Pitch-Verlauf. Änderungen an Schriftgröße,
-Zeilenabstand, Spiegelmodus und Fokus-Linie werden dort sofort sichtbar.
+Die Vorschau nutzt dieselbe Darstellung wie der Präsentationsmodus und lässt sich
+abspielen, verzichtet aber auf den Countdown und schreibt keinen Pitch-Verlauf.
+Änderungen an Schriftgröße, Zeilenabstand, Spiegelmodus und Fokus-Linie werden
+dort sofort sichtbar.
 
 Der Editor unterstützt Markdown im Skript. Überschriften, **fette** und
 *kursive* Hervorhebungen werden in Vorschau und Präsentation gerendert.
