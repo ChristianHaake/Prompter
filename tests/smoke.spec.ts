@@ -184,13 +184,14 @@ test('preview reflects settings without recording pitch history', async ({ page 
   await page.locator('#project-text').fill('# Abschnitt\n\nVorschau Text');
   await page.locator('#btn-preview').click();
   await expect(page.locator('#prompter-text h1')).toHaveText('Abschnitt');
-  await expect(page.locator('#btn-playpause')).toBeDisabled();
+  // Preview is playable (no countdown), so play is enabled immediately.
+  await expect(page.locator('#btn-playpause')).toBeEnabled();
 
   await page.locator('#preview-fontsize').fill('80');
-  await page.keyboard.press('Space');
-  await expect(page.locator('#btn-playpause')).toHaveText('Vorschau');
-  await expect(page.locator('#time-elapsed')).toHaveText('0:00');
-  await page.keyboard.press('KeyR');
+  await page.locator('#btn-playpause').click();
+  await expect(page.locator('#btn-playpause')).toHaveText('Pause');
+  await page.locator('#btn-reset').click();
+  await expect(page.locator('#btn-playpause')).toHaveText('Start');
   await expect(page.locator('#time-elapsed')).toHaveText('0:00');
   await expect(page.locator('#prompter-text')).toHaveCSS('font-size', '80px');
   await page.locator('#preview-mirror').selectOption('true');
