@@ -69,7 +69,7 @@ durations, word counts, and whether a run was completed or cancelled. This data
 stays in the browser, can be cleared in the editor, and can be exported as a
 local CSV file.
 
-Users can delete the current draft with "Reset local data" in the app. Pitch
+Users can delete the current draft with "New" in the app. Pitch
 history has its own clear action. All local site data can also be removed
 through the browser's site-data settings. Exported `.prompter` files are
 generated locally by the browser and then exist outside the app on the user's
