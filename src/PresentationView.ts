@@ -120,11 +120,10 @@ export class PresentationView {
       }
     }, 50);
     
-    if (this.mode === 'preview') {
-      this.hasStarted = false;
-      this.playPauseBtn.textContent = t('preview.static');
-      this.playPauseBtn.disabled = true;
-    } else if (this.project.countdownEnabled) {
+    // Preview is now playable: it runs the scroll like presentation but skips
+    // the countdown and never records a pitch run. Only presentation with the
+    // countdown enabled auto-starts with the 3-2-1 overlay.
+    if (this.mode === 'presentation' && this.project.countdownEnabled) {
       this.startCountdown();
     } else {
       this.hasStarted = true;
@@ -187,8 +186,8 @@ export class PresentationView {
               <button id="btn-section-next" class="icon-button" aria-label="${t('presentation.nextSection')}">↓</button>
            </div>
            
-           ${isPreview ? '' : `<button id="btn-reset" class="icon-button" aria-label="${t('presentation.reset')}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg></button>`}
-           <button id="btn-playpause" class="button button--primary" ${isPreview ? 'disabled' : ''}>${isPreview ? t('preview.static') : t('presentation.startHint')}</button>
+           <button id="btn-reset" class="icon-button" aria-label="${t('presentation.reset')}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg></button>
+           <button id="btn-playpause" class="button button--primary">${t('presentation.startHint')}</button>
         </div>
       </div>
     `;
@@ -388,7 +387,6 @@ export class PresentationView {
   }
 
   private reset = () => {
-    if (this.mode === 'preview') return;
     if (this.mode === 'presentation') {
       this.recordCancelledRun();
     }
@@ -403,7 +401,7 @@ export class PresentationView {
     this.updateTextTransform();
     this.updateProgressUI();
     this.playPauseBtn.textContent = t('presentation.start');
-    if (this.project.countdownEnabled) {
+    if (this.mode === 'presentation' && this.project.countdownEnabled) {
       this.startCountdown();
     } else {
       this.hasStarted = true;
