@@ -5,7 +5,7 @@ https://github.com/ChristianHaake/haak3-webapp-standard
 
 Standard version: `1.0.0-draft`
 
-Last reviewed: `2026-06-23`
+Last reviewed: `2026-07-21`
 
 ## App-Specific Decisions
 

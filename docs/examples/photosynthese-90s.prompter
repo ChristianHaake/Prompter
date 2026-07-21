@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "title": "Photosynthese in 90 Sekunden",
+  "text": "# Photosynthese in 90 Sekunden\n\nPflanzen koennen etwas, das wir Menschen nicht koennen: Sie stellen aus Licht ihre eigene Energie her. Dieser Vorgang heisst Photosynthese.\n\n## Was braucht die Pflanze?\n\nFuer die Photosynthese braucht eine Pflanze drei Dinge: Sonnenlicht, Wasser und Kohlenstoffdioxid.\n\nDas Wasser nimmt sie ueber die Wurzeln auf. Kohlenstoffdioxid kommt aus der Luft. Das Licht wird in den gruenen Blattteilen aufgenommen, vor allem mit dem Farbstoff Chlorophyll.\n\n## Was passiert dabei?\n\nIn den Blaettern werden Wasser und Kohlenstoffdioxid umgewandelt. Dabei entsteht Zucker. Dieser Zucker ist Energie und Baustoff fuer die Pflanze.\n\nAls Nebenprodukt entsteht Sauerstoff. Er wird wieder an die Luft abgegeben.\n\n## Warum ist das wichtig?\n\nPhotosynthese ist wichtig, weil Pflanzen dadurch wachsen koennen. Gleichzeitig entsteht der Sauerstoff, den Menschen und Tiere zum Atmen brauchen.\n\nAusserdem beginnt mit Pflanzen oft die Nahrungskette: Erst wachsen Pflanzen, dann fressen Tiere Pflanzen, und andere Tiere leben wiederum von diesen Tieren.\n\nKurz gesagt: Ohne Photosynthese gaebe es deutlich weniger Sauerstoff, weniger Nahrung und deutlich weniger Leben auf der Erde.",
+  "targetDurationSeconds": 90,
+  "manualSpeed": 5,
+  "fontSize": 64,
+  "lineHeight": 1.45,
+  "theme": "light",
+  "fontFamily": "system",
+  "textColorTheme": "dark",
+  "mirrorMode": false,
+  "focusLine": true,
+  "focusLinePosition": 48,
+  "countdownEnabled": true,
+  "updatedAt": "2026-07-21T00:00:00.000Z"
+}

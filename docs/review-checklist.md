@@ -5,8 +5,8 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 
 ## Release
 
-- Version: `1.0.0`
-- Review date: `2026-06-27`
+- Version: `1.0.1`
+- Review date: `2026-07-21`
 - Reviewer: Codex
 
 ## Results
@@ -42,11 +42,13 @@ https://github.com/ChristianHaake/haak3-webapp-standard/blob/main/docs/review-ch
 
 ## Notes
 
-Release 1.0.0 includes the full local-first Prompter workflow: editor autosave,
+Release 1.0.1 includes the full local-first Prompter workflow: editor autosave,
 validated project open/save, `.txt`/`.md` script import, preview mode,
 presentation mode, display customization, undo safeguards, pitch-history
 analytics, CSV export, Markdown presentation styling, keyboard controls, PWA
-shell, and Cloudflare static-asset deployment wiring.
+shell, Cloudflare static-asset deployment wiring, Cloudflare Web Analytics CSP
+alignment, runtime/layout fixes, and a school-oriented Photosynthesis example
+project in `docs/examples/`.
 
 Manual checks are specified in `docs/manual-release-checks.md`.
 
