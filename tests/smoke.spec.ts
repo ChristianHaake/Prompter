@@ -51,17 +51,21 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
 
   await expect(page.locator('.footer-local')).toContainText('Alle Daten bleiben lokal im Browser');
   await expect(page.locator('.footer-nav')).toContainText('Über das Projekt');
-  await expect(page.locator('.app-footer')).toHaveCSS('position', 'fixed');
-  await expect(page.locator('.app-footer')).toHaveCSS('bottom', '0px');
-  await expect
-    .poll(async () => page.evaluate(() => {
-      const main = document.querySelector('#app');
-      const footer = document.querySelector('.app-footer');
-      if (!main || !footer) return false;
-      const mainPaddingBottom = parseFloat(getComputedStyle(main).paddingBottom);
-      return mainPaddingBottom >= footer.getBoundingClientRect().height;
-    }))
-    .toBe(true);
+  if (viewport && viewport.width > 1024) {
+    await expect(page.locator('.app-footer')).toHaveCSS('position', 'fixed');
+    await expect(page.locator('.app-footer')).toHaveCSS('bottom', '0px');
+    await expect
+      .poll(async () => page.evaluate(() => {
+        const main = document.querySelector('#app');
+        const footer = document.querySelector('.app-footer');
+        if (!main || !footer) return false;
+        const mainPaddingBottom = parseFloat(getComputedStyle(main).paddingBottom);
+        return mainPaddingBottom >= footer.getBoundingClientRect().height;
+      }))
+      .toBe(true);
+  } else {
+    await expect(page.locator('.app-footer')).toHaveCSS('position', 'static');
+  }
   const footerLinks = page.locator('.footer-nav a');
   await expect(footerLinks.nth(0)).toHaveText('Hilfe');
   await expect(footerLinks.nth(1)).toHaveText('Über das Projekt');
@@ -506,6 +510,98 @@ test('mobile editor and presentation do not overflow horizontally', async ({ pag
   await expect
     .poll(async () => page.evaluate(() => document.body.scrollWidth <= window.innerWidth))
     .toBe(true);
+});
+
+test('phone and tablet presentation controls stay outside the teleprompter viewport', async ({ page }) => {
+  const viewports = [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 834, height: 1194 },
+  ];
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await disableCountdown(page);
+    await page.locator('#project-text').fill('# Mobiler Test\n\n'.repeat(40));
+    await page.locator('#btn-present').click();
+
+    const textViewport = await page.locator('#prompter-viewport').boundingBox();
+    const footer = await page.locator('.presentation-footer').boundingBox();
+    expect(textViewport).toBeTruthy();
+    expect(footer).toBeTruthy();
+    expect(footer!.y).toBeGreaterThanOrEqual(textViewport!.y + textViewport!.height - 1);
+
+    for (const selector of ['#btn-slower', '#btn-faster', '#btn-section-prev', '#btn-section-next', '#btn-reset', '#btn-playpause']) {
+      const box = await page.locator(selector).boundingBox();
+      expect(box).toBeTruthy();
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+    }
+
+    const speedBefore = await page.locator('.speed-indicator').textContent();
+    await page.locator('#btn-faster').click();
+    await expect(page.locator('.speed-indicator')).not.toHaveText(speedBefore ?? '');
+    await page.locator('#btn-playpause').click();
+    await expect(page.locator('#btn-playpause')).toHaveText('Pause');
+    await page.keyboard.press('Escape');
+  }
+});
+
+test('phone and tablet preview chrome stays outside the teleprompter viewport', async ({ page }) => {
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 834, height: 1194 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.locator('#project-text').fill('# Vorschau-Test\n\n'.repeat(40));
+    await page.locator('#btn-preview').click();
+
+    const settings = await page.locator('.preview-settings').boundingBox();
+    const textViewport = await page.locator('#prompter-viewport').boundingBox();
+    const footer = await page.locator('.presentation-footer').boundingBox();
+    expect(settings).toBeTruthy();
+    expect(textViewport).toBeTruthy();
+    expect(footer).toBeTruthy();
+    expect(settings!.y + settings!.height).toBeLessThanOrEqual(textViewport!.y + 1);
+    expect(footer!.y).toBeGreaterThanOrEqual(textViewport!.y + textViewport!.height - 1);
+    await expect
+      .poll(async () => page.evaluate(() => document.body.scrollWidth <= window.innerWidth))
+      .toBe(true);
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.pitch-history')).toContainText('Noch keine Durchläufe gespeichert.');
+  }
+});
+
+test('mobile and tablet shell footer flows below the editor', async ({ page }) => {
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 834, height: 1194 },
+    { width: 1024, height: 768 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+
+    await expect(page.locator('.app-footer')).toHaveCSS('position', 'static');
+    const main = await page.locator('#app').boundingBox();
+    const footer = await page.locator('.app-footer').boundingBox();
+    expect(main).toBeTruthy();
+    expect(footer).toBeTruthy();
+    expect(footer!.y).toBeGreaterThanOrEqual(main!.y + main!.height - 1);
+
+    const exportAction = page.locator('#btn-export');
+    await exportAction.scrollIntoViewIfNeeded();
+    const actionBox = await exportAction.boundingBox();
+    const footerAfterScroll = await page.locator('.app-footer').boundingBox();
+    expect(actionBox).toBeTruthy();
+    expect(footerAfterScroll).toBeTruthy();
+    expect(footerAfterScroll!.y).toBeGreaterThanOrEqual(actionBox!.y + actionBox!.height - 1);
+  }
 });
 
 test('large fonts and high contrast keep keyboard and layout paths usable', async ({ page }) => {
