@@ -170,11 +170,14 @@ export class PresentationView {
         </div>
 
         <div class="presentation-footer">
+          <div class="presentation-footer__status">
            <span class="presentation-stats"><span class="visually-hidden">${t('presentation.elapsed')}</span><span id="time-elapsed">0:00</span></span>
            <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
              <div id="progress-bar" class="progress-fill"></div>
            </div>
            <span class="presentation-stats"><span class="visually-hidden">${t('presentation.remaining')}</span><span id="time-remaining">${this.formatTime(this.project.targetDurationSeconds)}</span></span>
+          </div>
+          <div class="presentation-footer__actions">
           
            <div class="presentation-controls">
               <button id="btn-slower" class="icon-button" aria-label="${t('presentation.speedDecrease')}">-</button>
@@ -188,6 +191,7 @@ export class PresentationView {
            
            <button id="btn-reset" class="icon-button" aria-label="${t('presentation.reset')}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg></button>
            <button id="btn-playpause" class="button button--primary">${t('presentation.startHint')}</button>
+          </div>
         </div>
       </div>
     `;
@@ -284,18 +288,12 @@ export class PresentationView {
   private calculateScrollDistance() {
     const viewportHeight = this.viewport.clientHeight;
     const focusPosition = (this.project.focusLinePosition || 50) / 100;
-    // The footer (controls/progress bar) floats over the viewport rather than
-    // taking up flex space, so it can visually cover the last lines of text
-    // unless the bottom padding is at least as tall as the footer itself.
-    const footerEl = this.container.querySelector<HTMLElement>('.presentation-footer');
-    const footerHeight = footerEl?.offsetHeight ?? 0;
     this.textContainer.style.paddingTop = `${viewportHeight * focusPosition}px`;
-    this.textContainer.style.paddingBottom = `${Math.max(viewportHeight * (1 - focusPosition), footerHeight + 24)}px`;
-    // Keep the readable-text fade-out (mask-image) above the footer's solid
-    // background so scrolling lines are never crisp behind the controls.
+    this.textContainer.style.paddingBottom = `${Math.max(24, viewportHeight * (1 - focusPosition))}px`;
+    // The footer occupies its own layout row, so the fade only needs to keep
+    // the edge of the scrolling viewport readable.
     if (viewportHeight > 0) {
-      const fadeStart = Math.min(85, Math.max(50, 100 - ((footerHeight + 16) / viewportHeight) * 100));
-      this.viewport.style.setProperty('--fade-start', `${fadeStart}%`);
+      this.viewport.style.setProperty('--fade-start', '85%');
     }
     this.totalScrollDistance = Math.max(0, this.textContainer.scrollHeight - viewportHeight);
   }
