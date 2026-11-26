@@ -23,8 +23,10 @@
   privacy notices.
 - [ ] AGB, privacy, imprint, and translations are reviewed by the operator;
   the privacy notice date is updated.
-- [x] Stage route and browser smoke test are recorded. The deployed redesign
-  served the editor, five language options, translated shell, and draft AGB.
+- [x] Stage route and full browser smoke test are recorded. Worker version
+  `17ce622f-5254-4372-9c4c-a8b476c98cf0` served all five language workflows;
+  104 Chromium, mobile Chromium, and WebKit tests passed against the live Stage
+  domain, with one known WebKit offline skip.
 - [x] PR review and Linux CI passed. The current PR head passed 139 browser tests
   with one known WebKit offline skip in
   [run 45906186726](https://github.com/ChristianHaake/Prompter/actions/runs/45906186726).
@@ -34,11 +36,19 @@
 - [ ] The exact production rollback artifact is recorded before production
   deployment.
 
-Stage deployment completed on 2026-11-26; the final acceptance build and device
-results remain to be recorded. GitHub Actions was enabled for the repository on
+Stage deployment completed on 2026-11-26; device results and operator approval
+remain to be recorded. GitHub Actions was enabled for the repository on
 2026-11-26, restricted to GitHub-owned actions. The first Linux run exposed a
 Firefox manifest-download test issue and a WebKit timing assumption; both test
 cases were corrected and the next CI run passed.
+
+Cloudflare inserts a challenge precursor inline script into the Stage HTML.
+The enforced CSP blocks that script; the app's scripts remain external. The
+live-domain test checks that this is the only inline script, that its execution
+is blocked, and that no other enforced CSP violation occurs. Cloudflare
+report-only messages are not treated as blocked app behavior. A real Cloudflare
+challenge flow has not been validated; if one is enabled for visitors, it needs
+a separate Stage check before production.
 
 Rollback source baseline: `c5b16b3` on `main`, with compatible
 `prompter_project_v1`, `prompter_pitch_history_v1`, and `.prompter` schema 1.0.
