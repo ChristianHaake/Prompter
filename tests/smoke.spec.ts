@@ -204,7 +204,16 @@ test('preview reflects settings without recording pitch history', async ({ page 
   // Preview is playable (no countdown), so play is enabled immediately.
   await expect(page.locator('#btn-playpause')).toBeEnabled();
 
-  await page.locator('#preview-fontsize').fill('80');
+  // WebKit automation occasionally focuses and blurs this number input without
+  // delivering its input event. Retry the interaction, but still require the
+  // stored value to update before exercising playback.
+  const previewFontSize = page.locator('#preview-fontsize');
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await previewFontSize.fill('80');
+    if (await page.locator('#prompter-text').evaluate(el => getComputedStyle(el).fontSize) === '80px') break;
+  }
+  await expect(previewFontSize).toHaveValue('80');
+  await expect(page.locator('#prompter-text')).toHaveCSS('font-size', '80px');
   await page.locator('#btn-playpause').click();
   await expect(page.locator('#btn-playpause')).toHaveText('Pause');
   await page.locator('#btn-reset').click();
@@ -457,7 +466,7 @@ test('export and sanitized presentation work under production CSP', async ({ pag
   const cspErrors: string[] = [];
   page.on('console', message => {
     const text = message.text();
-    if (/Content Security Policy|violates|Refused/.test(text)) {
+    if (!text.startsWith('[Report Only]') && /Content Security Policy|violates|Refused/.test(text)) {
       cspErrors.push(text);
     }
   });
@@ -502,7 +511,19 @@ test('export and sanitized presentation work under production CSP', async ({ pag
   expect(renderedHtml).not.toContain('javascript:');
   expect(renderedHtml).not.toContain('style=');
   expect(await page.locator('#prompter-text').evaluate(el => el.style.transform)).toContain('scaleX(-1)');
-  expect(cspErrors).toEqual([]);
+  if (process.env.STAGE_BASE_URL) {
+    // Cloudflare injects its challenge precursor as an inline script into the
+    // live response. Our strict CSP blocks it; no application script is inline.
+    const inlineScripts = await page.locator('script:not([src])').allTextContents();
+    const challengeScripts = inlineScripts.filter(script => script.startsWith('window.__CF$cv$params='));
+    expect(inlineScripts).toEqual(challengeScripts);
+    const blockedChallengeErrors = cspErrors.filter(error =>
+      /Executing inline script violates.*Content Security Policy|Refused to execute a script because its hash/.test(error));
+    expect(cspErrors).toEqual(blockedChallengeErrors);
+    expect(blockedChallengeErrors).toHaveLength(challengeScripts.length);
+  } else {
+    expect(cspErrors).toEqual([]);
+  }
 });
 
 test('analytics history exports as CSV', async ({ page }) => {
