@@ -6,6 +6,7 @@ export type TranslationKey =
   | 'app.privacyBadge'
   | 'app.footerPrivacy'
   | 'nav.help'
+  | 'nav.support'
   | 'nav.about'
   | 'nav.privacy'
   | 'nav.imprint'
@@ -122,6 +123,7 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'app.privacyBadge': 'Lokale Verarbeitung im Browser',
     'app.footerPrivacy': 'Alle Daten bleiben lokal im Browser. Keine Serverübertragung.',
     'nav.help': 'Hilfe',
+    'nav.support': 'Unterstützen',
     'nav.about': 'Über das Projekt',
     'nav.privacy': 'Datenschutz',
     'nav.imprint': 'Impressum',
@@ -237,6 +239,7 @@ export const translations: Record<'de' | 'en', Record<TranslationKey, string>> =
     'app.privacyBadge': 'Local processing in browser',
     'app.footerPrivacy': 'All data stays local in the browser. No server transfer.',
     'nav.help': 'Help',
+    'nav.support': 'Support',
     'nav.about': 'About the project',
     'nav.privacy': 'Privacy',
     'nav.imprint': 'Imprint',

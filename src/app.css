@@ -1080,6 +1080,11 @@ main {
 }
 
 .footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 8px;
   text-decoration: none;
   font-weight: 750;
   color: var(--text-muted);
@@ -1107,10 +1112,23 @@ main {
 }
 
 .support-link {
+  min-height: 44px;
   border: 2px solid #111827;
   color: #111827;
   background: #ffd400;
   box-shadow: 0 1px 0 rgb(17 24 39 / 18%);
+}
+
+.support-cta {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #ffd400;
+  color: #111827;
+  font-weight: 750;
+  text-decoration: none;
 }
 
 .github-link:hover,

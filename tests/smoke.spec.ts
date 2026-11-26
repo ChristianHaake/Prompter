@@ -46,8 +46,8 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
 
   const supportLink = page.locator('.support-link');
   await expect(supportLink).toBeVisible();
-  await expect(supportLink).toHaveAttribute('href', 'https://buymeacoffee.com/haake');
-  await expect(supportLink).toContainText('Buy me a coffee');
+  await expect(supportLink).toHaveAttribute('href', '#/unterstuetzung');
+  await expect(supportLink).toContainText('Unterstützen');
 
   await expect(page.locator('.footer-local')).toContainText('Alle Daten bleiben lokal im Browser');
   await expect(page.locator('.footer-nav')).toContainText('Über das Projekt');
@@ -68,9 +68,10 @@ test('has title, brand logo, and GitHub footer button', async ({ page }) => {
   }
   const footerLinks = page.locator('.footer-nav a');
   await expect(footerLinks.nth(0)).toHaveText('Hilfe');
-  await expect(footerLinks.nth(1)).toHaveText('Über das Projekt');
-  await expect(footerLinks.nth(2)).toHaveText('Impressum');
-  await expect(footerLinks.nth(3)).toHaveText('Datenschutz');
+  await expect(footerLinks.nth(1)).toHaveText('Unterstützen');
+  await expect(footerLinks.nth(2)).toHaveText('Über das Projekt');
+  await expect(footerLinks.nth(3)).toHaveText('Impressum');
+  await expect(footerLinks.nth(4)).toHaveText('Datenschutz');
 });
 
 test('editor workflow actions are floating pills below the text editor', async ({ page }) => {
@@ -492,6 +493,13 @@ test('content routes render concrete pages', async ({ page }) => {
   await page.goto('/#/datenschutz');
   await expect(page.locator('.markdown-body h1')).toHaveText('Datenschutzerklärung');
   await expect(page.locator('.markdown-body')).toContainText('prompter_project_v1');
+
+  await page.goto('/#/unterstuetzung');
+  await expect(page.locator('.markdown-body h1')).toHaveText('Unterstützen');
+  const donationLink = page.locator('.markdown-body a[href="https://buymeacoffee.com/Haake"]');
+  await expect(donationLink).toHaveAttribute('target', '_blank');
+  await expect(donationLink).toHaveAttribute('rel', 'noopener noreferrer');
+  await expect(page.locator('.markdown-body a[href^="https://buymeacoffee.com/"]')).toHaveCSS('min-height', '44px');
 });
 
 test('mobile editor and presentation do not overflow horizontally', async ({ page }) => {

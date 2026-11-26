@@ -16,6 +16,8 @@ import ueberEnMd from '../content/ueber_en.md?raw';
 import datenschutzEnMd from '../content/datenschutz_en.md?raw';
 import impressumEnMd from '../content/impressum_en.md?raw';
 import lehrkraefteEnMd from '../content/fuer-lehrkraefte_en.md?raw';
+import supportMd from '../content/unterstuetzung.md?raw';
+import supportEnMd from '../content/unterstuetzung_en.md?raw';
 
 import { t, type TranslationKey } from './i18n';
 
@@ -25,6 +27,7 @@ const contentMap: Record<string, Record<'de' | 'en', string>> = {
   'datenschutz': { de: datenschutzMd, en: datenschutzEnMd },
   'impressum': { de: impressumMd, en: impressumEnMd },
   'fuer-lehrkraefte': { de: lehrkraefteMd, en: lehrkraefteEnMd },
+  'unterstuetzung': { de: supportMd, en: supportEnMd },
 };
 
 const langSwitchBtn = document.getElementById('lang-switch-btn');
@@ -151,6 +154,13 @@ function renderContentPage(page: string) {
         </div>
       </div>
     `;
+    appDiv.querySelectorAll<HTMLAnchorElement>('.markdown-body a[href^="http"]').forEach(link => {
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    });
+    if (page === 'unterstuetzung') {
+      appDiv.querySelector('.markdown-body a[href^="https://buymeacoffee.com/"]')?.classList.add('support-cta');
+    }
   } else {
     appDiv.innerHTML = `
       <div class="legal-page">
