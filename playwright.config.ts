@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const stageBaseURL = process.env.STAGE_BASE_URL;
+
 export default defineConfig({
   testDir: './tests',
   testMatch: '**/*.spec.ts',
@@ -9,7 +11,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:5180',
+    baseURL: stageBaseURL ?? 'http://localhost:5180',
     locale: 'de-DE',
     trace: 'on-first-retry',
   },
@@ -31,7 +33,7 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
-  webServer: {
+  webServer: stageBaseURL ? undefined : {
     command: 'npm run build && npm run preview -- --host 127.0.0.1',
     url: 'http://localhost:5180',
     reuseExistingServer: false,

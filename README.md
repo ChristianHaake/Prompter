@@ -90,7 +90,7 @@ Die Bilddateien für Blogposts und Social Media liegen in
 
 ## Release-Status
 
-Das Redesign für `1.1.0` wird auf Stage vorbereitet. Das automatisierte
+Das Redesign für `1.1.0` ist auf Stage verfügbar. Das automatisierte
 Release-Gate ist `npm run verify`; manuelle Zielgeräte-, Screenreader-,
 Rechtstext- und PWA-Prüfungen stehen in
 [docs/manual-release-checks.md](docs/manual-release-checks.md). Eine
@@ -169,6 +169,9 @@ npm run verify
 
 `npm run verify` ist das Release-Gate. Es führt Linting, Typecheck, Unit-Tests,
 Produktions-Audit, Build und Playwright-Tests gegen eine Produktions-Preview aus.
+Für den Browser-Test gegen die deployte Stage-Version kann
+`STAGE_BASE_URL=https://stage.prompter.haak3.de npx playwright test` verwendet
+werden. Dabei startet Playwright keinen lokalen Preview-Server.
 
 ## Projektstruktur
 

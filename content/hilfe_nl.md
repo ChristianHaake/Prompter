@@ -1,4 +1,4 @@
-# Help
+# Hulp
 
 ## Wat doet Prompter?
 

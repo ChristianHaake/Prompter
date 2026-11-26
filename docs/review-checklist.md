@@ -4,8 +4,9 @@
 
 - [x] Core editor, local project format, import failure recovery, history, CSV,
   presentation, and offline Chromium shell remain covered by browser tests.
-- [x] Five language dictionaries have matching typed keys. Browser tests open
-  every content route in each language and preserve an edited draft.
+- [x] Five language dictionaries have matching typed keys. Browser tests exercise
+  localized core actions, save/error states, project/CSV exports, and every
+  content route in each language while preserving an edited draft.
 - [x] Support links internally; external provider links open safely. The footer
   exposes help, examples, about, AGB, imprint, privacy, and haak3 attribution.
 - [x] Mobile text entry precedes settings in document order. Shell links wrap
@@ -22,10 +23,16 @@
   privacy notices.
 - [ ] AGB, privacy, imprint, and translations are reviewed by the operator;
   the privacy notice date is updated.
-- [ ] Stage route, PR review, CI, stage smoke test, and rollback artifact are
-  recorded before production deployment.
+- [x] Stage route and browser smoke test are recorded. The deployed redesign
+  served the editor, five language options, translated shell, and draft AGB.
+- [ ] PR review, green Linux CI, and exact rollback artifact are recorded before
+  production deployment.
 
-Stage deployment was paused at the operator's request on 2026-11-26.
+Stage deployment completed on 2026-11-26; the final acceptance build and device
+results remain to be recorded. GitHub Actions was enabled for the repository on
+2026-11-26, restricted to GitHub-owned actions. The first Linux run exposed a
+Firefox manifest-download test issue and a WebKit timing assumption; both test
+cases were corrected for the next CI run.
 
 Rollback source baseline: `c5b16b3` on `main`, with compatible
 `prompter_project_v1`, `prompter_pitch_history_v1`, and `.prompter` schema 1.0.
