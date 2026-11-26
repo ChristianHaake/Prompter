@@ -1,5 +1,6 @@
 import type {
   AppState,
+  Language,
   PitchRunRecord,
   PitchRunStatus,
   PrompterFontFamily,
@@ -31,6 +32,10 @@ export const MAX_LINE_HEIGHT = 2.4;
 export const MIN_FOCUS_LINE_POSITION = 20;
 export const MAX_FOCUS_LINE_POSITION = 80;
 export const DEFAULT_FOCUS_LINE_POSITION = 50;
+
+function isLanguage(value: string | null): value is Language {
+  return value === 'de' || value === 'en' || value === 'fr' || value === 'es' || value === 'nl';
+}
 
 export const DEFAULT_PROJECT: PrompterProject = {
   version: PROJECT_SCHEMA_VERSION,
@@ -273,6 +278,7 @@ export class Store {
   private state: AppState;
   private subscribers: Set<Subscriber> = new Set();
   private storage: StorageLike | null;
+  private projectSaveStatus: 'idle' | 'saved' | 'temporary' = 'idle';
 
   constructor(storage: StorageLike | null = getBrowserStorage()) {
     this.storage = storage;
@@ -311,8 +317,14 @@ export class Store {
 
   private saveToStorage() {
     try {
+      if (!this.storage) {
+        this.projectSaveStatus = 'temporary';
+        return;
+      }
       this.storage?.setItem(STORAGE_KEY, JSON.stringify(this.state.project));
+      this.projectSaveStatus = 'saved';
     } catch (e) {
+      this.projectSaveStatus = 'temporary';
       console.error('Failed to save project to local storage', e);
     }
   }
@@ -333,6 +345,10 @@ export class Store {
 
   public getState(): AppState {
     return this.state;
+  }
+
+  public getProjectSaveStatus() {
+    return this.projectSaveStatus;
   }
 
   public updateProject(partial: Partial<PrompterProject>) {
@@ -381,18 +397,20 @@ export class Store {
     this.notify();
   }
 
-  private loadLanguageFromStorage(): 'de' | 'en' {
+  private loadLanguageFromStorage(): Language {
     try {
-      const stored = this.storage?.getItem('prompter_language');
-      if (stored === 'de' || stored === 'en') return stored;
+      const stored = this.storage?.getItem('prompter_language') ?? null;
+      if (isLanguage(stored)) return stored;
     } catch {
-      // ignore
+      // The language menu remains usable when browser storage is blocked.
     }
-    // Default based on browser language if needed, but for simplicity default to 'de'
+    const browserLanguage = typeof navigator === 'undefined' ? '' : navigator.language;
+    const preferred = (browserLanguage.split('-')[0] ?? '').toLowerCase();
+    if (isLanguage(preferred)) return preferred;
     return 'de';
   }
 
-  public setLanguage(lang: 'de' | 'en') {
+  public setLanguage(lang: Language) {
     this.state.language = lang;
     try {
       this.storage?.setItem('prompter_language', lang);
@@ -410,7 +428,9 @@ export class Store {
     this.state.project = { ...DEFAULT_PROJECT, updatedAt: new Date().toISOString() };
     try {
       this.storage?.removeItem(STORAGE_KEY);
+      this.projectSaveStatus = 'idle';
     } catch (e) {
+      this.projectSaveStatus = 'temporary';
       console.error('Failed to clear project from local storage', e);
     }
     this.notify();

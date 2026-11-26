@@ -1,5 +1,56 @@
 # Release Review
 
+## Redesign 1.1.0 — 2026-11-26
+
+- [x] Core editor, local project format, import failure recovery, history, CSV,
+  presentation, and offline Chromium shell remain covered by browser tests.
+- [x] Five language dictionaries have matching typed keys. Browser tests open
+  every content route in each language and preserve an edited draft.
+- [x] Support links internally; external provider links open safely. The footer
+  exposes help, examples, about, AGB, imprint, privacy, and haak3 attribution.
+- [x] Mobile text entry precedes settings in document order. Shell links wrap
+  instead of forcing horizontal scrolling; central shell controls have 44px
+  targets.
+- [x] `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`,
+  `npm run audit`, Chromium Playwright (desktop/mobile), and WebKit Playwright
+  (online tests) passed locally.
+- [ ] Firefox browser tests pass in CI or on an unrestricted host. Local macOS
+  Firefox fails in its `plugin-container` before the first page loads.
+- [ ] Manual screen-reader, 200% zoom, contrast, reduced-motion, real phone and
+  tablet, PWA install/offline, and export-artifact checks are recorded on Stage.
+- [x] The operator approved `apps@haak3.de` as contact address for imprint and
+  privacy notices.
+- [ ] AGB, privacy, imprint, and translations are reviewed by the operator;
+  the privacy notice date is updated.
+- [ ] Stage route, PR review, CI, stage smoke test, and rollback artifact are
+  recorded before production deployment.
+
+Stage deployment was paused at the operator's request on 2026-11-26.
+
+Rollback source baseline: `c5b16b3` on `main`, with compatible
+`prompter_project_v1`, `prompter_pitch_history_v1`, and `.prompter` schema 1.0.
+The exact deployable rollback artifact must be recorded at release time.
+
+### Reproduce the automated checks
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run audit
+npm run build
+npx playwright test --project=chromium --project=mobile-chromium
+npx playwright test --project=webkit
+npx playwright test --project=firefox
+```
+
+The WebKit offline-navigation test is skipped because Playwright WebKit reports
+an internal error at `page.goto` while offline. This is a test-harness limit,
+not evidence that installed Safari works offline. Stage device testing remains
+required.
+
+## Previous release review
+
 Checklist source:
 https://github.com/ChristianHaake/DEV-Memory/blob/main/standards/haak3-webapps/docs/review-checklist.md
 

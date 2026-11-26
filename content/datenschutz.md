@@ -9,7 +9,7 @@ Alte Ziegelei 7
 26197 Großenkneten  
 Deutschland
 
-E-Mail: {mein Vorname}{mein Nachname}@gmail.com
+E-Mail: [apps@haak3.de](mailto:apps@haak3.de)
 
 ## 2. Bereitstellung der Website
 
@@ -76,8 +76,9 @@ https://www.cloudflare.com/web-analytics/
 Prompter verarbeitet die vom Nutzer eingegebenen Inhalte grundsätzlich lokal im
 Browser.
 
-Die eingegebenen Daten werden nicht an den Betreiber übermittelt und nicht
-dauerhaft gespeichert, soweit dies nicht ausdrücklich anders angegeben wird.
+Die eingegebenen Inhalte werden nicht an den Betreiber übermittelt oder von ihm
+gespeichert. Entwurf und Pitch-Verlauf bleiben im selben Browser gespeichert,
+bis sie in der App oder über die Website-Daten des Browsers gelöscht werden.
 
 Der aktuelle Entwurf wird im Browser unter dem `localStorage`-Schlüssel
 `prompter_project_v1` gespeichert. Diese Speicherung dient der lokalen

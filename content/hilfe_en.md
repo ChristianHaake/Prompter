@@ -48,3 +48,10 @@ Invalid files, files that are too large, and unsupported project versions are re
 Prompter is built for modern desktop and mobile browsers. The app uses `localStorage`, the browser's Fullscreen API, Web Audio for the end signal, optional Wake Lock during presentation, and a Service Worker for PWA functionality.
 
 Project files are JSON files with the `.prompter` extension. The current import limit is 500 KB. Very long texts are limited to 100,000 characters.
+## Feedback
+
+- [Report a bug](https://haak3.atlassian.net/jira/software/form/69a50efc-0474-445e-8f01-66eb6b747cc1)
+- [Suggest a feature](https://haak3.atlassian.net/jira/software/form/50d4fc51-bff4-4e21-b46e-8fd987b90d24)
+- Alternatively, email [apps@haak3.de](mailto:apps@haak3.de).
+
+Please do not share private script content.
