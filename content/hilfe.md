@@ -72,3 +72,10 @@ Funktionalität.
 Projektdateien sind JSON-Dateien mit der Endung `.prompter`. Die aktuelle
 Importgrenze liegt bei 500 KB. Sehr lange Texte werden auf 100.000 Zeichen
 begrenzt.
+## Rückmeldung
+
+- [Fehler melden](https://haak3.atlassian.net/jira/software/form/69a50efc-0474-445e-8f01-66eb6b747cc1)
+- [Funktion vorschlagen](https://haak3.atlassian.net/jira/software/form/50d4fc51-bff4-4e21-b46e-8fd987b90d24)
+- Alternativ per E-Mail an [apps@haak3.de](mailto:apps@haak3.de).
+
+Bitte teile keine privaten Skriptinhalte.
