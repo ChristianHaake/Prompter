@@ -5,13 +5,16 @@ off.
 
 ## Devices and Layout
 
+- Check 320, 360, 390, 768, and 1440 CSS-pixel widths on the Stage build.
 - Desktop Chrome/Firefox/Safari: editor, preview, presentation, import/export.
-- Mobile browser at about 390px width: editor settings, preview controls,
-  presentation footer, large font size, high-contrast mode.
+- Real phone and tablet: editor first, language menu, settings, preview controls,
+  presentation footer, large font size, high-contrast mode, and 44px targets.
 - Tablet landscape and portrait: no horizontal overflow, controls remain
   reachable.
 - Browser zoom at 200%: editor controls, undo banner, analytics, and
   presentation controls stay usable.
+- Open exported `.prompter` and CSV files and inspect content, encoding, scale,
+  and clipping. Re-import a pre-redesign project file.
 
 ## Screen Reader
 
@@ -38,3 +41,5 @@ off.
   backend during edit, preview, presentation, import, export, or CSV export.
 - Confirm Cloudflare/Web Analytics wording is still accurate on the privacy
   page.
+- Operator reviews AGB, imprint, privacy, and all translations; replace contact
+  placeholders and update the notice date before production release.

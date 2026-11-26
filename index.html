@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-    <meta name="theme-color" content="#245dcc" />
+    <meta name="theme-color" content="#f4f2ef" />
     <meta name="description" content="Teleprompter-App ohne Login und ohne Upload." />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Prompter</title>
   </head>
   <body>
-    <a class="skip-link" href="#app">Zum Inhalt springen</a>
+    <a class="skip-link" href="#app" data-i18n="app.skipLink">Zum Inhalt springen</a>
     <div class="app-shell">
       <header class="app-header">
         <a class="brand" href="/">
@@ -22,11 +22,15 @@
             <span data-i18n="app.privacyBadge">Lokale Verarbeitung im Browser</span>
           </span>
           <div class="header-actions">
-            <div class="language-toggle" aria-label="Sprache">
-              <button id="lang-switch-btn" class="language-toggle__button" title="Sprache wechseln" aria-label="Sprache wechseln" type="button">
-                <span id="lang-current" class="language-toggle__active">DE</span>
-                <span id="lang-target" class="language-toggle__inactive">EN</span>
-              </button>
+            <div class="language-toggle">
+              <label for="lang-select" data-i18n="lang.label">Sprache</label>
+              <select id="lang-select" class="language-toggle__select">
+                <option value="de">Deutsch</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="es">Español</option>
+                <option value="nl">Nederlands</option>
+              </select>
             </div>
             <a href="#/fuer-lehrkraefte" class="header-button">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.42 10.922a2 2 0 0 1-.019 3.022l-7.1 7.1a2 2 0 0 1-2.827 0l-7.1-7.1a2 2 0 0 1-.018-3.022L12 2.8z"></path><path d="m22 10-2.5 2.5"></path><path d="m2 10 2.5 2.5"></path><path d="m14 14.5-2 2-2-2"></path></svg>
@@ -41,13 +45,15 @@
       </main>
 
       <footer class="app-footer">
-        <p class="footer-local" data-i18n="app.footerPrivacy">Alle Daten bleiben lokal im Browser. Keine Serverübertragung.</p>
-        <nav class="footer-nav" aria-label="Rechtliches und Hilfe">
+        <p class="footer-local" data-i18n="app.footerPrivacy">Skripte bleiben im Browser; der Hoster verarbeitet technische Verbindungsdaten.</p>
+        <nav class="footer-nav" aria-label="Rechtliches und Hilfe" data-i18n-aria-label="app.footerNavLabel">
           <a href="#/hilfe" data-i18n="nav.help">Hilfe</a>
+          <a href="#/beispiele" data-i18n="nav.examples">Beispiele</a>
           <a href="#/ueber" data-i18n="nav.about">Über</a>
+          <a href="#/agb" data-i18n="nav.terms">AGB</a>
           <a href="#/impressum" data-i18n="nav.imprint">Impressum</a>
           <a href="#/datenschutz" data-i18n="nav.privacy">Datenschutz</a>
-          <a class="support-link" href="https://buymeacoffee.com/haake" target="_blank" rel="noopener noreferrer" aria-label="Buy me a coffee">
+          <a class="support-link" href="#/unterstuetzung">
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 2v2"></path>
               <path d="M14 2v2"></path>
@@ -55,15 +61,15 @@
               <path d="M18 9h1a3 3 0 0 1 0 6h-1"></path>
               <path d="M4 22h16"></path>
             </svg>
-            <span>Buy me a coffee</span>
+            <span data-i18n="nav.support">Unterstützen</span>
           </a>
-          <a class="github-link" href="https://github.com/ChristianHaake/Prompter" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
+          <a class="github-link" href="https://github.com/ChristianHaake/Prompter" target="_blank" rel="noopener noreferrer" aria-label="Prompter auf GitHub" title="Prompter auf GitHub">
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24">
               <path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.2.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C17.9 4.8 19 5.1 19 5.1c.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.7c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z" />
             </svg>
-            <span data-i18n="nav.github">GitHub</span>
           </a>
         </nav>
+        <a class="footer-attribution" href="https://haak3.de/" target="_blank" rel="noopener noreferrer" data-i18n="app.footerAttribution">Eine haak3-App</a>
       </footer>
     </div>
     <script type="module" src="/src/main.ts"></script>

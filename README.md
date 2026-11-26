@@ -59,9 +59,9 @@ Skript.
   Trend.
 - **Recovery Flow**: Rückgängig-Funktion für destruktive Aktionen wie neues
   Projekt und Verlauf leeren.
-- **Mehrsprachige App-Shell**: Deutsch/Englisch, Hilfe, Über das Projekt,
-  Datenschutz, Impressum, Für Lehrkräfte, lokales Browser-Speichermodell und
-  PWA-Unterstützung.
+- **Mehrsprachige App-Shell**: Deutsch, Englisch, Französisch, Spanisch und
+  Niederländisch mit Hilfe, Beispielprojekt, Unterstützung, AGB-Entwurf,
+  Datenschutz, Impressum und Informationen für Lehrkräfte.
 
 ## Beispielprojekt
 
@@ -90,10 +90,11 @@ Die Bilddateien für Blogposts und Social Media liegen in
 
 ## Release-Status
 
-`1.0.1` ist als Maintenance-Release vorbereitet. Das automatisierte Release-Gate
-ist `npm run verify`; manuelle Zielgeräte-, Screenreader- und PWA-Prüfungen
-stehen in [docs/manual-release-checks.md](docs/manual-release-checks.md), weil
-sie nicht ehrlich automatisiert abgehakt werden können.
+Das Redesign für `1.1.0` wird auf Stage vorbereitet. Das automatisierte
+Release-Gate ist `npm run verify`; manuelle Zielgeräte-, Screenreader-,
+Rechtstext- und PWA-Prüfungen stehen in
+[docs/manual-release-checks.md](docs/manual-release-checks.md). Eine
+Produktionsfreigabe ist damit noch nicht verbunden.
 
 ## Tastatursteuerung
 
@@ -114,6 +115,10 @@ Lokale Speicherorte:
 - `prompter_project_v1`: aktuelles Projekt im `localStorage`.
 - `prompter_pitch_history_v1`: lokale Pitch-History im `localStorage`.
 - `prompter_language`: gewählte Sprache.
+
+Eine gespeicherte Sprachwahl hat Vorrang. Ohne gespeicherte Wahl verwendet die
+App eine unterstützte Browsersprache, sonst Deutsch. Skriptinhalt und
+Projekteinstellungen bleiben beim Sprachwechsel erhalten.
 
 Projektdateien sind lokale JSON-Dateien mit der Endung `.prompter` und
 Schema-Version `1.0`. Importierte Projekte werden vor dem Ersetzen des aktuellen

@@ -10,6 +10,7 @@ export default defineConfig({
   reporter: 'html',
   use: {
     baseURL: 'http://localhost:5180',
+    locale: 'de-DE',
     trace: 'on-first-retry',
   },
   projects: [
@@ -20,6 +21,14 @@ export default defineConfig({
     {
       name: 'mobile-chromium',
       use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
     },
   ],
   webServer: {

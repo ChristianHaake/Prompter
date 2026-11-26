@@ -93,4 +93,11 @@ Subject to statutory requirements, data subjects have rights including access,
 rectification, erasure, restriction of processing, data portability, and
 objection. They may also lodge a complaint with a data protection authority.
 
-The German version is authoritative. This translation is not legal advice.
+## 9. Changes to This Notice
+
+This notice may be updated when technical or legal changes require it. The
+current version published on this website applies.
+
+Last updated: June 2026
+
+The German version is authoritative. This translation requires operator review.

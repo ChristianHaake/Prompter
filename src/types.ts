@@ -34,7 +34,7 @@ export type PitchRunRecord = {
 // Application View State
 export type ViewMode = 'editor' | 'preview' | 'presentation';
 
-export type Language = 'de' | 'en';
+export type Language = 'de' | 'en' | 'fr' | 'es' | 'nl';
 
 export type AppState = {
   project: PrompterProject;

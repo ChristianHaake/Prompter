@@ -70,6 +70,7 @@ export class EditorView {
   private textColorThemeSelect!: HTMLSelectElement;
   private focusLinePositionInput!: HTMLInputElement;
   private textInput!: HTMLTextAreaElement;
+  private saveStatusEl!: HTMLSpanElement;
   private pitchHistoryList!: HTMLDivElement;
   private analyticsEl!: HTMLDivElement;
   private undoBanner!: HTMLDivElement;
@@ -95,11 +96,13 @@ export class EditorView {
       this.updateStats();
       this.updatePitchHistoryUI();
       this.updateUndoBanner();
+      this.updateSaveStatus();
     });
     this.syncFormWithProject();
     this.updateStats();
     this.updatePitchHistoryUI();
     this.updateUndoBanner();
+    this.updateSaveStatus();
   }
 
   public unmount() {
@@ -114,6 +117,7 @@ export class EditorView {
 
   private scheduleTextUpdate(value: string) {
     this.pendingText = value;
+    this.updateSaveStatus();
     if (this.textUpdateTimeoutId !== null) {
       window.clearTimeout(this.textUpdateTimeoutId);
     }
@@ -306,7 +310,8 @@ export class EditorView {
 	                <h2 id="text-panel-title">${escapeHtml(this.getTextPanelTitle())}</h2>
 	              </div>
 	              <div class="preview-panel__content">
-	                <label class="visually-hidden" for="project-text">${t('editor.text.label')}</label>
+	                <label class="field-label text-label" for="project-text">${t('editor.text.label')}</label>
+                <span id="save-status" class="save-status" role="status" aria-live="polite"></span>
                 <textarea id="project-text" class="text-input" placeholder="${t('editor.placeholder.text')}">${escapeHtml(this.currentProject.text)}</textarea>
                 <div class="action-bar">
                   <div class="stats">
@@ -337,6 +342,10 @@ export class EditorView {
           </div>
     `;
 
+    const workspace = this.container.querySelector('.workspace');
+    const textPanel = workspace?.querySelector('.preview-panel');
+    if (textPanel) workspace?.prepend(textPanel);
+
     this.presentBtn = this.container.querySelector('#btn-present') as HTMLButtonElement;
     this.previewBtn = this.container.querySelector('#btn-preview') as HTMLButtonElement;
     this.wordCountEl = this.container.querySelector('#word-count') as HTMLSpanElement;
@@ -357,6 +366,7 @@ export class EditorView {
     this.textColorThemeSelect = this.container.querySelector('#project-textcolor') as HTMLSelectElement;
     this.focusLinePositionInput = this.container.querySelector('#project-focus-position') as HTMLInputElement;
     this.textInput = this.container.querySelector('#project-text') as HTMLTextAreaElement;
+    this.saveStatusEl = this.container.querySelector('#save-status') as HTMLSpanElement;
     this.pitchHistoryList = this.container.querySelector('#pitch-history-list') as HTMLDivElement;
     this.analyticsEl = this.container.querySelector('#analytics-panel') as HTMLDivElement;
     this.undoBanner = this.container.querySelector('#undo-banner') as HTMLDivElement;
@@ -425,6 +435,13 @@ export class EditorView {
         const seconds = Number(button.dataset.timerPreset);
         button.classList.toggle('is-active', seconds === this.currentProject.targetDurationSeconds);
       });
+  }
+
+  private updateSaveStatus() {
+    const status = this.pendingText === null ? store.getProjectSaveStatus() : 'pending';
+    const message = status === 'idle' ? '' : t(`editor.save.${status}`);
+    if (this.saveStatusEl.textContent !== message) this.saveStatusEl.textContent = message;
+    this.saveStatusEl.dataset.state = status;
   }
 
   private updateStats() {
@@ -689,7 +706,10 @@ export class EditorView {
     window.scrollTo(0, 0);
   };
 
+  private handlePageHide = () => this.flushPendingTextUpdate();
+
   private attachEventListeners() {
+    window.addEventListener('pagehide', this.handlePageHide);
     this.container.addEventListener('input', this.handleInput);
     this.container.addEventListener('click', this.handleClick);
     this.previewBtn.addEventListener('click', this.handlePreview);
@@ -701,6 +721,7 @@ export class EditorView {
   }
 
   private removeEventListeners() {
+    window.removeEventListener('pagehide', this.handlePageHide);
     this.container.removeEventListener('input', this.handleInput);
     this.container.removeEventListener('click', this.handleClick);
     if (this.presentBtn) {

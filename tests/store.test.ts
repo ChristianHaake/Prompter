@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import { calculatePitchAnalytics, exportPitchHistoryCsv } from '../src/analytics';
 import {
   decodePitchHistoryStorage,
@@ -38,11 +38,13 @@ function validProject(overrides: Record<string, unknown> = {}) {
 }
 
 describe('Store persistence and imports', () => {
+  afterEach(() => vi.unstubAllGlobals());
   test('autosaves updates and restores them from storage', () => {
     const storage = new MemoryStorage();
     const store = new Store(storage);
 
     store.updateProject({ title: 'Gespeichert', text: 'Lokaler Entwurf' });
+    expect(store.getProjectSaveStatus()).toBe('saved');
 
     const restored = new Store(storage);
     expect(restored.getState().project.title).toBe('Gespeichert');
@@ -166,6 +168,33 @@ describe('Store persistence and imports', () => {
     const restored = new Store(storage);
     expect(restored.getState().language).toBe('en');
     expect(restored.getState().project.title).toBe(DEFAULT_PROJECT.title);
+  });
+
+  test('uses a supported browser language unless a saved choice takes precedence', () => {
+    vi.stubGlobal('navigator', { language: 'fr-CA' });
+    const storage = new MemoryStorage();
+    expect(new Store(storage).getState().language).toBe('fr');
+    storage.setItem('prompter_language', 'nl');
+    expect(new Store(storage).getState().language).toBe('nl');
+    storage.setItem('prompter_language', 'invalid');
+    expect(new Store(storage).getState().language).toBe('fr');
+    vi.stubGlobal('navigator', { language: 'pt-BR' });
+    expect(new Store(storage).getState().language).toBe('de');
+  });
+
+  test('language selection works when preference storage is blocked', () => {
+    vi.stubGlobal('navigator', { language: 'es-ES' });
+    const blockedStorage = {
+      getItem: () => { throw new Error('blocked'); },
+      setItem: () => { throw new Error('blocked'); },
+      removeItem: () => { throw new Error('blocked'); },
+    };
+    const store = new Store(blockedStorage);
+    expect(store.getState().language).toBe('es');
+    store.setLanguage('nl');
+    expect(store.getState().language).toBe('nl');
+    store.updateProject({ text: 'Temporary draft' });
+    expect(store.getProjectSaveStatus()).toBe('temporary');
   });
 
   test('reset clears persisted project data and restores defaults in memory', () => {

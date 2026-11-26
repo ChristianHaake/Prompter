@@ -1,5 +1,7 @@
 # Imprint
 
+The German version is authoritative. This translation requires operator review.
+
 Information according to § 5 DDG
 
 Christian Haake  
