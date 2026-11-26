@@ -133,17 +133,17 @@ test('pending editor text is saved on immediate navigation', async ({ page }) =>
   await expect(page.locator('#project-text')).toHaveValue('Latest words before leaving');
 });
 
-test('PWA manifest and service worker are available in production preview', async ({ page }) => {
-  const manifestResponse = await page.goto('/manifest.webmanifest');
-  expect(manifestResponse?.ok()).toBe(true);
-  const manifest = JSON.parse(await page.locator('body').textContent() ?? '{}');
+test('PWA manifest and service worker are available in production preview', async ({ request }) => {
+  const manifestResponse = await request.get('/manifest.webmanifest');
+  expect(manifestResponse.ok()).toBe(true);
+  const manifest = await manifestResponse.json();
   expect(manifest.name).toBe('Prompter');
   expect(manifest.display).toBe('standalone');
   expect(manifest.icons.some((icon: { purpose?: string }) => icon.purpose === 'maskable')).toBe(true);
 
-  const swResponse = await page.goto('/sw.js');
-  expect(swResponse?.ok()).toBe(true);
-  const serviceWorkerText = await page.locator('body').textContent() ?? '';
+  const swResponse = await request.get('/sw.js');
+  expect(swResponse.ok()).toBe(true);
+  const serviceWorkerText = await swResponse.text();
   expect(serviceWorkerText).toContain('precacheAndRoute');
   expect(serviceWorkerText).toContain('logo.png');
   expect(serviceWorkerText).not.toContain('icons.svg');
@@ -180,7 +180,7 @@ test('can type text and use presentation controls', async ({ page }) => {
 
   await page.keyboard.press('Space');
   await expect(page.locator('#btn-playpause')).toHaveText('Pause');
-  await page.waitForTimeout(200);
+  await expect(page.locator('#time-elapsed')).not.toHaveText('0:00');
 
   await page.keyboard.press('Space');
   await expect(page.locator('#btn-playpause')).toHaveText('Weiter');

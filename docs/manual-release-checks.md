@@ -3,6 +3,11 @@
 These checks cover the parts that automated local tests cannot honestly sign
 off.
 
+For the 1.1.0 Stage sign-off, record the actual device, OS, browser, date,
+result, and a short reproduction for every failure. Use at least one real phone
+and one real tablet, covering Apple Safari and Android Chrome between them.
+Do not mark a check passed from a browser emulator alone.
+
 ## Devices and Layout
 
 - Check 320, 360, 390, 768, and 1440 CSS-pixel widths on the Stage build.
@@ -14,7 +19,8 @@ off.
 - Browser zoom at 200%: editor controls, undo banner, analytics, and
   presentation controls stay usable.
 - Open exported `.prompter` and CSV files and inspect content, encoding, scale,
-  and clipping. Re-import a pre-redesign project file.
+  and clipping where applicable. Prompter has no image export. Re-import a
+  pre-redesign project file.
 
 ## Screen Reader
 
@@ -43,3 +49,19 @@ off.
   page.
 - Operator reviews AGB, imprint, privacy, and all translations; update the
   notice date before production release. The contact address is `apps@haak3.de`.
+
+## Stage Sign-off Record
+
+| Area | Device / browser | Result and date | Evidence or defect |
+| --- | --- | --- | --- |
+| Phone layout, editing, preview, presentation, touch targets | Pending | Pending | |
+| Tablet portrait and landscape, large fonts, contrast | Pending | Pending | |
+| 200% zoom, keyboard, reduced motion | Pending | Pending | |
+| Screen reader: editor, errors, undo, preview, presentation | Pending | Pending | |
+| Safari PWA install and offline restart | Pending | Pending | |
+| Android Chrome workflow and offline restart | Pending | Pending | |
+| Exported `.prompter` and CSV opened; old project re-imported | Pending | Pending | |
+| AGB, privacy, imprint, and translations approved by operator | Pending | Pending | |
+
+Record each failure in a linked issue. Legal approval requires the operator's
+explicit review; the current AGB text is marked as a draft.

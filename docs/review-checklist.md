@@ -4,8 +4,9 @@
 
 - [x] Core editor, local project format, import failure recovery, history, CSV,
   presentation, and offline Chromium shell remain covered by browser tests.
-- [x] Five language dictionaries have matching typed keys. Browser tests open
-  every content route in each language and preserve an edited draft.
+- [x] Five language dictionaries have matching typed keys. Browser tests exercise
+  localized core actions, save/error states, project/CSV exports, and every
+  content route in each language while preserving an edited draft.
 - [x] Support links internally; external provider links open safely. The footer
   exposes help, examples, about, AGB, imprint, privacy, and haak3 attribution.
 - [x] Mobile text entry precedes settings in document order. Shell links wrap
@@ -14,18 +15,30 @@
 - [x] `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`,
   `npm run audit`, Chromium Playwright (desktop/mobile), and WebKit Playwright
   (online tests) passed locally.
-- [ ] Firefox browser tests pass in CI or on an unrestricted host. Local macOS
-  Firefox fails in its `plugin-container` before the first page loads.
+- [x] Firefox browser tests passed in Linux CI. Local macOS Firefox still fails
+  in its `plugin-container` before the first page loads.
 - [ ] Manual screen-reader, 200% zoom, contrast, reduced-motion, real phone and
   tablet, PWA install/offline, and export-artifact checks are recorded on Stage.
 - [x] The operator approved `apps@haak3.de` as contact address for imprint and
   privacy notices.
 - [ ] AGB, privacy, imprint, and translations are reviewed by the operator;
   the privacy notice date is updated.
-- [ ] Stage route, PR review, CI, stage smoke test, and rollback artifact are
-  recorded before production deployment.
+- [x] Stage route and browser smoke test are recorded. The deployed redesign
+  served the editor, five language options, translated shell, and draft AGB.
+- [x] PR review and Linux CI passed. The current PR head passed 139 browser tests
+  with one known WebKit offline skip in
+  [run 45906186726](https://github.com/ChristianHaake/Prompter/actions/runs/45906186726).
+- [x] Previous Stage Worker version
+  `04d26a77-873b-4977-9016-ab008297e657` is recorded as the Stage rollback
+  target.
+- [ ] The exact production rollback artifact is recorded before production
+  deployment.
 
-Stage deployment was paused at the operator's request on 2026-11-26.
+Stage deployment completed on 2026-11-26; the final acceptance build and device
+results remain to be recorded. GitHub Actions was enabled for the repository on
+2026-11-26, restricted to GitHub-owned actions. The first Linux run exposed a
+Firefox manifest-download test issue and a WebKit timing assumption; both test
+cases were corrected and the next CI run passed.
 
 Rollback source baseline: `c5b16b3` on `main`, with compatible
 `prompter_project_v1`, `prompter_pitch_history_v1`, and `.prompter` schema 1.0.
