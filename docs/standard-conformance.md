@@ -47,8 +47,8 @@ Review date: Before production release
 
 ```text
 Rule: Browser and device validation must separate test harness failures from app behavior.
-Reason: Local Playwright Firefox on this macOS host fails to start its plugin-container with Operation not permitted. Playwright WebKit reports an internal error on offline navigation; that one automated check is skipped for WebKit.
-Scope: Firefox local run and Safari/WebKit offline navigation. Chromium and WebKit online flows run in Playwright; Firefox CI and real Safari/Firefox still need confirmation.
+Reason: Local Playwright Firefox on this macOS host fails to start its plugin-container with Operation not permitted; Linux CI passed all Firefox tests. Playwright WebKit reports an internal error on offline navigation; that one automated check is skipped for WebKit.
+Scope: Firefox local run and Safari/WebKit offline navigation. Chromium, Firefox, and WebKit online flows pass in Linux CI; real Safari offline behavior still needs confirmation.
 Temporary or permanent: Temporary
 Review date: Before production release
 ```

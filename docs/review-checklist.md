@@ -15,8 +15,8 @@
 - [x] `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`,
   `npm run audit`, Chromium Playwright (desktop/mobile), and WebKit Playwright
   (online tests) passed locally.
-- [ ] Firefox browser tests pass in CI or on an unrestricted host. Local macOS
-  Firefox fails in its `plugin-container` before the first page loads.
+- [x] Firefox browser tests passed in Linux CI. Local macOS Firefox still fails
+  in its `plugin-container` before the first page loads.
 - [ ] Manual screen-reader, 200% zoom, contrast, reduced-motion, real phone and
   tablet, PWA install/offline, and export-artifact checks are recorded on Stage.
 - [x] The operator approved `apps@haak3.de` as contact address for imprint and
@@ -25,14 +25,20 @@
   the privacy notice date is updated.
 - [x] Stage route and browser smoke test are recorded. The deployed redesign
   served the editor, five language options, translated shell, and draft AGB.
-- [ ] PR review, green Linux CI, and exact rollback artifact are recorded before
-  production deployment.
+- [x] PR review and Linux CI passed. The current PR head passed 139 browser tests
+  with one known WebKit offline skip in
+  [run 45906186726](https://github.com/ChristianHaake/Prompter/actions/runs/45906186726).
+- [x] Previous Stage Worker version
+  `04d26a77-873b-4977-9016-ab008297e657` is recorded as the Stage rollback
+  target.
+- [ ] The exact production rollback artifact is recorded before production
+  deployment.
 
 Stage deployment completed on 2026-11-26; the final acceptance build and device
 results remain to be recorded. GitHub Actions was enabled for the repository on
 2026-11-26, restricted to GitHub-owned actions. The first Linux run exposed a
 Firefox manifest-download test issue and a WebKit timing assumption; both test
-cases were corrected for the next CI run.
+cases were corrected and the next CI run passed.
 
 Rollback source baseline: `c5b16b3` on `main`, with compatible
 `prompter_project_v1`, `prompter_pitch_history_v1`, and `.prompter` schema 1.0.
