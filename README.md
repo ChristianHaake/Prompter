@@ -169,9 +169,10 @@ npm run verify
 
 `npm run verify` ist das Release-Gate. Es führt Linting, Typecheck, Unit-Tests,
 Produktions-Audit, Build und Playwright-Tests gegen eine Produktions-Preview aus.
-Für den Browser-Test gegen die deployte Stage-Version kann
-`STAGE_BASE_URL=https://stage.prompter.haak3.de npx playwright test` verwendet
-werden. Dabei startet Playwright keinen lokalen Preview-Server.
+Für den Browser-Test gegen die deployte Stage-Version kann lokal
+`STAGE_BASE_URL=https://stage.prompter.haak3.de npx playwright test --project=chromium --project=mobile-chromium --project=webkit`
+verwendet werden. Dabei startet Playwright keinen lokalen Preview-Server.
+Auf Linux läuft der Befehl ohne Projektfilter auch mit Firefox.
 
 ## Projektstruktur
 
