@@ -39,7 +39,7 @@ Review date: Before public production release
 
 ```text
 Rule: Terms, imprint, privacy notice, and their translations require operator review.
-Reason: The AGB route contains a marked draft; existing imprint/privacy text still has contact placeholders and the privacy notice carries an older date.
+Reason: The AGB route contains a marked draft; imprint/privacy now use apps@haak3.de, but the operator must review their content and the privacy notice carries an older date.
 Scope: All five language versions of AGB, imprint, and privacy; no production release before approval.
 Temporary or permanent: Temporary
 Review date: Before production release

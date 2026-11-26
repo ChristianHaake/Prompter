@@ -11,7 +11,7 @@ Alte Ziegelei 7\
 26197 Großenkneten\
 Duitsland
 
-E-mail: {mein Vorname}{mein Nachname}@gmail.com
+E-mail: [apps@haak3.de](mailto:apps@haak3.de)
 
 ## 2. Beschikbaarstelling van de website
 

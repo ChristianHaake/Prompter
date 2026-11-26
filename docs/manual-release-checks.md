@@ -41,5 +41,5 @@ off.
   backend during edit, preview, presentation, import, export, or CSV export.
 - Confirm Cloudflare/Web Analytics wording is still accurate on the privacy
   page.
-- Operator reviews AGB, imprint, privacy, and all translations; replace contact
-  placeholders and update the notice date before production release.
+- Operator reviews AGB, imprint, privacy, and all translations; update the
+  notice date before production release. The contact address is `apps@haak3.de`.

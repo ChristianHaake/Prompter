@@ -18,10 +18,14 @@
   Firefox fails in its `plugin-container` before the first page loads.
 - [ ] Manual screen-reader, 200% zoom, contrast, reduced-motion, real phone and
   tablet, PWA install/offline, and export-artifact checks are recorded on Stage.
+- [x] The operator approved `apps@haak3.de` as contact address for imprint and
+  privacy notices.
 - [ ] AGB, privacy, imprint, and translations are reviewed by the operator;
-  contact placeholders and the privacy notice date are resolved.
+  the privacy notice date is updated.
 - [ ] Stage route, PR review, CI, stage smoke test, and rollback artifact are
   recorded before production deployment.
+
+Stage deployment was paused at the operator's request on 2026-11-26.
 
 Rollback source baseline: `c5b16b3` on `main`, with compatible
 `prompter_project_v1`, `prompter_pitch_history_v1`, and `.prompter` schema 1.0.
